@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCloudArrowUp,faTrashCan} from "@fortawesome/free-solid-svg-icons";
 
 
-function AppUploadStudent(){
+function AppAnswerSheet(){
    
     const [csvFile, setcsvFile] = useState(''); // สำหรับเก็บไฟล์
     const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
@@ -71,7 +71,7 @@ function AppUploadStudent(){
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                        <div className="w300px">
+                        <div className="mw300px">
                             <div className="dropzone">
                                 <div className="dz-box"{...getRootProps()}>
                                     <input className="test" {...getInputProps()} />
@@ -100,8 +100,36 @@ function AppUploadStudent(){
                             </form >
                         </div>
                         <div>แสดงรายชื่อนักศึกษา</div>
-                        <div>
-                            table
+                        <div className="tableSub">
+                            <table>
+                                <thead>
+                                    <tr >
+                                        <th >รหัสนักศึกษา</th>
+                                        <th >ชื่อ</th>
+                                        <th >นามสกุล</th>
+                                        <th >กลุ่มเรียน</th>
+                                        <th >อีเมล์</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                
+                                    <tr>
+                                        <td>64015142</td>
+                                        <td>ศุภมิตร</td>
+                                        <td>เทียนศิริ</td>
+                                        <td>1</td>
+                                        <td>64015142@kmitl.ac.th</td>
+                                       
+                                    </tr>
+                                    <tr>
+                                        <td>64015161</td>
+                                        <td>อนุวัต</td>
+                                        <td>สะอุบล</td>
+                                        <td>53</td>
+                                        <td>tode@kmitl.ac.th</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -113,4 +141,4 @@ function AppUploadStudent(){
 
 }
 
-export default AppUploadStudent;
+export default AppAnswerSheet;

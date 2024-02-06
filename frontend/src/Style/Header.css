@@ -123,7 +123,8 @@
 }
 
 .sidebar .side-menu li.active a{
-    color: var(--success);
+    /* color: var(--success); */
+    color: var(--dark)
 }
 /* .sidebar .side-menu li.d a .danger{
     color: var(--danger);

@@ -11,8 +11,21 @@
 .flex{
     display: flex;
 }
+.flexCenter{
+    display: flex;
+    justify-content: center;
+}
+.flexJACenter{
+    display: flex;
+    justify-items: center;
+    align-items: center;
+}
+
 .grid{
     display: grid;
+}
+.DPcontent{
+    display: contents;
 }
 
 .inline-block{
@@ -36,8 +49,12 @@
     width: 100%;
 }
 /*  width */
+
 .width100{
     width: 100%;
+}
+.wAuto{
+    width: auto;
 }
 .w60px{
     width: 60px;
@@ -51,22 +68,40 @@
 .w120px{
     width: 120px;
 }
+.w140px{
+    width: 140px;
+}
 .w150px{
     width: 150px;
 }
-.w300px{
+.mw80px{
+    max-width: 80px;
+    min-width: 80px;
+}
+.mw300px{
     max-width: 300px;
 }
+.mw1200px{
+    max-width: 1200px;
+}
+.mw1600px{
+    max-width: 1600px;
+}
+
+
 /* END width */
 
 /*  */
+.pdb5px{
+    padding-bottom: 5px;
+}
 .mgR10{
     margin: 0px 10px 0px 0px;
 }
 
 /* END margin */
 /*  font-size */
-.f8{
+.fs8{
     font-size: 8px;
 }
 .fs10{
@@ -78,4 +113,8 @@
 .fs16{
     font-size: 16px;
 }
+.fb{
+    font-weight: bold;
+}
+
 /* END  font-size */

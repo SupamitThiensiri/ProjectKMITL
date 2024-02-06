@@ -68,3 +68,10 @@
     }
     
 }
+.wait{
+    /* border-radius: 10px; */
+    background-color: #dddddd; /* Set the background color to gray */
+    color: gray; /* Set the text color to gray */
+    opacity: 0.7; /* Optionally, reduce opacity to visually indicate it's disabled */
+    pointer-events: none; /* Disable pointer events to make it non-interactive */
+}

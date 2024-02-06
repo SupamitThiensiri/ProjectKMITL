@@ -2,26 +2,81 @@ import {
     Link
 } from "react-router-dom";
 import { useState } from 'react';
-
+import { useParams } from 'react-router-dom';
+import {variables} from "../../Variables";
+import Swal from 'sweetalert2'
+import Cookies from 'js-cookie';
 function AppCreateExam(){
+    const { id } = useParams();
 
     const [NameExam, setNameExam] = useState('');
     const [ExamNo, setExamNo] = useState('');
-    const [NumExam, setNumExam] = useState('');
-    const [SetExam, setSetExam] = useState('');
+    const [NumExam, setNumExam] = useState(40);
+    const [SetExam, setSetExam] = useState(1);
 
     const handleInputNameExam = (e) => { setNameExam(e.target.value); };
     const handleInputExamNo = (e) => {setExamNo(e.target.value);};
     const handleInputNumExam = (e) => { setNumExam(e.target.value); };
     const handleInputSetExam = (e) => {setSetExam(e.target.value);};
 
-    const handleSubmit = (e) => {
+
+    async function handleSubmit(e) {
         e.preventDefault();
-        console.log('NameExam:', NameExam);
-        console.log('ExamNo:', ExamNo);
-        console.log('NumExam:', NumExam);
-        console.log('SetExam:', SetExam);
-    };
+        if(NameExam !== '' && ExamNo !== '' && NumExam !== '' && SetExam !== ''){
+            try {
+                const response = await fetch(variables.API_URL + "exam/create/", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json, text/plain',
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify({
+                        subid : id,
+                        examname: NameExam,
+                        examno: ExamNo,
+                        numberofexams: NumExam,
+                        numberofexamsets: SetExam,
+                        userid : Cookies.get('userid')
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: "สร้างการสอบเสร็จสิ้น",
+                        icon: "success",//error,question,warning,success
+                        confirmButtonColor: "#341699",
+                    });
+                    setNameExam([]);
+                    setExamNo([]);
+                    setNumExam('40')
+                    setSetExam('1');
+                } else {
+                    console.log(result)
+                    Swal.fire({
+                        title: "เกิดข้อผิดพลาด"+result.err,
+                        icon: "error",//error,question,warning,success
+                        confirmButtonColor: "#341699",
+                    });
+                    console.error(result.msg || response.statusText);
+                }
+            } catch (err) {
+                Swal.fire({
+                    title: "เกิดข้อผิดพลาด"+err,
+                    icon: "error",//error,question,warning,success
+                    confirmButtonColor: "#341699",
+                });
+                console.error(err);
+            }
+        }else{
+            Swal.fire({
+                title: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                icon: "warning",//error,question,warning,success
+                confirmButtonColor: "#341699",
+            });
+        }
+    }
 
     return(
         <div className='content'>
@@ -36,7 +91,7 @@ function AppCreateExam(){
                             <form onSubmit={handleSubmit}>
                                 <div className="bx-input-fix">
                                     <label htmlFor="NameExam" className="w120px">ชื่อการสอบ</label>
-                                    <input
+                                    <input className="mw300px"
                                         type="text"
                                         id="NameExam"
                                         name="NameExam"
@@ -47,35 +102,41 @@ function AppCreateExam(){
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="ExamNo" className="w120px">การสอบครั้งที่</label>
-                                    <input
-                                        type="text"
+                                    <input className="mw300px"
+                                        type="number"
                                         id="ExamNo"
                                         name="ExamNo"
                                         value={ExamNo}
                                         onChange={handleInputExamNo}
                                         placeholder="การสอบครั้งที่"
+                                        min="1"
+                                        max="10"
                                     />
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="setNumExam" className="w120px">จำนวนข้อสอบ</label>
-                                    <input
-                                        type="text"
+                                    <input className="mw300px"
+                                        type="number"
                                         id="setNumExam"
                                         name="setNumExam"
                                         value={NumExam}
                                         onChange={handleInputNumExam}
                                         placeholder="จำนวนข้อสอบ"
+                                        min="1"
+                                        max="120"
                                     />
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="SetExam" className="w120px">จำนวนชุดข้อสอบ</label>
-                                    <input
-                                        type="text"
+                                    <input className="mw300px"
+                                        type="number"
                                         id="SetExam"
                                         name="SetExam"
                                         value={SetExam}
                                         onChange={handleInputSetExam}
                                         placeholder="จำนวนชุดข้อสอบ"
+                                        min="1"
+                                        max="30"
                                     />
                                 </div>
 

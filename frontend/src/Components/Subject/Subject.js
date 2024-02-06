@@ -1,11 +1,27 @@
 import {
     Link
 } from "react-router-dom";
+import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
+import TableSubject from "../Tools/ToolsTableSubject";
 
 function AppSubject(){
 
+    const columns = useMemo(
+    () => [
+        {Header: 'subid',accessor: 'subid',},
+        {Header: 'รหัสวิชา',accessor: 'subjectid', },
+        {Header: 'ชื่อวิชา',accessor: 'subjectname', },
+        {Header: 'ปีการศึกษา',accessor: 'year', },
+        {Header: 'เทอม',accessor: 'semester',},
+        {Header: 'statussubject',accessor: 'statussubject',},
+        {Header: 'deletetimesubject',accessor: 'deletetimesubject', },
+        {Header: 'createtimesubject',accessor: 'createtimesubject', },
+        {Header: 'userid',accessor: 'userid',},
+    ],
+    []
+    );
     return(
 
         <div className='content'>
@@ -25,7 +41,7 @@ function AppSubject(){
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                        <Link to="/Subject/SubjectNo/1">table to Subject No</Link>
+                        <TableSubject columns={columns}/>
                     </div>
                 </div>
             </div>

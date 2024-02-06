@@ -1,21 +1,45 @@
 import './../Style/Header.css';
 
-import { useState  } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Link
 } from "react-router-dom";
-
+import Cookies from 'js-cookie';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faBars, faCircleUser,faXmark, faHouse, faFolderPlus, faBook, faFileCirclePlus,faArrowRightFromBracket, faClipboardList, faUserShield,faBookOpenReader} from "@fortawesome/free-solid-svg-icons";
-
+// import {GoogleLogout} from 'react-google-login'
 
 function AppHeader(){
+    useEffect(() => {
+        if (Cookies.get('email') === "undefined" || Cookies.get('email') === undefined) {
+            window.location.href = '/SingIn';
+        }else{
+            console.log(Cookies.get())
+        }
+    }, []);
 
     const [Sidebar,setSidebar] = useState(false);
     const handSidebar = () => setSidebar(!Sidebar);
 
     const location = useLocation();
+    const handleLogoutLinkClick = () => {
+        handleGoogleLogout();
+    };
+    const handleGoogleLogout = () => {
+        Cookies.remove('userid');
+        Cookies.remove('email');
+        Cookies.remove('fullname');
+        Cookies.remove('googleid');
+        Cookies.remove('usageformat');
+        Cookies.remove('e_kyc');
+        Cookies.remove('typesid');
+        Cookies.remove('clientId');
+        Cookies.remove('userToken');
+        console.log(Cookies.get())
+        window.location.href = '/SingIn';
+    }
+
     return(
         <>
         <div className={Sidebar ? "sidebar":"sidebar close"}>
@@ -25,6 +49,7 @@ function AppHeader(){
             </Link>
             <div className='logo-xmark' onClick={handSidebar}><FontAwesomeIcon icon={faXmark} /></div>
             <ul className="side-menu">
+                
                 <li className={location.pathname.includes("/Home") ? "active" : ""} ><Link to="/Home"><div className='iconmenu'><FontAwesomeIcon icon={faHouse} /></div>หน้าแรก</Link></li>
                 <li className={location.pathname.includes("/Subject") ?"active":""}><Link to="/Subject"><div className='iconmenu'><FontAwesomeIcon icon={faBook} /></div>รายวิชาทั้งหมด</Link></li>
                 <li className={location.pathname.includes("/CreateSubject") ?"active":""}><Link to="/CreateSubject"><div className='iconmenu'><FontAwesomeIcon icon={faFolderPlus} /></div>สร้างรายวิชา</Link></li>
@@ -32,9 +57,11 @@ function AppHeader(){
                 <li className={location.pathname.includes("/CreateQuestionnaire") ?"active":""}><Link to="CreateQuestionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faFileCirclePlus} /></div>สร้างแบบสอบถาม</Link></li>
                 <li><Link to="#"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
                 <li className={location.pathname.includes("/Contact") ?"active":""}><Link to="/Contact"><div className='iconmenu'><FontAwesomeIcon icon={faUserShield} /></div>ติดต่อ Admin</Link></li>
+                
             </ul>
             <ul className="side-menu">
-                <li className=''><Link to="SingIn"><div className='iconmenu danger-font'><FontAwesomeIcon icon={faArrowRightFromBracket} /></div><span className='danger-font'>Logout</span></Link></li>
+                <li className='' onClick={handleLogoutLinkClick} ><Link><div className='iconmenu danger-font'><FontAwesomeIcon icon={faArrowRightFromBracket} /></div><span className='danger-font'>Logout</span></Link></li>
+                {/* <GoogleLogout clientId={Cookies.get('clientId')} buttonText="Log out" onLogoutSuccess={handleGoogleLogout} /> */}
             </ul>
         </div>
         <div className="content contentnavbar">

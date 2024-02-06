@@ -15,7 +15,6 @@ function AppHeaderOutSide(){
                     <div className="logo-name"><img src='/img/namelogo.png' alt=''/></div>
                 </div>
                 <ul className="menu">
-                    <li ><Link to="/ReadScore" className='light'>ดูคะแนนสอบ</Link></li>
                     <li ><Link to="/SingUp" className='light'>สมัครสมาชิก</Link></li>
                     <li ><Link to="/SingIn" className='primary-blue'>เข้าสู่ระบบ</Link></li>
                 </ul>
