@@ -11,6 +11,7 @@ import Swal from 'sweetalert2'
 import {
     Link
 } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faChevronRight, faChevronLeft, faAnglesRight, faAnglesLeft, faTrashCan, faPen, faSortDown, faSortUp, faSort} from "@fortawesome/free-solid-svg-icons";
@@ -19,9 +20,9 @@ const ToolTableQuestionaire = ({ columns }) => {
     // const [DataSubject, setDataSubject] = useState([]);
     const [data, setdata] = useState([]);
 
-    const fetchDatSubject = async () => {
+    const fetchDataSubject = async () => {
         try{
-            fetch(variables.API_URL+"subject/", {
+            fetch(variables.API_URL+"quesheet/detail/user/"+Cookies.get('userid')+"/", {
                 method: "GET",
                 headers: {
                     'Accept': 'application/json, text/plain',
@@ -30,9 +31,8 @@ const ToolTableQuestionaire = ({ columns }) => {
                 })
                 .then(response => response.json())
                 .then(result => {
-                    // console.log(result)
+                    console.log(result)
                     setdata(result)
-                    setdata([])
                 }
             )
         }catch (err) {
@@ -43,7 +43,7 @@ const ToolTableQuestionaire = ({ columns }) => {
     };
     
     useEffect(() => {
-        fetchDatSubject();
+        fetchDataSubject();
     }, []);
 
     const {
@@ -90,12 +90,12 @@ const ToolTableQuestionaire = ({ columns }) => {
     const [selectedColumn] = useState('all');
     // const [selectedColumn,setSelectedColumn] = useState('all'); // Default to search all columns
 
-    const handleDelCours = async (subid,subname) => {
+    const handleDelCours = async (Queid,Quename) => {
         // console.log(subid)
         Swal.fire({
-            title: "ลบรายวิชา",
-            text: `คุณต้องการลบรายวิชา ${subname} ใช่หรือไม่ `,
-            icon: "warning",
+            title: "ลบแบบสอบถาม",
+            text: `คุณต้องการลบแบบสอบถาม ${Quename} ใช่หรือไม่ `,
+            icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             confirmButtonText: "ยืนยัน",
@@ -103,7 +103,7 @@ const ToolTableQuestionaire = ({ columns }) => {
         }).then( (result) => {
             if (result.isConfirmed) {
                 try{
-                    fetch(variables.API_URL+"subject/delete/"+subid+"/", {
+                    fetch(variables.API_URL+"quesheet/delete/"+Queid+"/", {
                         method: "DELETE",
                         headers: {
                             'Accept': 'application/json, text/plain',
@@ -112,13 +112,57 @@ const ToolTableQuestionaire = ({ columns }) => {
                         })
                         .then(response => response.json())
                         .then(result => {
-                            // console.log(,result)
+                            // console.log(result)
                             Swal.fire({
-                                title: result.msg,
+                                title: result.msg+"\n"+removeTZ(result.deletetime),
                                 icon: "success",//error,question,warning,success
                                 confirmButtonColor: "#341699",
                             });
-                            fetchDatSubject();
+                            fetchDataSubject();
+                        }
+                    )
+                }catch (err) {
+                    // console.error('เกิดข้อผิดพลาดในการลบ:', err);
+                    Swal.fire({
+                        title: "เกิดข้อผิดพลาดในการลบแบบสอบถาม",
+                        icon: "error",//error,question,warning,success
+                        confirmButtonColor:"#341699",
+                    });
+                }
+            }
+        });
+    };
+    const handlecancelDel = async (Queid,Quename,datetime) => {
+        Swal.fire({
+            title: `วิชาจะถูกลบในวันที่และเวลา \n${datetime}`,
+            text: `คุณต้องการยกเลิกการลบวิชา ${Quename} ใช่หรือไม่ `,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonText:"ยกเลิก"
+        }).then( (result) => {
+            if (result.isConfirmed) {
+                try{
+                    fetch(variables.API_URL+"quesheet/update/"+Queid+"/", {
+                        method: "PUT",
+                        headers: {
+                            'Accept': 'application/json, text/plain',
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        },
+                        body: JSON.stringify({
+                            userid : Cookies.get('userid'),
+                            deletetimequesheet : null
+                        }),
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            Swal.fire({
+                                title: "ทำการยกเลิกการลบเสร็จสิ้น",
+                                icon: "success",//error,question,warning,success
+                                confirmButtonColor: "#341699",
+                            });
+                            fetchDataSubject();
                         }
                     )
                 }catch (err) {
@@ -132,11 +176,10 @@ const ToolTableQuestionaire = ({ columns }) => {
             }
         });
     };
-    // Swal.fire({
-    //     title: "เกิดข้อผิดพลาด",
-    //     icon: "success",
-    //     confirmButtonColor: "#341699",
-    // });
+
+    function removeTZ(dateTimeString) {
+        return dateTimeString.replace("T", " ").replace("Z", "").replace("+07:00", "");
+    }
     return (
         <div>
             <div className='InputSize space-between'>
@@ -148,7 +191,7 @@ const ToolTableQuestionaire = ({ columns }) => {
                 >
                     {[10, 20, 30, 40, 50].map((pageSize) => (
                         <option key={pageSize} value={pageSize}>
-                        Show {pageSize}
+                        แสดง {pageSize}
                         </option>
                 ))}
                 </select>
@@ -167,7 +210,7 @@ const ToolTableQuestionaire = ({ columns }) => {
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             <th>ลำดับ</th>
                             {headerGroup.headers.map((column) => (
-                                (column.id !== 'userid_sub' && column.id !== 'subid') ? (
+                                (column.id !== 'quesheetid' && column.id !== 'deletetimequesheet') ? (
                                     <th {...column.getHeaderProps()}>
                                     {/* <th {...column.getHeaderProps(column.getSortByToggleProps())}> */}
                                         {column.render('Header')}
@@ -175,18 +218,6 @@ const ToolTableQuestionaire = ({ columns }) => {
                                         <span className='' {...column.getSortByToggleProps()}>
                                             {column.isSorted ? (column.isSortedDesc ?  <FontAwesomeIcon icon={faSortDown} />: <FontAwesomeIcon icon={faSortUp} />) : <FontAwesomeIcon icon={faSort} />}
                                         </span>
-                                        {/* <div>
-                                            {column.canFilter ? ( // Check if the column can be filtered
-                                            <input
-                                                type="text"
-                                                value={column.filterValue || ''}
-                                                onChange={(e) =>
-                                                column.setFilter(e.target.value) // Set the filter value for the column
-                                                }
-                                                placeholder={`ค้นหา ${column.render('Header')}`}
-                                            />
-                                            ) : null}
-                                        </div> */}
                                     </th>
                                 ) : null
                             ))}
@@ -200,14 +231,16 @@ const ToolTableQuestionaire = ({ columns }) => {
                         page.map((row) => {
                             prepareRow(row);
                                 return (
-                                    
                                     <tr {...row.getRowProps()} key={row.id}>
-                                        <td className='center'>{Number(row.id)+1}</td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[1].value}</Link></td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[2].value}</Link></td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[3].value}</Link></td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[4].value}</Link></td>
-                                        <td className='center mw80px' ><Link to={"/Subject/UpdateSubject/"+row.cells[0].value} className='' style={{ display: 'contents' }}><span className=''><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.cells[0].value,row.cells[1].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
+                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"center":"center wait"}><Link to={"/Questionnaire/QuestionnaireNo/"+row.values.quesheetid}>{Number(row.id)+1}</Link></td>
+                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={"/Questionnaire/QuestionnaireNo/"+row.values.quesheetid}>{row.values.quesheetname}</Link></td>
+                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={"/Questionnaire/QuestionnaireNo/"+row.values.quesheetid}>{row.values.quesheettopicname}</Link></td>                                       
+                                        {console.log(row.values.createtimequesheet)}
+                                        {row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?
+                                            <td className='center mw80px' ><Link to={'/Questionnaire/QuestionnaireNo/ShowQuestionnaire/UpdateQuestionnaire/'+row.values.quesheetid} className='' style={{ display: 'contents' }}><span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.values.quesheetid,row.values.quesheetname)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
+                                        :
+                                            <td className='center mw80px' ><Link to="#"><p className='danger light-font' onClick={() => handlecancelDel(row.values.quesheetid,row.values.quesheetname,removeTZ(row.values.deletetimequesheet))}>ยกเลิกการลบ</p> </Link></td>
+                                        }
                                     </tr>
                                 );
                         })
@@ -232,8 +265,8 @@ const ToolTableQuestionaire = ({ columns }) => {
                 {<FontAwesomeIcon icon={faAnglesRight} />}
                 </button>{' '}
                 <span>
-                    Page{' '}
-                    {pageIndex + 1} of {pageOptions.length}
+                    หน้า{' '}
+                    {pageIndex + 1} ของ {pageOptions.length}
                     {/* <strong>
                         {pageIndex + 1} of {pageOptions.length}
                     </strong>{' '} */}

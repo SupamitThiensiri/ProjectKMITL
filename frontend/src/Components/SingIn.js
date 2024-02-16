@@ -29,6 +29,7 @@ function AppSingIn(){
   //       console.log(Cookies.get())
   //   }
   // }, []);
+  
   useEffect(() => {
     const initClient = () => {
       gapi.client.init({
@@ -101,7 +102,7 @@ function AppSingIn(){
       Cookies.set('clientId', clientId, { expires: 5 / 24 });
       // Log the values to the console
         console.log('All Cookies:', Cookies.get());
-        window.location.href = '/home';
+        window.location.href = '/Home';
       
       }else{
         console.log("result err :",result.err)
@@ -148,7 +149,7 @@ function AppSingIn(){
         Cookies.set('typesid', result.typesid, { expires: 5 / 24 });
         Cookies.set('clientId', clientId, { expires: 5 / 24 });
 
-        window.location.href = '/home';
+        window.location.href = '/Home';
       }else{
         console.log("result err :",result.err)
         Swal.fire({
@@ -171,7 +172,7 @@ function AppSingIn(){
       <AppHeaderOutSide />
       <div>
         <div className="box-contents-SingIn">
-            <div className="box-contents-form">
+            <div className={Cookies.get('email') !== undefined || Cookies.get('email') === "undefined" ? "box-contents-form wait" :"box-contents-form"}>
               <div className="box-contents-form-view light">
                 <h3 className="center">เข้าสู่ระบบ</h3>
                 <div className='light'>

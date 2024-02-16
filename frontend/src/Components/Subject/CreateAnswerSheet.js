@@ -1,3 +1,4 @@
+
 import {
     Link
 } from "react-router-dom";
@@ -10,6 +11,8 @@ import { SRLWrapper } from 'simple-react-lightbox';
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
+
+
 function AppCreateAnswerSheet(){
     const { id } = useParams();
 
@@ -18,17 +21,36 @@ function AppCreateAnswerSheet(){
     const [subid, setsubid] = useState('');
     const [subjectname, setsubjectname] = useState('');
     const [imganswersheetformat_path, setimganswersheetformat_path] = useState('');
+    const [imgcheck, setimgcheck] = useState('');
+    const [imgoriginal, setimgoriginal] = useState('');
     
     const [File, setFile] = useState(''); // สำหรับเก็บไฟล์
     const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
     const [namefileupload, setNameFileUpload] = useState(''); // สำหรับชื่อไฟล์อัปโหลด
     const [selectedOption, setSelectedOption] = useState('1');
     const [isChecked, setChecked] = useState(false);
+    const [isoriginal, setisoriginal] = useState(false);
 
-    const handleOptionChange = (event) => {setSelectedOption(event.target.value);console.log(selectedOption)};
+    const handleCheckboxOriginal = () => {
+        if(isoriginal === false){
+            setImages(imgoriginal)
+            setChecked(false)
+            setFile('')
+            setStatusItem('')
+            setNameFileUpload('')
+            console.log(images)
+        }else{
+            setImages(imganswersheetformat_path)
+        }
+        setisoriginal(!isoriginal);
+    };
+
+    const handleOptionChange = (event) => {setSelectedOption(event.target.value);console.log(images[selectedOption-1])};
     const handleCheckboxChange = () => {setChecked(!isChecked);};
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
+
+    const [images, setImages] = useState([]);
 
     const fetchDataStart = async () => {
         try{
@@ -47,8 +69,25 @@ function AppCreateAnswerSheet(){
                     console.log(result)
                     setExamNo(result.examno)
                     setExamNoShow(result.examid)
-                    setimganswersheetformat_path(result.imganswersheetformat_path)
+                    setimgoriginal([
+                        { id: '1', imageName: new URL(result.imganswersheetformat_path).origin+"/media/original_answersheet/answersheet_num.jpg", tag: 'free' },
+                        { id: '2', imageName: new URL(result.imganswersheetformat_path).origin+"/media/original_answersheet/answersheet_eng.jpg", tag: 'free' },
+                        { id: '3', imageName: new URL(result.imganswersheetformat_path).origin+"/media/original_answersheet/answersheet_thai.jpg", tag: 'free' },
+                    ])
+                    setimganswersheetformat_path([
+                        { id: '1', imageName: result.imganswersheetformat_path+"answersheet_num.jpg", tag: 'free' },
+                        { id: '2', imageName: result.imganswersheetformat_path+"answersheet_eng.jpg", tag: 'free' },
+                        { id: '3', imageName: result.imganswersheetformat_path+"answersheet_thai.jpg", tag: 'free' }, // 1170 827
+                    ])
+                    setSelectedOption(result.answersheetformat)
                     setsubid(result.subid)
+                    console.log( new URL(result.imganswersheetformat_path).origin)
+                    setimgcheck(extractFilenameFromURL(result.imganswersheetformat_path))
+                    setImages([
+                        { id: '1', imageName: result.imganswersheetformat_path+"answersheet_num.jpg", tag: 'free' },
+                        { id: '2', imageName: result.imganswersheetformat_path+"answersheet_eng.jpg", tag: 'free' },
+                        { id: '3', imageName: result.imganswersheetformat_path+"answersheet_thai.jpg", tag: 'free' }, // 1170 827
+                    ])
                     fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
                         method: "GET",
                         headers: {
@@ -58,8 +97,11 @@ function AppCreateAnswerSheet(){
                         })
                         .then(response => response.json())
                         .then(result => {
-                            console.log(result)
-                            setsubjectname(result.subjectname)
+                            if (result.err !== undefined) {
+                                setStartError(1);
+                            }else{
+                                setsubjectname(result.subjectname)
+                            }
                             
                         }
                     )
@@ -69,11 +111,16 @@ function AppCreateAnswerSheet(){
             setStartError(1);
         }
     };
+    const setStartError2 = (e) => {
+        setStartError(2);
+    }
     if(Start === 0){
         fetchDataStart();
         setStart(1);
+        setTimeout(function() {
+            setStartError2()
+        }, 800);
     }
-
     const onDrop = useCallback((acceptedFiles) => {
         console.log("OnDrop");
         console.log(acceptedFiles);
@@ -92,83 +139,26 @@ function AppCreateAnswerSheet(){
             });
         }
     }, []);
-
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accepts: "image/*",
         multiple: false,
     })
-
     const handleFileInputChange = (e) => {
         const file = e;
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            setFile(reader.result);
-        }
-
         setStatusItem(true);
         setNameFileUpload(file.path);
-
+        setFile(file);
     }
-
     async function handleSubmitFile(e) {
         e.preventDefault();
         if ((File !== '' && isChecked === true) || isChecked === false) {
-            Swal.fire({
-                title: "",
-                text: `กดยืนยันเพื่อทำการสร้างกระดาษคำตอบ`,
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#341699",
-                confirmButtonText: "ยืนยัน",
-                cancelButtonColor: "#d33",
-                cancelButtonText: "ยกเลิก"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await fetch(variables.API_URL + "exam/update/" + id + "/", {
-                            method: "PUT",
-                            headers: {
-                                'Accept': 'application/json, text/plain',
-                                'Content-Type': 'application/json;charset=UTF-8'
-                            },
-                            body: JSON.stringify({
-                                answersheetformat:selectedOption,
-                                statusexam:"2",
-                                userid : Cookies.get('userid')
-                            }),
-                        });
-    
-                        const result = await response.json();
-    
-                        if (response.ok) {
-                            fetchDataStart()
-                            Swal.fire({
-                                title: "",
-                                text: "สร้างกระดาษคำตอบเสร็จสิ้น",
-                                icon: "success",
-                                confirmButtonColor: "#341699",
-                                confirmButtonText: "ยืนยัน",  
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "เกิดข้อผิดพลาด" + result.msg,
-                                icon: "error", //error,question,warning,success
-                                confirmButtonColor: "#341699",
-                            });
-                        }
-                    } catch (err) {
-                        Swal.fire({
-                            title: "เกิดข้อผิดพลาด" + err,
-                            icon: "error", //error,question,warning,success
-                            confirmButtonColor: "#341699",
-                        });
-                        console.error(err);
-                    }
-    
-                }
-            });
+            if(isoriginal === true){
+                resetlogo()
+            }else{
+                loading()
+            }
+           
         } else {
             console.log("กรุณาอัปโหลดไฟล์");
             Swal.fire({
@@ -180,8 +170,128 @@ function AppCreateAnswerSheet(){
             }).then((result) => {});
         }
     }
+    async function loading(){
+        try {
+            const loadingSwal = Swal.fire({
+                title: 'กำลังประมวลผล...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: async () => { 
+                    Swal.showLoading();
+                    try {
+                        const check = await saveAnswerSheet()
+                        console.log(check)
+                       if(check === true){
+                            Swal.close();
+                            Swal.fire({
+                                title: "",
+                                text: "สร้างกระดาษคำตอบเสร็จสิ้น",
+                                icon: "success",
+                                confirmButtonColor: "#341699",
+                                confirmButtonText: "ยืนยัน",  
+                            }).then((result) => {
+                                window.location.reload();
+                                setNameFileUpload('');
+                                setFile('');
+                                setStatusItem(false);
+                            });
+                        }else{
+                            Swal.close();
+                            Swal.fire('เกิดข้อผิดพลาด'+check);
+                        }
+                    } catch (error) {
+                        Swal.close();
+                        Swal.fire('เกิดข้อผิดพลาด'+error);
+                    }
+                }
+            });
+            await loadingSwal;
+        } catch (error) {
+            console.error(error);
+            Swal.fire('เกิดข้อผิดพลาด');
+        }
+    }
+    async function saveAnswerSheet() {
+        if (isChecked === true) {
+            try {
+                const formData = new FormData();
+                formData.append("file", File);
+                formData.append("userid", Cookies.get('userid'));
+                formData.append("examid", id);
+                const upload = await fetch(variables.API_URL + "exam/upload/logo/", {
+                    method: "POST",
+                    body: formData,
+                });
+                const result = await upload.json();
+                if (result.err === undefined) {
+                    setimganswersheetformat_path(result.imganswersheetformat_path);
+                }else{
+                    return result.err
+                }
+            } catch (err) {
+                return err
+            }
+        }
+        
+        try {
+            const response = await fetch(variables.API_URL + "exam/update/" + id + "/", {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    answersheetformat: selectedOption,
+                    statusexam: "1",
+                    sequencesteps: "2",
+                    userid: Cookies.get('userid')
+                }),
+            });
     
-
+            const result = await response.json();
+    
+            if (result.err === undefined) {
+                fetchDataStart()
+                return true;
+            } else {
+                return result.err
+            }
+        } catch (err) {
+            return err
+        }
+    }
+    async function resetlogo(){
+        const response = await fetch(variables.API_URL + "exam/update/"+id+"/", {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json, text/plain',
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            body: JSON.stringify({
+                reset_logo : "1",                
+                userid : Cookies.get('userid')
+            })
+        });
+    
+        const result = await response.json();
+        console.log("result",result)
+        if(result.err === undefined){
+            Swal.fire({
+                title: "",
+                text: "คืนค่ากระดาษคำตอบเสร็จสิ้น",
+                icon: "success",
+                confirmButtonColor: "#341699",
+                confirmButtonText: "ยืนยัน",  
+            }).then((result) => {
+                setNameFileUpload('');
+                setFile('');
+                setStatusItem(false);
+                window.location.reload();
+            })
+        } else {
+            Swal.fire('เกิดข้อผิดพลาด '+result.err);
+        }
+    }
     const handleDelFileUpload = (e) => {
         Swal.fire({
             title: "",
@@ -201,34 +311,73 @@ function AppCreateAnswerSheet(){
         }
         });
     }
-
-    const images= [
-        { id: '1', imageName: imganswersheetformat_path, tag: 'free' }, // 1170 827
-    ]
+    function extractFilenameFromURL(url) {
+        const parts = url.split('/');
+        const filenameWithSpaces = parts[parts.length - 2];
+        const decodedFilename = decodeURIComponent(filenameWithSpaces);
+        return decodedFilename;
+    }
+    const example_image = () => {
+        const show_image = images.map(image => {
+            if (image.id === selectedOption){
+                return (
+                    <div key={image.id} className="image-card">
+                        <a href={`${image.imageName}`}>
+                            <img className="image" src={`${image.imageName}`} alt={`${image.imageName.substring(image.imageName.lastIndexOf('/') + 1)}`} />
+                        </a>
+                    </div>
+                );
+            }
+            return null;
+        })
+        return show_image;
+    };
     const options = {}
-    const [filteredImages] = useState(images);
-
-
+    
     return(
         <div className='content'>
-        <main>
-            <div className='box-content'>
-                {StartError === 1 ?
-                    <div className='box-content-view'>
-                        <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
-                        <div className='bx-details light'><h2>Not Found</h2></div>
-                    </div>
-                :
-                    <div className='box-content-view'>
+            <main>
+                <div className='box-content'>
+                    {StartError === 0 || StartError === 1 ? 
+                        StartError === 0 ? 
+                            <div className='box-content-view'>
+                                <div className='bx-topic light '>
+                                    <div className='skeleton-loading'>
+                                        <div className='skeleton-loading-topic'></div>
+                                    </div> 
+                                </div>
+                                <div className='bx-details light '>
+                                    <div className='skeleton-loading'>
+                                        <div className='skeleton-loading-content'></div>
+                                    </div> 
+                                </div>
+                            </div>
+                        :
+                            <div className='box-content-view'>
+                                <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
+                                <div className='bx-details light'><h2>Not Found</h2></div>
+                            </div>
+                    :
+                    null
+                    }
+                    <div className= {StartError === 2 ? 'box-content-view':'box-content-view none'} >
                         <div className='bx-topic light'>
-                            <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link></p>
+                            <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / สร้างกระดาษคำตอบ</p>
                             <div className='bx-grid2-topic'>
                                 <h2>สร้างกระดาษคำตอบ</h2>
-                                <div className="flex-end"><p className="button-submit">ดาวโหลด</p></div>
                             </div> 
                         </div>
                         <div className='bx-details light'>
-                            <div>รูปแบบฟอร์มกระดาษคำตอบ</div>
+                            <div>
+                                {imgcheck === 'original_answersheet'?
+                                    ''
+                                    :
+                                    <div className="bx-input-fix">
+                                        <span className="flex"><input className="mgR10" value = "Tree" type = "checkbox" checked={isoriginal} onChange = {handleCheckboxOriginal} /> คืนค่ารูปต้นฉบับ <p className="fs10 flexJACenter">&nbsp;</p> </span>
+                                    </div>
+                                }
+                            </div>
+                            <div className="fb">รูปแบบฟอร์มกระดาษคำตอบ</div>
                             <div className="gtc2-CAS">
                                 <div className="jc-center">
                                     <div className="mw300px fit-content">
@@ -250,7 +399,7 @@ function AppCreateAnswerSheet(){
                                             </div>
                                         </div>
                                         <div className="bx-input-fix">
-                                            <span className="flex"><input className="mgR10" value = "Tree" type = "checkbox" checked={isChecked} onChange = {handleCheckboxChange} /> เพิ่มรูปโลโก้ <p className="fs10 flexJACenter">&nbsp;(ขนาดรูปภาพที่แนะนำ 480 x 280 Pixels)</p> </span>
+                                            <span className="flex"><input className={isoriginal ? "mgR10 wait":"mgR10"} value = "Tree" type = "checkbox" checked={isChecked} onChange = {handleCheckboxChange} /> เพิ่มรูปโลโก้ <p className="fs10 flexJACenter">&nbsp;(ขนาดรูปภาพที่แนะนำ 480 x 280 Pixels)</p> </span>
                                         </div>
                                         <div className={isChecked ? "dropzone":"dropzone wait"}>
                                             <div className="dz-box"{...getRootProps()}>
@@ -280,16 +429,10 @@ function AppCreateAnswerSheet(){
                                 </div>
                                 <div className="TB">
                                     <div className="TB-box">
-                                        <h3>แสดงตัวอย่างรูปแบบฟอร์มกระดาษคำตอบ</h3>
+                                        <h3 className="center">แสดงตัวอย่างรูปแบบฟอร์มกระดาษคำตอบ</h3>
                                         <SRLWrapper options={options}>
                                             <div className="container">
-                                                {filteredImages.map(image => (
-                                                    <div key={image.id} className="image-card">
-                                                        <a href={`${image.imageName}`}>
-                                                            <img className="image" src={`${image.imageName}`} alt="" />
-                                                        </a>
-                                                    </div>
-                                                ))}
+                                                {example_image()}
                                             </div>
                                         </SRLWrapper> 
                                     </div>
@@ -297,10 +440,9 @@ function AppCreateAnswerSheet(){
                             </div>
                         </div>
                     </div>
-                }
-            </div>
-        </main>
-    </div>
+                </div>
+            </main>
+        </div>
     );
 
 }

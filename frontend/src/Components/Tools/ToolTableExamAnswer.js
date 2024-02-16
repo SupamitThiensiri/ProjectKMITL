@@ -11,42 +11,54 @@ import Swal from 'sweetalert2'
 import {
     Link
 } from "react-router-dom";
-
+import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faChevronRight, faChevronLeft, faAnglesRight, faAnglesLeft, faTrashCan, faPen, faSortDown, faSortUp, faSort} from "@fortawesome/free-solid-svg-icons";
+import {faChevronRight, faChevronLeft, faAnglesRight, faAnglesLeft, faTrashCan, faPen, faSortDown, faSortUp, faSort, faSquarePlus, faCircleCheck, faTriangleExclamation} from "@fortawesome/free-solid-svg-icons";
 
-const TableExamAnswer = ({ columns }) => {
-    // const [DataSubject, setDataSubject] = useState([]);
+const TableExamAnswer = ({ columns, examnoanswers }) => {
+    const { id } = useParams(); 
     const [data, setdata] = useState([]);
+    const FullData = useState([]);
+    const numbers = parseInt(examnoanswers)
+    const [Start, setStart] = useState(0);
 
-    const fetchDatSubject = async () => {
+    const Simulateddata = Array.from({ length: numbers }, (_, index) => ({
+        choiceanswers: null,
+        examanswersid: null,
+        examid: null,
+        examnoanswers: `${index + 1}`,
+        papeans_path: null,
+        scoringcriteria: null
+    }));
+    const fetchDataExamAnswer = async () => {
         try{
-            // fetch(variables.API_URL+"subject/", {
-            //     method: "GET",
-            //     headers: {
-            //         'Accept': 'application/json, text/plain',
-            //         'Content-Type': 'application/json;charset=UTF-8'
-            //     },
-            //     })
-            //     .then(response => response.json())
-            //     .then(result => {
-            //         // console.log(result)
-            //         setdata(result)
-            //     }
-                
-            // )
-            setdata([])
+            fetch(variables.API_URL+"examanswers/detail/exam/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+ 
+
+                    const output2Map = result.reduce((map, item) => {
+                        map[item.examnoanswers] = item;
+                        return map;
+                    }, {});
+                    const FullData = Simulateddata.map(item => {
+                        const output2Item = output2Map[item.examnoanswers];
+                        return output2Item ? output2Item : item;
+                    });
+                    setdata(FullData)
+                }
+            )
         }catch (err) {
-            // console.error('ไม่พบข้อมูล:', err);
             setdata([])
         }
-        
-    };
-    
-    useEffect(() => {
-        fetchDatSubject();
-    }, []);
-
+     };
+     
     const {
         getTableProps,
         getTableBodyProps,
@@ -85,18 +97,18 @@ const TableExamAnswer = ({ columns }) => {
         useSortBy,
         usePagination
     );
-
-
+ 
+ 
     const { pageIndex, pageSize, globalFilter } = state;
     const [selectedColumn] = useState('all');
     // const [selectedColumn,setSelectedColumn] = useState('all'); // Default to search all columns
 
-    const handleDelCours = async (subid,subname) => {
+    const handleDelCours = async (examanswersid,examnoanswers) => {
         // console.log(subid)
         Swal.fire({
-            title: "ลบรายวิชา",
-            text: `คุณต้องการลบรายวิชา ${subname} ใช่หรือไม่ `,
-            icon: "warning",
+            title: "ลบเฉลยคำตอบ",
+            text: `คุณต้องลบเฉลยข้อสอบชุดที่ ${examnoanswers} ใช่หรือไม่ `,
+            icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             confirmButtonText: "ยืนยัน",
@@ -104,7 +116,7 @@ const TableExamAnswer = ({ columns }) => {
         }).then( (result) => {
             if (result.isConfirmed) {
                 try{
-                    fetch(variables.API_URL+"subject/delete/"+subid+"/", {
+                    fetch(variables.API_URL+"examanswers/delete/"+examanswersid+"/", {
                         method: "DELETE",
                         headers: {
                             'Accept': 'application/json, text/plain',
@@ -113,31 +125,61 @@ const TableExamAnswer = ({ columns }) => {
                         })
                         .then(response => response.json())
                         .then(result => {
-                            // console.log(,result)
+                            // console.log(result)
                             Swal.fire({
                                 title: result.msg,
                                 icon: "success",//error,question,warning,success
                                 confirmButtonColor: "#341699",
                             });
-                            fetchDatSubject();
+                            fetchDataExamAnswer();
                         }
                     )
                 }catch (err) {
                     // console.error('เกิดข้อผิดพลาดในการลบ:', err);
                     Swal.fire({
-                        title: "เกิดข้อผิดพลาดในการลบรายวิชา",
+                        title: "เกิดข้อผิดพลาดในการลบการสอบ",
                         icon: "error",//error,question,warning,success
                         confirmButtonColor:"#341699",
                     });
                 }
             }
         });
+    };    
+    // display: flex;
+    // justify-content: center;
+    // padding: 20px;
+    // margin: 20px
+    const showAlertCreate = (id,idsetexam) => {
+        const isMobile = window.innerWidth < 500;
+        Swal.fire({
+          title: 'รูปแบบการสร้างเฉลย  ',
+          html: `
+            <div className="bx-step-content" style="display: ${isMobile ? 'grid' : 'flex'};justify-content: center;" >
+                <div style="margin: 20px;"><a href="/Subject/SubjectNo/Exam/ExamAnswer/CreateExamAnswer/${id}/${idsetexam}/1"><div className="bx-show" style="padding: 20px;border: 1px solid #DDDDDD" ><div className="box"><div className="box-img"><img src='/img/AnsCustomized.png' alt='' /><p className="grid" style="color: #000;">กำหนดเอง</p></div></div></div></a></div>
+                <div style="margin: 20px;"><a href="/Subject/SubjectNo/Exam/ExamAnswer/CreateExamAnswer/${id}/${idsetexam}/2"><div className="bx-show" style="padding: 20px;border: 1px solid #DDDDDD;" ><div className="box"><div className="box-img"><img src='/img/AnsScan.png' alt='' /><p className="grid" style="color: #000;">สแกนไฟล์เฉลย</p></div></div></div></a></div>
+            </div>
+            `,
+            showConfirmButton:false,
+            showCancelButton: true,
+            cancelButtonText: 'ยกเลิก',
+            customClass: {
+            popup: 'custom-alert-popup',
+            },
+            
+        });
     };
-    // Swal.fire({
-    //     title: "เกิดข้อผิดพลาด",
-    //     icon: "success",
-    //     confirmButtonColor: "#341699",
-    // });
+
+
+    useEffect(() => {
+        if(data.length === 0){
+            fetchDataExamAnswer();
+        }
+    }, [data,FullData]);
+    if(Start === 0){
+        fetchDataExamAnswer();
+        setStart(1);
+    }
+
     return (
         <div>
             <div className='InputSize space-between'>
@@ -160,7 +202,7 @@ const TableExamAnswer = ({ columns }) => {
                     placeholder="ค้นหาทั้งหมด..."
                 />
             </div>   
-            <div className="tableSub LC-bg">
+            <div className="tableSub nLC-bg">
                 
                 <table {...getTableProps()} className="table width100">
                     <thead>
@@ -168,49 +210,56 @@ const TableExamAnswer = ({ columns }) => {
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             <th>ลำดับ</th>
                             {headerGroup.headers.map((column) => (
-                                (column.id !== 'userid_sub' && column.id !== 'subid') ? (
+                                (column.id !== 'examanswersid' && column.id !== 'scoringcriteria' && column.id !== 'choiceanswers' && column.id !== 'papeans_path') ? (
                                     <th {...column.getHeaderProps()}>
-                                    {/* <th {...column.getHeaderProps(column.getSortByToggleProps())}> */}
                                         {column.render('Header')}
-                                        {/* {console.log(column.Header)} */}
                                         <span className='' {...column.getSortByToggleProps()}>
                                             {column.isSorted ? (column.isSortedDesc ?  <FontAwesomeIcon icon={faSortDown} />: <FontAwesomeIcon icon={faSortUp} />) : <FontAwesomeIcon icon={faSort} />}
                                         </span>
-                                        {/* <div>
-                                            {column.canFilter ? ( // Check if the column can be filtered
-                                            <input
-                                                type="text"
-                                                value={column.filterValue || ''}
-                                                onChange={(e) =>
-                                                column.setFilter(e.target.value) // Set the filter value for the column
-                                                }
-                                                placeholder={`ค้นหา ${column.render('Header')}`}
-                                            />
-                                            ) : null}
-                                        </div> */}
                                     </th>
                                 ) : null
                             ))}
+                            <th>สถานะ</th>
                             <th>การจัดการ</th>
                         </tr>
                     ))}
                     
                     </thead>
                     <tbody {...getTableBodyProps()}>
-                    {page.length <= 0 ? (<tr className='center'><td colSpan={columns.length + 2}>ไม่พบข้อมูล</td></tr>):(
+                    {page.length <= 0 ? (
+                    <>
+                        <tr className='center'><td colSpan={columns.length + 2}>ไม่พบข้อมูล</td></tr>
+                    </>
+                    ):(
                         page.map((row) => {
                             prepareRow(row);
-                                return (
-                                    
-                                    <tr {...row.getRowProps()} key={row.id}>
-                                        <td className='center'>{Number(row.id)+1}</td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[1].value}</Link></td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[2].value}</Link></td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[3].value}</Link></td>
-                                        <td><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[4].value}</Link></td>
-                                        <td className='center mw80px' ><Link to={"/Subject/UpdateSubject/"+row.cells[0].value} className='' style={{ display: 'contents' }}><span className=''><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.cells[0].value,row.cells[1].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
-                                    </tr>
-                                );
+                            return (
+                                row.values.examanswersid !== null ?
+                                    <tr {...row.getRowProps()} key={row.id} className='LCshow'>
+                                        <td className='center'><Link to={"" + row.values.examanswersid}>{Number(row.id) + 1}</Link></td>
+                                        <td><Link to={"" + row.values.examanswersid}>{row.values.examnoanswers}</Link></td>
+                                        <td className='statustable'><Link to={""}><p className='succeed'><FontAwesomeIcon icon={faCircleCheck} />{"สร้างเฉลยเสร็จสิ้น"}</p></Link></td>
+                                        <td className='center mw80px '>
+                                            <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/UpdateExamAnswer/" + row.values.examanswersid +"/"+ id +"/"+ row.values.examnoanswers} className='' style={{ display: 'contents' }}>
+                                                <span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span>
+                                            </Link>
+                                            <span className='danger light-font' onClick={() => handleDelCours(row.values.examanswersid, row.values.examnoanswers)}>
+                                                <FontAwesomeIcon icon={faTrashCan} />
+                                            </span>
+                                        </td>
+                                    </tr>  
+                                    :
+                                    <tr {...row.getRowProps()} key={row.id} className='LCnotshow' onClick={() => showAlertCreate(id,Number(row.id) + 1)}>
+                                        <td className='center'><Link to={"" + row.values.examanswersid}>{Number(row.id) + 1}</Link></td>
+                                        <td><Link to={"" + row.values.examanswersid}>{row.values.examnoanswers}</Link></td>
+                                        <td className='statustable'><Link to={""}><p className='warning'><FontAwesomeIcon icon={faTriangleExclamation} />{"รอดำเนินการสร้าง"}</p></Link></td>
+                                        <td className='center mw80px'>
+                                            <span className='primary-blue light-font' >
+                                                <FontAwesomeIcon icon={faSquarePlus} />
+                                            </span>
+                                        </td>
+                                    </tr>  
+                            );
                         })
                     )}
                     </tbody>
@@ -235,25 +284,13 @@ const TableExamAnswer = ({ columns }) => {
                 <span>
                     Page{' '}
                     {pageIndex + 1} of {pageOptions.length}
-                    {/* <strong>
-                        {pageIndex + 1} of {pageOptions.length}
-                    </strong>{' '} */}
                 </span>
-                {/* <span>
-                | Go to page:{' '}
-                <input
-                    type="number"
-                    defaultValue={pageIndex + 1}
-                    onChange={(e) => {
-                    const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                    gotoPage(page);
-                    }}
-                />
-                </span>{' '} */}
-
             </div>
         </div>
     );
 };
+ 
 
-export default TableExamAnswer;
+export default TableExamAnswer;                                     
+
+

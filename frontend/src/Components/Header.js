@@ -42,23 +42,27 @@ function AppHeader(){
 
     return(
         <>
-        <div className={Sidebar ? "sidebar":"sidebar close"}>
+        <div className={!Sidebar ? "sidebar":"sidebar close"}>
             <Link to="Home" className="logo">
                 <div className='logo-icon'><img src='/img/logo.png' alt=''/></div>
                 <div className="logo-name"><img src='/img/namelogo.png' alt=''/></div>  
             </Link>
             <div className='logo-xmark' onClick={handSidebar}><FontAwesomeIcon icon={faXmark} /></div>
-            <ul className="side-menu">
-                
-                <li className={location.pathname.includes("/Home") ? "active" : ""} ><Link to="/Home"><div className='iconmenu'><FontAwesomeIcon icon={faHouse} /></div>หน้าแรก</Link></li>
-                <li className={location.pathname.includes("/Subject") ?"active":""}><Link to="/Subject"><div className='iconmenu'><FontAwesomeIcon icon={faBook} /></div>รายวิชาทั้งหมด</Link></li>
-                <li className={location.pathname.includes("/CreateSubject") ?"active":""}><Link to="/CreateSubject"><div className='iconmenu'><FontAwesomeIcon icon={faFolderPlus} /></div>สร้างรายวิชา</Link></li>
-                <li className={location.pathname.includes("/Questionnaire") ?"active":""}><Link to="Questionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faClipboardList} /></div>แบบสอบถามทั้งหมด</Link></li>
-                <li className={location.pathname.includes("/CreateQuestionnaire") ?"active":""}><Link to="CreateQuestionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faFileCirclePlus} /></div>สร้างแบบสอบถาม</Link></li>
-                <li><Link to="#"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
-                <li className={location.pathname.includes("/Contact") ?"active":""}><Link to="/Contact"><div className='iconmenu'><FontAwesomeIcon icon={faUserShield} /></div>ติดต่อ Admin</Link></li>
-                
-            </ul>
+            {Cookies.get('typesid') === 1 || Cookies.get('typesid') === '1'?
+                <ul className="side-menu">
+                    <li className={location.pathname.includes("/Home") ? "active" : ""} ><Link to="/Home"><div className='iconmenu'><FontAwesomeIcon icon={faHouse} /></div>หน้าแรก</Link></li>
+                </ul>
+            :
+                <ul className="side-menu">
+                    <li className={location.pathname.includes("/Home") ? "active" : ""} ><Link to="/Home"><div className='iconmenu'><FontAwesomeIcon icon={faHouse} /></div>หน้าแรก</Link></li>
+                    <li className={location.pathname.includes("/Subject") ?"active":""}><Link to="/Subject"><div className='iconmenu'><FontAwesomeIcon icon={faBook} /></div>รายวิชาทั้งหมด</Link></li>
+                    <li className={location.pathname.includes("/CreateSubject") ?"active":""}><Link to="/CreateSubject"><div className='iconmenu'><FontAwesomeIcon icon={faFolderPlus} /></div>สร้างรายวิชา</Link></li>
+                    <li className={location.pathname.includes("/Questionnaire") ?"active":""}><Link to="Questionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faClipboardList} /></div>แบบสอบถามทั้งหมด</Link></li>
+                    <li className={location.pathname.includes("/CreateQuestionnaire") ?"active":""}><Link to="CreateQuestionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faFileCirclePlus} /></div>สร้างแบบสอบถาม</Link></li>
+                    <li><Link to="#"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
+                    <li className={location.pathname.includes("/Contact") ?"active":""}><Link to="/Contact"><div className='iconmenu'><FontAwesomeIcon icon={faUserShield} /></div>ติดต่อ Admin</Link></li>
+                </ul>
+            }
             <ul className="side-menu">
                 <li className='' onClick={handleLogoutLinkClick} ><Link><div className='iconmenu danger-font'><FontAwesomeIcon icon={faArrowRightFromBracket} /></div><span className='danger-font'>Logout</span></Link></li>
                 {/* <GoogleLogout clientId={Cookies.get('clientId')} buttonText="Log out" onLogoutSuccess={handleGoogleLogout} /> */}

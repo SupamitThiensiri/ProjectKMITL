@@ -1,20 +1,15 @@
 import {
     Link,
 } from "react-router-dom";
-import React, { useState ,useCallback} from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
-import { useDropzone } from 'react-dropzone';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faCloudArrowUp,faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import Swal from 'sweetalert2'
-import Cookies from 'js-cookie';
-
-function AppCreateExamAnswer(){
+import Swal from 'sweetalert2';
+function AppUpdateExamAnswer(){
 
     const { id } = useParams();
+    const { idexam } = useParams();
     const { idsetexam } = useParams();
-    const { idstatus } = useParams();
 
     const [ExamNo, setExamNo] = useState('');
     const [ExamNoShow, setExamNoShow] = useState('');
@@ -24,71 +19,24 @@ function AppCreateExamAnswer(){
     
     const [subid, setsubid] = useState('');
     const [subjectname, setsubjectname] = useState('');
+    
 
     const [selectedOption, setSelectedOption] = useState('1');
     const [inputValue1, setInputValue1] = useState('1');
     const [inputValue2, setInputValue2] = useState('0');
+    const [MaskChecked1, setMaskChecked1] = useState(false);
+    const [MaskChecked2, setMaskChecked2] = useState(false);
     
     const handleOptionChange = (event) => {setSelectedOption(event.target.value);};
     const handleInputChange1 = (event) => {setInputValue1(event.target.value);};
     const handleInputChange2 = (event) => {setInputValue2(event.target.value);};
+    const handleMaskChecked1 = () => {setMaskChecked1(!MaskChecked1);};
+    const handleMaskChecked2 = () => {setMaskChecked2(!MaskChecked2);};
 
     const [StepCreate, setStepCreate] = useState(0);
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
-
-    const fetchDataStart = async () => {
-        try{
-            fetch(variables.API_URL+"exam/detail/"+id+"/", {
-                method: "GET",
-                headers: {
-                    'Accept': 'application/json, text/plain',
-                    'Content-Type': 'application/json;charset=UTF-8'
-                },
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.err !== undefined){
-                        setStartError(1);
-                    }
-                    console.log(result)
-                    setExamNo(result.examno)
-                    setExamNoShow(result.examid)
-                    setNumExam(result.numberofexams)
-                    // setSetExam(result.numberofexamsets)
-                    setanswersheetformat(result.answersheetformat)
-                    setsubid(result.subid)
-                    fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json, text/plain',
-                            'Content-Type': 'application/json;charset=UTF-8'
-                        },
-                        })
-                        .then(response => response.json())
-                        .then(result => {
-                            if (result.err !== undefined) {
-                                setStartError(1);
-                            }else{
-                            
-                                setsubjectname(result.subjectname)
-                                setStartError(2);
-                            }
-                            
-                        }
-                    )
-                }
-            )
-        }catch (err) {
-            setStartError(1);
-        }
-    };
-
-    if(Start === 0){
-        fetchDataStart();
-        setStart(1);
-    }
-
+   
     // สร้างคำตอบ
     const [checkboxValues1, setCheckboxValues1] = useState(Array(NumExam).fill(false));//ก
     const [checkboxValues2, setCheckboxValues2] = useState(Array(NumExam).fill(false));//ข
@@ -148,7 +96,7 @@ function AppCreateExamAnswer(){
     };
     const handleInput2Change = (index, value) => {
         const newInputValues = [...inputValues2];
-        newInputValues[index] = Math.abs(value);
+        newInputValues[index] = value;
         setInputValues2(newInputValues);
     };
 
@@ -178,7 +126,7 @@ function AppCreateExamAnswer(){
             return checkboxValues.map(value => value ? 'H' : null);
         }
     };
-    const setChoiceAnswers = (A, B, C, D, E, F, G, H) => {
+    const generateChoiceAnswers = (A, B, C, D, E, F, G, H) => {
         const indexArray = Array.from({ length: NumExam }, (_, index) => index);
         return indexArray.map(index => {
             const value1 = A[index];
@@ -195,8 +143,12 @@ function AppCreateExamAnswer(){
     }
     function generateScoringCriteria(Data1, Data2, Data3, Data4) {
         const output = [];
-
         for (let i = 1; i <= Data1; i++) {
+            if(Data2 === 1 || Data2 === '1'){
+
+            }else{
+                Data4[i-1] = 0
+            }
             const tempArray = [];
             tempArray.push(`${i}:${Data2}:${Data3[i-1]}:${Data4[i-1]}`);
             output.push(tempArray);
@@ -204,253 +156,68 @@ function AppCreateExamAnswer(){
         return output;
     }  
     const handleNextStep = (e) => {
-        console.log("StepCreate :",StepCreate)
-        console.log("idstatus :",idstatus)
+        
         if(StepCreate === 0){
-            if(idstatus === '1'){
-                setStepCreate(2)
-            }else if(idstatus === '2'){
-                setStepCreate(1)
-            }
+            setStepCreate(1)
         }else if(StepCreate === 1){
-            setStepCreate(2)
+            setStepCreate(1)
         }
-        setInputValues1(inputValues1.map(value => inputValue1));
-        setInputValues2(inputValues2.map(value => inputValue2));
-        console.log("NextStep :",StepCreate)
+        if(MaskChecked1){setInputValues1(inputValues1.map(value => inputValue1));}
+        else{}
+        if(MaskChecked2){setInputValues2(inputValues2.map(value => inputValue2));}
+        // setInputValues1(inputValues1.map(value => inputValue1));
+        // setInputValues2(inputValues2.map(value => inputValue2));
     }
     const handleReverseStep = (e) => {
         if(StepCreate === 0){
             setStepCreate(0)
-        }else if(StepCreate === 1){
-            if(idstatus === '1'){
-                setStepCreate(0)
-            }else if(idstatus === '2'){
-                setStepCreate(0)
-            }
         }
-        else if(StepCreate === 2){
-            if(idstatus === '1'){
-                setStepCreate(0)
-            }else if(idstatus === '2'){
-                setStepCreate(1)
-            } 
+        else if(StepCreate === 1){
+            setStepCreate(0)
         }
-        
     }
-    async function handleSubmit(e) {
-        e.preventDefault();
-        const CAOutput = setChoiceAnswers(
-            ChangeAnswerFormat(checkboxValues1,"A"),
-            ChangeAnswerFormat(checkboxValues2,"B"),
-            ChangeAnswerFormat(checkboxValues3,"C"),
-            ChangeAnswerFormat(checkboxValues4,"D"),
-            ChangeAnswerFormat(checkboxValues5,"E"),
-            ChangeAnswerFormat(checkboxValues6,"F"),
-            ChangeAnswerFormat(checkboxValues7,"G"),
-            ChangeAnswerFormat(checkboxValues8,"H")
-        )
-        const nullIndices = CAOutput.map((element, index) => element === '' ? index + 1 : null).filter(index => index !== null);
-        const ChoiceAnswersOutput = CAOutput.join(',');
 
-        const ScoringCriteria = generateScoringCriteria(NumExam,selectedOption,inputValues1,inputValues2);
-        const ScoringCriteriaOutput = ScoringCriteria.map(arr => arr[0]).join(',');
-        if(nullIndices.length <= NumExam/2){
-            Swal.fire({
-                title: `สร้างเฉลยข้อสอบชุดที่ `+idsetexam,
-                text: (nullIndices.length === 0 ? "คุณต้องการสร้างเฉลยใช่หรือไม่":'ยังมีข้อ '+nullIndices+" ยังตอบไม่ครบ ยืนยันที่จะสร้างเฉลยใช่หรือไม่"),
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: (nullIndices.length ===0 ? "#341699":"#d33"),
-                confirmButtonText: "ยืนยัน",
-                cancelButtonText:"ยกเลิก"
-            }).then( async (result) => {
-                if(result.isConfirmed){
-                    try {
-                        const response = await fetch(variables.API_URL + "examanswers/create/", {
-                            method: "POST",
-                            headers: {
-                                'Accept': 'application/json, text/plain',
-                                'Content-Type': 'application/json;charset=UTF-8'
-                            },
-                            body: JSON.stringify({
-                                // examnoanswers : idsetexam,
-                                examnoanswers : idsetexam,
-                                scoringcriteria : ScoringCriteriaOutput,
-                                choiceanswers : ChoiceAnswersOutput,
-                                papeans_path : null,
-                                examid : id
-                            }),
-                        });
-
-                        const result = await response.json();
-
-                        if (response.ok) {
-                            console.log(result)
-                            Swal.fire({
-                                title: "สร้างรายวิชาเสร็จสิ้น",
-                                icon: "success",//error,question,warning,success
-                                confirmButtonColor: "#341699",
-                            }).then((result) => {
-                                window.location.href = '/Subject/SubjectNo/Exam/ExamAnswer/'+id+'/';
-                            });
+    const fetchDataStart = async () => {
+        try{
+            fetch(variables.API_URL+"exam/detail/"+idexam+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    
+                    setExamNo(result.examno)
+                    setExamNoShow(result.examid)
+                    setNumExam(result.numberofexams)
+                    setanswersheetformat(result.answersheetformat)
+                    setsubid(result.subid)
+                    fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
+                        method: "GET",
+                        headers: {
+                            'Accept': 'application/json, text/plain',
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        },
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                       
+                            setsubjectname(result.subjectname)
                             
-                        } else {
-                            Swal.fire({
-                                title: "เกิดข้อผิดพลาด"+result.err,
-                                icon: "error",//error,question,warning,success
-                                confirmButtonColor: "#341699",
-                            });
-                            console.error(result.msg || response.statusText);
                         }
-                    } catch (err) {
-                        Swal.fire({
-                            title: "เกิดข้อผิดพลาด"+err,
-                            icon: "error",//error,question,warning,success
-                            confirmButtonColor: "#341699",
-                        });
-                        console.error(err);
-                    }
+                    )
                 }
-            
-            });
-                        
-        }else{
-            Swal.fire({
-                title: "ต้องกำหนดเฉลยมากกว่าหรือเท่าครึ่งนึงของข้อสอบ",
-                icon: "warning",//error,question,warning,success
-                confirmButtonColor: "#341699",
-            });
+            ) 
+        }catch (err) {
+            setStartError(1);
         }
-    }
+    };
 
-    // DropZone
-    const [File, setFile] = useState(''); // สำหรับเก็บไฟล์
-    const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
-    const [namefileupload, setNameFileUpload] = useState(''); // สำหรับชื่อไฟล์อัปโหลด
-
-    const onDrop = useCallback((acceptedFiles) => {
-        console.log("OnDrop");
-        console.log(acceptedFiles);
-        console.log(acceptedFiles[0].type);
-        if(acceptedFiles[0].type === "image/png" ||acceptedFiles[0].type === "image/jpeg" ||acceptedFiles[0].type === "image/jpg"){
-            handleFileInputChange(acceptedFiles[0]);
-        }else{
-            console.log("รองรับเฉพาะไฟล์ .PNG .JPG และ .JPGE");
-            Swal.fire({
-                title: "",
-                text: `รองรับเฉพาะไฟล์ .PNG .JPG และ .JPGE`,
-                icon: "error",//error,question,warning,success
-                confirmButtonColor: "#341699",
-                confirmButtonText: "ยืนยัน",
-            }).then((result) => {
-            });
-        }
-       
-    }, []);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accepts: "image/*",
-        multiple: false,
-    })
-
-    const handleFileInputChange = (e) => {
-        const file = e;
-        // const reader = new FileReader();
-        // reader.readAsDataURL(file);
-        // reader.onloadend = () => {
-        //     setFile(reader.result);
-        // }
-        setFile(file);
-        setStatusItem(true);
-        setNameFileUpload(file.path);
-
-    }
-    const handleDelFileUpload = (e) => {
-        Swal.fire({
-            title: "",
-            text: `คุณต้องการลบไฟล์ออกใช่หรือไม่`,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#341699",
-            confirmButtonText: "ยืนยัน",
-            cancelButtonColor: "#d33",
-            cancelButtonText:"ยกเลิก"
-        }).then((result) => {
-        if (result.isConfirmed) {
-            setNameFileUpload('');
-            setFile('');
-            setStatusItem(false);
-            console.log("File",File);
-        }
-        });
-    }
-
-    async function handleSubmitFile(e) {
-        e.preventDefault();
-        if ((File !== '')) {
-            Swal.fire({
-                title: "",
-                text: `กดยืนยันเพื่อทำการสร้างกระดาษคำตอบ`,
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#341699",
-                confirmButtonText: "ยืนยัน",
-                cancelButtonColor: "#d33",
-                cancelButtonText: "ยกเลิก"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try{
-                        const formData = new FormData();
-                        formData.append("file", File);
-                        formData.append("userid", Cookies.get('userid'));
-                        formData.append("examid", id);
-                        const upload = await fetch(variables.API_URL + "examanswers/upload/paper/", {
-                            method: "POST",
-                            body: formData,
-                        });
-                        const result = await upload.json()
-                        if (result.err === undefined) {
-                            console.log(result)
-                            transformChoice(result.choiceanswers)
-                            Swal.fire({
-                                title: result.msg,
-                                text: result.msg,
-                                icon: "success", //error,question,warning,success
-                                confirmButtonColor: "#341699",
-                                confirmButtonText: "ตกลง",
-                            }).then((result) => {
-                                setStepCreate(2)
-                            });
-                           
-                        }else{
-                            Swal.fire({
-                                title: "เกิดข้อผิดพลาด",
-                                text: ``+result.err,
-                                icon: "error", //error,question,warning,success
-                                confirmButtonColor: "#341699",
-                                confirmButtonText: "ตกลง",
-                            }).then((result) => {});
-                        }
-                    }
-                    catch (err) {
-                        console.error("เกิดข้อผิดพลาด",err);
-                    }
-                }
-            });
-        } else {
-            console.log("กรุณาอัปโหลดไฟล์");
-            Swal.fire({
-                title: "",
-                text: `กรุณาอัปโหลดไฟล์`,
-                icon: "warning", //error,question,warning,success
-                confirmButtonColor: "#341699",
-                confirmButtonText: "ตกลง",
-            }).then((result) => {});
-        }
-    }
-    
     function transformChoice(input) {
         const pairs = input.split(',');
         let A = [];
@@ -485,14 +252,14 @@ function AppCreateExamAnswer(){
             if(item.length > G.length){G.push(false);}
             if(item.length > H.length){H.push(false);}
         });
-        console.log('A:', A);
-        console.log('B:', B);
-        console.log('C:', C);
-        console.log('D:', D);
-        console.log('E:', E);
-        console.log('F:', F);
-        console.log('G:', G);
-        console.log('H:', H);
+        // console.log('A:', A);
+        // console.log('B:', B);
+        // console.log('C:', C);
+        // console.log('D:', D);
+        // console.log('E:', E);
+        // console.log('F:', F);
+        // console.log('G:', G);
+        // console.log('H:', H);
         setCheckboxValues1(A);
         setCheckboxValues2(B);
         setCheckboxValues3(C);
@@ -503,6 +270,145 @@ function AppCreateExamAnswer(){
         setCheckboxValues7(H);
 
     }
+    function transformScoringCriteria(input) {
+        const pairs = input.split(',');
+        let typeOption = '1';
+        let inputV1 = [];
+        let inputV2 = [];
+        pairs.forEach(pair => {
+            const letters = pair.split(':');
+            typeOption = letters[1]
+            inputV1.push(letters[2])
+            inputV2.push(letters[3])
+            // item.push(true);
+            // if(item.length > A.length){A.push(false);}
+        });
+
+        setSelectedOption(typeOption)
+        setInputValues1(inputV1);
+        setInputValues2(inputV2);
+    }
+    const fetchDataExamanswersStart = async () => {
+        try{
+            fetch(variables.API_URL+"examanswers/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    else{
+                        transformChoice(result.choiceanswers)
+                        transformScoringCriteria(result.scoringcriteria)
+                        // setStartError(2);
+                    }  
+                }
+            ) 
+        }catch (err) {
+            setStartError(2);
+        }
+    };
+    const setStartError2 = (e) => {
+        setStartError(2);
+    }
+    if(Start === 0){
+        fetchDataStart();
+        fetchDataExamanswersStart();
+        setStart(1);
+        setTimeout(function() {
+            setStartError2()
+        }, 800);
+    }
+    const handleReset = (e) => {
+        fetchDataExamanswersStart();
+        setStepCreate(0);
+    }
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const CAOutput = generateChoiceAnswers(
+            ChangeAnswerFormat(checkboxValues1,"A"),
+            ChangeAnswerFormat(checkboxValues2,"B"),
+            ChangeAnswerFormat(checkboxValues3,"C"),
+            ChangeAnswerFormat(checkboxValues4,"D"),
+            ChangeAnswerFormat(checkboxValues5,"E"),
+            ChangeAnswerFormat(checkboxValues6,"F"),
+            ChangeAnswerFormat(checkboxValues7,"G"),
+            ChangeAnswerFormat(checkboxValues8,"H")
+        )
+        const nullIndices = CAOutput.map((element, index) => element === '' ? index + 1 : null).filter(index => index !== null);
+        const ChoiceAnswersOutput = CAOutput.join(',');
+
+        const ScoringCriteria = generateScoringCriteria(NumExam,selectedOption,inputValues1,inputValues2);
+        const ScoringCriteriaOutput = ScoringCriteria.map(arr => arr[0]).join(',');
+        if(nullIndices.length <= NumExam/2){
+            Swal.fire({
+                title: `แก้ไขเฉลยข้อสอบชุดที่ `+idsetexam,
+                text: (nullIndices.length === 0 ? "คุณต้องการสแก้ไขเฉลยใช่หรือไม่":'ยังมีข้อ '+nullIndices+" ยังตอบไม่ครบ ยืนยันที่จะแก้ไขเฉลยใช่หรือไม่"),
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: (nullIndices.length ===0 ? "#341699":"#d33"),
+                confirmButtonText: "ยืนยัน",
+                cancelButtonText:"ยกเลิก"
+            }).then( async (result) => {
+                if(result.isConfirmed){
+                    try {
+                        const response = await fetch(variables.API_URL + "examanswers/update/"+id+"/", {
+                            method: "PUT",
+                            headers: {
+                                'Accept': 'application/json, text/plain',
+                                'Content-Type': 'application/json;charset=UTF-8'
+                            },
+                            body: JSON.stringify({
+                                scoringcriteria : ScoringCriteriaOutput,
+                                choiceanswers : ChoiceAnswersOutput
+                              
+                            }),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                           
+                            Swal.fire({
+                                title: "แก้ไขเฉลยเฉลยคำตอบเสร็จสิ้น",
+                                icon: "success",
+                                confirmButtonColor: "#341699",
+                            }).then((result) => {
+                               
+                            });
+                            
+                        } else {
+                            Swal.fire({
+                                title: "เกิดข้อผิดพลาด"+result.err,
+                                icon: "error",//error,question,warning,success
+                                confirmButtonColor: "#341699",
+                            });
+                        }
+                    } catch (err) {
+                        Swal.fire({
+                            title: "เกิดข้อผิดพลาด"+err,
+                            icon: "error",//error,question,warning,success
+                            confirmButtonColor: "#341699",
+                        });
+                       
+                    }
+                }
+            
+            });
+                        
+        }else{
+            Swal.fire({
+                title: "ต้องกำหนดเฉลยมากกว่าหรือเท่าครึ่งนึงของข้อสอบ",
+                icon: "warning",//error,question,warning,success
+                confirmButtonColor: "#341699",
+            });
+        }
+    }
 
 
     return(
@@ -511,30 +417,30 @@ function AppCreateExamAnswer(){
         <main>
             <div className='box-content'>
                 {StartError === 0 || StartError === 1 ? 
-                        StartError === 0 ? 
-                            <div className='box-content-view'>
-                                <div className='bx-topic light '>
-                                    <div className='skeleton-loading'>
-                                        <div className='skeleton-loading-topic'></div>
-                                    </div> 
-                                </div>
-                                <div className='bx-details light '>
-                                    <div className='skeleton-loading'>
-                                        <div className='skeleton-loading-content'></div>
-                                    </div> 
-                                </div>
+                    StartError === 0 ? 
+                        <div className='box-content-view'>
+                            <div className='bx-topic light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-topic'></div>
+                                </div> 
                             </div>
-                        :
-                            <div className='box-content-view'>
-                                <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
-                                <div className='bx-details light'><h2>Not Found</h2></div>
+                            <div className='bx-details light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-content'></div>
+                                </div> 
                             </div>
+                        </div>
+                    :
+                        <div className='box-content-view'>
+                            <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
+                            <div className='bx-details light'><h2>Not Found</h2></div>
+                        </div>
                 :
                     <div className='box-content-view'>
                         <div className='bx-topic light'>
-                            <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/"+ExamNoShow}> เฉลยคำตอบ </Link> / สร้างเฉลย</p>
+                            <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/"+ExamNoShow}> เฉลยคำตอบ </Link> / แก้ไขเฉลย</p>
                             <div className='bx-grid2-topic'>
-                                <h2>{idstatus === "1" ?"สร้างเฉลยด้วยตนเอง":"สร้างเฉลยด้วยการสแกนไฟล์"}</h2>                           
+                                <h2>แก้ไขเฉลยคำตอบ</h2>                           
                             </div> 
                         </div>
                         <div className='bx-details light'>
@@ -566,22 +472,32 @@ function AppCreateExamAnswer(){
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="fb">เกณฑ์การให้คะแนน</div>
-                                        <div className="bx-input-fix">
+                                        <div className="fb">เกณฑ์การให้คะแนน </div>
+                                        <div className="danger-font"> คลิกช่องสี่เหลี่ยมหลังเกณฑ์การให้คะแนน คะแนนตอบถูก หรือ คะแนนตอบผิด เพื่อนำเกณฑ์คะแนนไปใช้แทนที่เกณฑ์คะแนนเก่าทั้งหมด</div>
+                                        <div className="bx-input-fix set-ip-cb ">
                                             <label htmlFor="input1" className="w100px">คะแนนตอบถูก</label>
-                                            <input className="mw50px"
+                                            <input className="mw50px h35px"
                                                 type="number"
                                                 id="input1"
                                                 value={inputValue1}
                                                 onChange={handleInputChange1}
                                                 min={0} // Minimum value
                                                 max={100}
+                                                
                                             />
+                                            <span>
+                                                <input
+                                                    className=""
+                                                    type="checkbox"
+                                                    checked={MaskChecked1}
+                                                    onChange={handleMaskChecked1}
+                                                />
+                                            </span>
                                         </div>
                                         {selectedOption === "1"?
-                                        <div className="bx-input-fix">
+                                        <div className="bx-input-fix set-ip-cb">
                                             <label htmlFor="input2" className="w100px">คะแนนตอบผิด</label>
-                                            <input className="mw50px"
+                                            <input className="mw50px h35px danger-font"
                                                 type="number"
                                                 id="input2"
                                                 value={inputValue2}
@@ -590,7 +506,16 @@ function AppCreateExamAnswer(){
                                                 max={100}
                                                 style={{ color: '#D32F2F' }}
                                             />
+                                            <span>
+                                                <input
+                                                    className=""
+                                                    type="checkbox"
+                                                    checked={MaskChecked2}
+                                                    onChange={handleMaskChecked2}
+                                                />
+                                            </span>
                                         </div>
+                                        
                                         :''
                                         }
                                     </div>
@@ -599,35 +524,6 @@ function AppCreateExamAnswer(){
                                     </div>
                                 </div>
                             :StepCreate === 1 ?
-                                <div>
-                                    <div className="fb">อัปโหลดกระดาษเฉลยคำตอบ</div>
-                                    <div className="mw300px">
-                                                <div className="dropzone">
-                                                    <div className="dz-box"{...getRootProps()}>
-                                                        <input className="test" {...getInputProps()} />
-                                                        <div className="dz-icon blue-font"><FontAwesomeIcon icon={faCloudArrowUp} /></div>
-                                                        { isDragActive ?
-                                                            <div>วางไฟล์ที่นี่ ...</div>:
-                                                            <div>ลากไฟล์มาที่นี่หรืออัปโหลด<p className="">รองรับ .PNG .JPG และ JPEG</p></div>  
-                                                        }
-                                                    </div>
-                                                </div>
-                                                {
-                                                    statusitem?
-                                                    <div className="box-item-name-trash space-between">
-                                                        <div>{namefileupload}</div>
-                                                        <div onClick={handleDelFileUpload} className="icon-Trash danger-font"><FontAwesomeIcon icon={faTrashCan} /></div>
-                                                    </div>
-                                                    :
-                                                    ''
-                                                }
-                                            </div>
-                                    <div className='bx-button'>
-                                        <div className="button-reset" onClick={handleReverseStep}>ย้อนกลับ</div>
-                                        {StepCreate ===1 ?<div className="button-submit" onClick={handleSubmitFile}>ถัดไป</div>:""}
-                                    </div>
-                                </div>
-                            :StepCreate === 2 ?
                                 <div>
                                     <form onSubmit={handleSubmit}>
                                         <div className="tableQue">
@@ -750,7 +646,7 @@ function AppCreateExamAnswer(){
                                                             {selectedOption === "1" ?
                                                             <td>
                                                                 <div >
-                                                                    <input
+                                                                    <input className="danger-font"
                                                                     type="number"
                                                                     id={`input-${index}`}
                                                                     name={`input-${index}`}
@@ -772,6 +668,7 @@ function AppCreateExamAnswer(){
                                             
                                                 
                                                 <div className="button-cancel" onClick={handleReverseStep}>ย้อนกลับ</div>
+                                                <div className="button-reset" onClick={handleReset}>รีเซ็ต</div>
                                                 <div className='button-submit' onClick={handleSubmit}>บันทึก</div>
                                             </div>
                                         </div>
@@ -789,4 +686,4 @@ function AppCreateExamAnswer(){
 
 }
 
-export default AppCreateExamAnswer;
+export default AppUpdateExamAnswer;

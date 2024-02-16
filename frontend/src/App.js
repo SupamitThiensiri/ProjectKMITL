@@ -1,6 +1,7 @@
 import './App.css';
 import './Style/StyleProperty.css'
 import './Style/Style.css'
+import './Style/Loading.css';
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -32,10 +33,18 @@ import AppCreateQuestionnaire from './Components/Questionnaire/CreateQuestionnai
 import AppCreateAnswerSheet from './Components/Subject/CreateAnswerSheet';
 import AppExamAnswer from './Components/Subject/ExamAnswer';
 import AppCreateExamAnswer from './Components/Subject/CreateExamAnswer';
-import AppShowQuestionnaire from './Components/Questionnaire/ShowQuestionnaire';
 import AppCheckAnswerSheet from './Components/Subject/CheckAnswerSheet';
 import AppCreateType from './Components/Admin/CreateType';
 import AppUploadAnswerSheet from './Components/Subject/UploadAnswerSheet';
+import AppUpdateExamAnswer from './Components/Subject/UpdateExamAnswer';
+import AppScoreResults from './Components/Subject/ScoreResults';
+import AppUploadQuestionnaire from './Components/Questionnaire/UploadQuestionnaire';
+import AppUpdateQuetionaire from './Components/Questionnaire/UpdateQuetionaire';
+import AppQuestionnaireNo from './Components/Questionnaire/QuestionnaireNo';
+import AppShowQuestionaire from './Components/Questionnaire/ShowQuestionaire';
+import AppSetDateTimeQuesionnaire from './Components/Questionnaire/SetDateTimeQuesionnaire';
+import AppOnlineQuestionnaire from './Components/Questionnaire/OnlineQuestionnaire';
+import Appverify from './Components/verify';
 
 
 function App() {
@@ -47,8 +56,10 @@ function App() {
         <Route path='/ToolsSweetAlert' element={<AppToolsSweetAlert />}></Route>
 
         
-        <Route path='SingIn' element={<AppSingIn />}></Route>
-        <Route path='SingUp' element={<AppSingUp />}></Route>
+        <Route path='/verify/:id' element={<Appverify />}></Route>
+        <Route path='/SingIn' element={<AppSingIn />}></Route>
+        <Route path='/SingUp' element={<AppSingUp />}></Route>
+        <Route path='/OnlineQuestionnaire' element={<AppOnlineQuestionnaire />}></Route>
         <Route path='*' element={<AppHeader />}></Route>
       </Routes>
       <Routes>
@@ -65,19 +76,27 @@ function App() {
         <Route path='/Subject/SubjectNo/Exam/UploadStudent/:id' element={<AppUploadStudent />}></Route>
         <Route path='/Subject/SubjectNo/Exam/CreateAnswerSheet/:id' element={<AppCreateAnswerSheet />}></Route>
         <Route path='/Subject/SubjectNo/Exam/ExamAnswer/:id' element={<AppExamAnswer />}></Route>
-        <Route path='/Subject/SubjectNo/Exam/ExamAnswer/CreateExamAnswer/:id' element={<AppCreateExamAnswer />}></Route>
+        <Route path='/Subject/SubjectNo/Exam/ExamAnswer/CreateExamAnswer/:id/:idsetexam/:idstatus' element={<AppCreateExamAnswer />}></Route>
+        <Route path='/Subject/SubjectNo/Exam/ExamAnswer/UpdateExamAnswer/:id/:idexam/:idsetexam' element={<AppUpdateExamAnswer />}></Route>
         <Route path='/Subject/SubjectNo/Exam/UploadAnswerSheet/:id' element={<AppUploadAnswerSheet />}></Route>
         <Route path='/Subject/SubjectNo/Exam/CheckAnswerSheet/:id' element={<AppCheckAnswerSheet />}></Route>
+        <Route path='/Subject/SubjectNo/Exam/ScoreResults/:id' element={<AppScoreResults />}></Route>
+        
 
         <Route path='/Questionnaire' element={<AppQuestionnaire />}></Route>
-        <Route path='/Questionnaire/ShowQuestionnaire' element={<AppShowQuestionnaire />}></Route>
         <Route path='/CreateQuestionnaire' element={<AppCreateQuestionnaire />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/:id' element={<AppQuestionnaireNo />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/ShowQuestionnaire/:id' element={<AppShowQuestionaire />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/SetDateTimeQuestionnaire/:id' element={<AppSetDateTimeQuesionnaire />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/UploadQuestionnaire/:id' element={<AppUploadQuestionnaire />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/ShowQuestionnaire/UpdateQuestionnaire/:id' element={<AppUpdateQuetionaire />}></Route>
 
 
         <Route path='/Profile' element={<AppProfile />}></Route>
         <Route path='/Contact' element={<AppContact />}></Route>
 
         <Route path='/Admin/Type/create' element={<AppCreateType />}></Route>
+        
         
 
         

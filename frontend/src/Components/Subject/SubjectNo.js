@@ -13,7 +13,9 @@ function AppSubjectNo(){
     const [SubjectName, setSubjectName] = useState('');
     const [Semester, setSemester] = useState('');
     const [Year,setYear] = useState('');
+
     const [Start, setStart] = useState(0);
+    const [StartError, setStartError] = useState(0);
 
     const fetchDataSubject = async () => {
         try{
@@ -26,11 +28,14 @@ function AppSubjectNo(){
                 })
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result)
-                    setSubjectID(result.subjectid)
-                    setSubjectName(result.subjectname)
-                    setSemester(result.semester)
-                    setYear(result.year)
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }else{
+                        setSubjectID(result.subjectid)
+                        setSubjectName(result.subjectname)
+                        setSemester(result.semester)
+                        setYear(result.year)
+                    }
                 }
             )
         }catch (err) {
@@ -41,9 +46,15 @@ function AppSubjectNo(){
         }
         
     };
+    const setStartError2 = (e) => {
+        setStartError(2);
+    }
     if(Start === 0){
         fetchDataSubject();
         setStart(1);
+        setTimeout(function() {
+            setStartError2()
+        }, 800);
     }
 
     const columns = useMemo(
@@ -71,7 +82,29 @@ function AppSubjectNo(){
         <div className='content'>
         <main>
             <div className='box-content'>
-                <div className='box-content-view'>
+                {StartError === 0 || StartError === 1 ? 
+                    StartError === 0 ? 
+                        <div className='box-content-view'>
+                            <div className='bx-topic light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-topic'></div>
+                                </div> 
+                            </div>
+                            <div className='bx-details light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-content'></div>
+                                </div> 
+                            </div>
+                        </div>
+                    :
+                        <div className='box-content-view'>
+                            <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
+                            <div className='bx-details light'><h2>Not Found</h2></div>
+                        </div>
+                :
+                    null
+                }
+                <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                     <div className='bx-topic light'>
                         <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / {SubjectName}</p>
                         <div className='bx-grid2-topic'>
@@ -79,7 +112,7 @@ function AppSubjectNo(){
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                       
+                    
                         <div className="bx-grid2-detail-topic">
                             <div className="bx-details-items">
                                 <div className="bx-bx-topic">

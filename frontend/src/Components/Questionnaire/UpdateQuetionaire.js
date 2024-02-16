@@ -8,8 +8,11 @@ import {faCloudArrowUp,faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 import Cookies from 'js-cookie';
 import {variables} from "../../Variables";
-function AppCreateQuestionnaire(){
+import { useParams } from 'react-router-dom';
+function AppUpdateQuetionaire(){
+    const { id } = useParams(); 
     const [step,setstep] = useState(true);
+
     const handstep = (e) => {
         e.preventDefault();
         if(step === true){
@@ -126,6 +129,188 @@ function AppCreateQuestionnaire(){
       newCheckboxValues[index] = !newCheckboxValues[index];
       setCheckboxValues(newCheckboxValues);
     };
+    // read data
+    const [Start, setStart] = useState(0);
+    const [StartError, setStartError] = useState(0);
+   
+    const fetchDataUpdatequesheet = async () => {
+        try{
+            fetch(variables.API_URL+"quesheet/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                    setQueSheetName(result.quesheetname)
+                    setQueSheetTopicName(result.quesheettopicname)
+                    setDetailsLineOne(result.detailslineone)
+                    setDetailsLinetwo(result.detailslinetwo)
+                    setExplanation(result.explanation)
+                }
+            )
+            fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                }
+            )
+            fetch(variables.API_URL+"quetopicdetails/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                }
+            )
+            
+        }catch (err) {
+            console.error(err)
+            setStartError(1);
+           
+        }
+    };
+    const fetchDataUpdatequeheaddetails = async () => {
+        try{
+            fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                    const quehead1 = result.quehead1.split(',');
+                    const quehead2 = result.quehead2.split(',');
+                    const quehead3 = result.quehead3.split(',');
+                    const quehead4 = result.quehead4.split(',');
+                    const quehead5 = result.quehead5.split(',');
+                    setQH1C1(quehead1[0])
+                    setQH1C2(quehead1[1])
+                    setQH1C3(quehead1[2])
+                    setQH1C4(quehead1[3])
+                    setQH1C5(quehead1[4])
+                    setQH2C1(quehead2[0])
+                    setQH2C2(quehead2[1])
+                    setQH2C3(quehead2[2])
+                    setQH2C4(quehead2[3])
+                    setQH2C5(quehead2[4])
+                    setQH3C1(quehead3[0])
+                    setQH3C2(quehead3[1])
+                    setQH3C3(quehead3[2])
+                    setQH3C4(quehead3[3])
+                    setQH3C5(quehead3[4])
+                    setQH4C1(quehead4[0])
+                    setQH4C2(quehead4[1])
+                    setQH4C3(quehead4[2])
+                    setQH4C4(quehead4[3])
+                    setQH4C5(quehead4[4])
+                    setQH5C1(quehead5[0])
+                    setQH5C2(quehead5[1])
+                    setQH5C3(quehead5[2])
+                    setQH5C4(quehead5[3])
+                    setQH5C5(quehead5[4])
+                }
+            )
+        }catch (err) {
+            console.error(err)
+            setStartError(1);
+           
+        }
+    };
+    const fetchDataUpdatequetopicdetails = async () => {
+        try{
+            fetch(variables.API_URL+"quetopicdetails/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                    setInputValues(result.quetopicnum.split(','))
+                    const array = result.quetopicformat.split(',');
+                    const booleanArray = array.map(item => item === 'true');
+                    setCheckboxValues(booleanArray)
+                }
+            )
+        }catch (err) {
+            console.error(err)
+            setStartError(1);
+           
+        }
+    };
+    if(Start === 0){
+        fetchDataUpdatequesheet();
+        fetchDataUpdatequeheaddetails();
+        fetchDataUpdatequetopicdetails();
+        setStart(1);
+    }
+    useEffect(() => {
+        setTimeout(() => {
+          setStartError(2);
+        }, 800); 
+    }, []);
+    const ResetQue = (e) =>{
+        Swal.fire({
+            title: "",
+            text: "ต้องการรีเซ็ทเป็นค่าเริ่มต้นใช่หรือไม่",
+            icon: "question",//error,question,warning,success
+            showCancelButton: true,
+            confirmButtonColor: "#341699",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonText:"ยกเลิก"
+        }).then((result) => {
+            fetchDataUpdatequesheet();
+        });
+      
+    }
+    const Resetdetails = (e) =>{
+        Swal.fire({
+            title: "",
+            text: "ต้องการรีเซ็ทเป็นค่าเริ่มต้นใช่หรือไม่",
+            icon: "question",//error,question,warning,success
+            showCancelButton: true,
+            confirmButtonColor: "#341699",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonText:"ยกเลิก"
+        }).then((result) => {
+            fetchDataUpdatequeheaddetails();
+            fetchDataUpdatequetopicdetails();
+        });
+    }
     function checkConsecutiveTrue(array) {
         for (let i = 0; i < array.length - 1; i++) {
           if (array[i] && array[i + 1]) {
@@ -149,23 +334,20 @@ function AppCreateQuestionnaire(){
     // FORM Submit
     async function handleSubmit(e) {
         e.preventDefault();
-        // loading()
-        // console.log('QueSheetName:', QueSheetName);
-        // console.log('QueSheetTopicName:', QueSheetTopicName);
-        // console.log('DetailsLineOne:', DetailsLineOne);
-        // console.log('DetailsLinetwo:', DetailsLinetwo);
-        // console.log('Explanation:', Explanation);
-        // console.log('QH1:', QH1);
-        // console.log('QH1:', checkConsecutiveStrings(QH1));
-        // console.log('QH1:', QH1.join(','));
-        // console.log('QH2:', QH2.join(','));
-        // console.log('QH3:', QH3.join(','));
-        // console.log('QH4:', QH4.join(','));
-        // console.log('QH5:', QH5.join(','));
+        console.log('QueSheetName:', QueSheetName);
+        console.log('QueSheetTopicName:', QueSheetTopicName);
+        console.log('DetailsLineOne:', DetailsLineOne);
+        console.log('DetailsLinetwo:', DetailsLinetwo);
+        console.log('Explanation:', Explanation);
         
-        // console.log('inputValues:', inputValues.join(','))
-        // console.log('checkboxValues:', checkboxValues.join(','))
-        // console.log('checkboxValues:', checkConsecutiveTrue(checkboxValues))
+        console.log('QH1:', QH1.join(','));
+        console.log('QH2:', QH2.join(','));
+        console.log('QH3:', QH3.join(','));
+        console.log('QH4:', QH4.join(','));
+        console.log('QH5:', QH5.join(','));
+        
+        console.log('inputValues:', inputValues.join(','))
+        console.log('checkboxValues:', checkboxValues.join(','))
         if(
             checkConsecutiveStrings(QH1) === false &&
             checkConsecutiveStrings(QH2) === false &&
@@ -193,7 +375,7 @@ function AppCreateQuestionnaire(){
                 confirmButtonText: "ยืนยัน",  
             })
         }
-
+        
         
     };
     async function loading(){
@@ -205,13 +387,13 @@ function AppCreateQuestionnaire(){
                 didOpen: async () => { 
                     Swal.showLoading();
                     try {
-                        const check = await CreateQue()
+                        const check = await UpdateQue()
                         console.log(check)
                        if(check === true){
                             Swal.close();
                             Swal.fire({
                                 title: "",
-                                text: "สร้างแบบสอบถามเสร็จสิ้น",
+                                text: "แก้ไขแบบสอบถามเสร็จสิ้น",
                                 icon: "success",
                                 confirmButtonColor: "#341699",
                                 confirmButtonText: "ยืนยัน",  
@@ -234,22 +416,7 @@ function AppCreateQuestionnaire(){
             Swal.fire('เกิดข้อผิดพลาด');
         }
     }
-    async function CreateQue() {
-        console.log('QueSheetName:', QueSheetName);
-        console.log('QueSheetTopicName:', QueSheetTopicName);
-        console.log('DetailsLineOne:', DetailsLineOne);
-        console.log('DetailsLinetwo:', DetailsLinetwo);
-        console.log('Explanation:', Explanation);
-        
-        console.log('QH1:', QH1.join(','));
-        console.log('QH2:', QH2.join(','));
-        console.log('QH3:', QH3.join(','));
-        console.log('QH4:', QH4.join(','));
-        console.log('QH5:', QH5.join(','));
-        
-        console.log('inputValues:', inputValues.join(','))
-        console.log('checkboxValues:', checkboxValues.join(','))
-
+    async function UpdateQue() {
         const formData = new FormData();
         const quesheet_data = {
             userid : Cookies.get('userid'),
@@ -279,8 +446,8 @@ function AppCreateQuestionnaire(){
         console.log(formData)
 
         try{
-            const quecreate = await fetch(variables.API_URL + "quesheet/create/", {
-                method: "POST",
+            const quecreate = await fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+                method: "PUT",
                 body: formData,
             });
             const result = await quecreate.json()
@@ -288,11 +455,11 @@ function AppCreateQuestionnaire(){
                 if(result.err === undefined){
                     return true
                 }else{
-                    return result.err
+                    return false
                 }
                 
             }else{
-                return result.err
+                return false
             }
         }
         catch (err) {
@@ -337,7 +504,6 @@ function AppCreateQuestionnaire(){
         reader.onloadend = () => {
             setFileShow(reader.result);
         }
-        console.log(file)
         setFile(file)
         setStatusItem(true);
         setNameFileUpload(file.path);
@@ -357,8 +523,9 @@ function AppCreateQuestionnaire(){
         if (result.isConfirmed) {
             setNameFileUpload('');
             setFile('');
-            setFileShow('')
             setStatusItem(false);
+            setFileShow('')
+            console.log("File",File);
         }
         });
     }
@@ -367,10 +534,32 @@ function AppCreateQuestionnaire(){
         <div className='content'>
             <main>
                 <div className='box-content'>
-                    <div className='box-content-view'>
+                {StartError === 0 || StartError === 1 ? 
+                    StartError === 0 ? 
+                        <div className='box-content-view'>
+                            <div className='bx-topic light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-topic'></div>
+                                </div> 
+                            </div>
+                            <div className='bx-details light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-content'></div>
+                                </div> 
+                            </div>
+                        </div>
+                    :
+                        <div className='box-content-view'>
+                            <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
+                            <div className='bx-details light'><h2>Not Found</h2></div>
+                        </div>
+                :
+                    null
+                }
+                    <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                         <div className='bx-topic light'>
-                            <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / สร้างแบบสอบถาม</p>
-                            <h2>สร้างแบบสอบถาม</h2>  
+                            <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / แก้ไขแบบสอบถาม</p>
+                            <h2>แก้ไขแบบสอบถาม</h2>  
                         </div>
                         <div className='bx-details light'>
                             <form onSubmit={handleSubmit}>
@@ -455,9 +644,6 @@ function AppCreateQuestionnaire(){
                                                 :
                                                 ''
                                             }
-                                            
-                                        
-                                        
                                         </div>
                                         <div className="space5"></div>
                                         <div className="fb">แสดงตัวอย่างส่วนหัวแบบสอบถาม</div>
@@ -475,7 +661,7 @@ function AppCreateQuestionnaire(){
                                             </div>
                                         </div>
                                         <div className='bx-button'>
-                                            <div className='button-reset'>รีเซ็ท</div>
+                                            <div className='button-reset'  onClick={ResetQue}>รีเซ็ท</div>
                                             <div className='button-submit' onClick={handstep}>ถัดไป</div>
                                         </div>
                                     </div>
@@ -587,7 +773,7 @@ function AppCreateQuestionnaire(){
                                             </table>
                                             <div className='bx-button'>
                                                 <div className='button-cancel' onClick={handstep}>ย้อนกลับ</div>
-                                                <div className='button-reset'>รีเซ็ท</div>
+                                                <div className='button-reset' onClick={Resetdetails}>รีเซ็ท</div>
                                                 <button type="submit" className='button-submit'>บันทึก</button>
                                             </div>
                                         </div>
@@ -604,4 +790,4 @@ function AppCreateQuestionnaire(){
 
 }
 
-export default AppCreateQuestionnaire;
+export default AppUpdateQuetionaire;

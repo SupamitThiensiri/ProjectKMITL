@@ -10,3 +10,5 @@ simple-react-lightbox
 @fortawesome/free-solid-svg-icons
 @fortawesome/react-fontawesome
 js-cookie
+papaparse
+react-loading-skeleton

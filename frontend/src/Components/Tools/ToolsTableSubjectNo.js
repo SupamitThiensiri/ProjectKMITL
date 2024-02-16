@@ -113,7 +113,7 @@ const TableSubjectNo = ({ columns }) => {
                          .then(result => {
                              console.log(result)
                              Swal.fire({
-                                 title: result.msg+"\n"+result.deletetime,
+                                 title: result.msg+"\n"+removeTZ(result.deletetime),
                                  icon: "success",//error,question,warning,success
                                  confirmButtonColor: "#341699",
                              });
@@ -174,6 +174,10 @@ const TableSubjectNo = ({ columns }) => {
              }
          });
      };
+
+     function removeTZ(dateTimeString) {
+        return dateTimeString.replace("T", " ").replace("Z", "").replace("+07:00", "");
+    }
      return (
          <div>
              <div className='InputSize space-between'>
@@ -244,9 +248,9 @@ const TableSubjectNo = ({ columns }) => {
                                          <td className={row.cells[5].value === null || row.cells[5].value === '' || row.cells[5].value === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/Exam/"+row.cells[0].value}>{row.cells[3].value}</Link></td>
                                          <td className={row.cells[5].value === null || row.cells[5].value === '' || row.cells[5].value === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/Exam/"+row.cells[0].value}>{row.cells[4].value}</Link></td>
                                          {row.cells[5].value === null || row.cells[5].value === '' || row.cells[5].value === "null"?
-                                             <td className='center mw80px' ><Link to={"/Subject/SubjectNo/UpdateExam/"+row.cells[0].value} className='' style={{ display: 'contents' }}><span className=''><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.cells[0].value,row.cells[2].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
+                                             <td className='center mw80px' ><Link to={"/Subject/SubjectNo/UpdateExam/"+row.cells[0].value} className='' style={{ display: 'contents' }}><span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.cells[0].value,row.cells[2].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
                                          :
-                                             <td className='center mw80px' ><Link to="#"><p className='danger light-font' onClick={() => handlecancelDel(row.cells[0].value,row.cells[2].value,row.cells[5].value)}>ยกเลิกการลบ</p> </Link></td>
+                                             <td className='center mw80px' ><Link to="#"><p className='danger light-font' onClick={() => handlecancelDel(row.cells[0].value,row.cells[2].value,removeTZ(row.cells[5].value))}>ยกเลิกการลบ</p> </Link></td>
                                          }
                                      </tr>
                                  );

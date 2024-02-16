@@ -9,7 +9,7 @@ function AppCreateSubject(){
 
     const [SubjectID, setSubjectID] = useState('');
     const [SubjectName, setSubjectName] = useState('');
-    const [Semester, setSemester] = useState('');
+    const [Semester, setSemester] = useState(1);
     const [currentYear] = useState(new Date().getFullYear()+543);
     const [selectedYear, setSelectedYear] = useState(currentYear);
 
@@ -52,12 +52,14 @@ function AppCreateSubject(){
                         title: "สร้างรายวิชาเสร็จสิ้น",
                         icon: "success",//error,question,warning,success
                         confirmButtonColor: "#341699",
+                    }).then((result) => {
+                        setSubjectID([]);
+                        setSubjectName([]);
+                        setSelectedYear([currentYear])
+                        setSemester([]);
+                        window.location.href = '/Subject';
                     });
-                    setSubjectID([]);
-                    setSubjectName([]);
-                    setSelectedYear([currentYear])
-                    setSemester([]);
-                    console.log(result.msg)
+                    
                 } else {
                     Swal.fire({
                         title: "เกิดข้อผิดพลาด"+result.err,
@@ -83,6 +85,12 @@ function AppCreateSubject(){
         }
     }
 
+    const handleReset = (e) => {
+        setSubjectID('')
+        setSubjectName('')
+        setSemester(1)
+        setSelectedYear(new Date().getFullYear()+543)
+    }
     return(
         <div className='content'>
             <main>
@@ -146,7 +154,7 @@ function AppCreateSubject(){
                                     </div>
 
                                     <div className='bx-button'>
-                                        <button type="reset" className='button-reset'>รีเซ็ท</button>
+                                        <div onClick={handleReset} className='button-reset'>รีเซ็ท</div>
                                         <button type="submit"  className='button-submit'>บันทึก</button>
                                     </div>
                                 </div>

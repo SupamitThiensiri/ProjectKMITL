@@ -114,7 +114,7 @@ const TableSubject = ({ columns }) => {
                         .then(result => {
                             // console.log(result)
                             Swal.fire({
-                                title: result.msg+"\n"+result.deletetime,
+                                title: result.msg+"\n"+removeTZ(result.deletetime),
                                 icon: "success",//error,question,warning,success
                                 confirmButtonColor: "#341699",
                             });
@@ -152,7 +152,6 @@ const TableSubject = ({ columns }) => {
                         },
                         body: JSON.stringify({
                             deletetimesubject : null
-                    
                         }),
                         })
                         .then(response => response.json())
@@ -176,6 +175,10 @@ const TableSubject = ({ columns }) => {
             }
         });
     };
+
+    function removeTZ(dateTimeString) {
+        return dateTimeString.replace("T", " ").replace("Z", "").replace("+07:00", "");
+    }
     return (
         <div>
             <div className='InputSize space-between'>
@@ -240,16 +243,16 @@ const TableSubject = ({ columns }) => {
                             prepareRow(row);
                                 return (
                                     <tr {...row.getRowProps()} key={row.id}>
-                                        <td className={row.cells[6].value === null || row.cells[6].value === '' || row.cells[6].value === "null"?"center":"center wait"}><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{Number(row.id)+1}</Link></td>
-                                        <td className={row.cells[6].value === null || row.cells[6].value === '' || row.cells[6].value === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[1].value}</Link></td>
-                                        <td className={row.cells[6].value === null || row.cells[6].value === '' || row.cells[6].value === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[2].value}</Link></td>
-                                        <td className={row.cells[6].value === null || row.cells[6].value === '' || row.cells[6].value === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[3].value}</Link></td>
-                                        <td className={row.cells[6].value === null || row.cells[6].value === '' || row.cells[6].value === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.cells[0].value}>{row.cells[4].value}</Link></td>
-                                        {/* {console.log(row.cells[6].value)} */}
-                                        {row.cells[6].value === null || row.cells[6].value === '' || row.cells[6].value === "null"?
-                                            <td className='center mw80px' ><Link to={"/Subject/UpdateSubject/"+row.cells[0].value} className='' style={{ display: 'contents' }}><span className=''><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.cells[0].value,row.cells[1].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
+                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"center":"center wait"}><Link to={"/Subject/SubjectNo/"+row.values.subid}>{Number(row.id)+1}</Link></td>
+                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.values.subid}>{row.values.subjectid}</Link></td>
+                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.values.subid}>{row.values.subjectname}</Link></td>
+                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.values.subid}>{row.values.year}</Link></td>
+                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Subject/SubjectNo/"+row.values.subid}>{row.values.semester}</Link></td>
+                                       
+                                        {row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?
+                                            <td className='center mw80px' ><Link to={"/Subject/UpdateSubject/"+row.values.subid} className='' style={{ display: 'contents' }}><span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.values.subid,row.cells[1].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
                                         :
-                                            <td className='center mw80px' ><Link to="#"><p className='danger light-font' onClick={() => handlecancelDel(row.cells[0].value,row.cells[2].value,row.cells[6].value)}>ยกเลิกการลบ</p> </Link></td>
+                                            <td className='center mw80px' ><Link to="#"><p className='danger light-font' onClick={() => handlecancelDel(row.values.subid,row.values.subjectname,removeTZ(row.values.deletetimesubject))}>ยกเลิกการลบ</p> </Link></td>
                                         }
                                     </tr>
                                 );

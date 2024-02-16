@@ -158,6 +158,7 @@
 }
 /* start navbar */
 .content nav{
+    box-shadow: 10px 8px 5px -10px var(--dark-grey);
     height: 56px;
     background: var(--light);
     padding: 0 24px 0 0;

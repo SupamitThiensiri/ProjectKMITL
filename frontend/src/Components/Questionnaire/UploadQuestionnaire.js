@@ -18,58 +18,58 @@ function AppUploadAnswerSheet(){
     const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
     const [namefileupload, setNameFileUpload] = useState(''); // สำหรับชื่อไฟล์อัปโหลด
 
-    const [ExamNo, setExamNo] = useState('');
-    const [ExamNoShow, setExamNoShow] = useState('');
-    const [subid, setsubid] = useState('');
-    const [subjectname, setsubjectname] = useState('');
+    // const [ExamNo, setExamNo] = useState('');
+    // const [ExamNoShow, setExamNoShow] = useState('');
+    // const [subid, setsubid] = useState('');
+    // const [subjectname, setsubjectname] = useState('');
     const [sequencesteps, setsequencesteps] = useState('');
     
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
     
     const fetchDataStartExam = async () => {
-        try{
-            fetch(variables.API_URL+"exam/detail/"+id+"/", {
-                method: "GET",
-                headers: {
-                    'Accept': 'application/json, text/plain',
-                    'Content-Type': 'application/json;charset=UTF-8'
-                },
-                })
-                .then(response => response.json())
-                .then(result => {
-                    // console.log(result)
-                    if(result.err !== undefined){
-                        setStartError(1);
-                    }
-                    setExamNo(result.examno)
-                    setExamNoShow(result.examid)
-                    setsubid(result.subid)
-                    setsequencesteps(result.sequencesteps)
-                    fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json, text/plain',
-                            'Content-Type': 'application/json;charset=UTF-8'
-                        },
-                        })
-                        .then(response => response.json())
-                        .then(result => {
-                            if(result.err !== undefined){
-                                setStartError(1);
-                            }
-                            else{
-                                setsubjectname(result.subjectname)
-                                setStartError(2);
-                            }
-                        }
-                    )
-                }
-            )
-        }catch (err) {
-            // console.error(err)
-            setStartError(1);
-        }
+        // try{
+        //     fetch(variables.API_URL+"exam/detail/"+id+"/", {
+        //         method: "GET",
+        //         headers: {
+        //             'Accept': 'application/json, text/plain',
+        //             'Content-Type': 'application/json;charset=UTF-8'
+        //         },
+        //         })
+        //         .then(response => response.json())
+        //         .then(result => {
+        //             // console.log(result)
+        //             if(result.err !== undefined){
+        //                 setStartError(1);
+        //             }
+        //             setExamNo(result.examno)
+        //             setExamNoShow(result.examid)
+        //             setsubid(result.subid)
+        //             setsequencesteps(result.sequencesteps)
+        //             fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
+        //                 method: "GET",
+        //                 headers: {
+        //                     'Accept': 'application/json, text/plain',
+        //                     'Content-Type': 'application/json;charset=UTF-8'
+        //                 },
+        //                 })
+        //                 .then(response => response.json())
+        //                 .then(result => {
+        //                     if(result.err !== undefined){
+        //                         setStartError(1);
+        //                     }
+        //                     else{
+        //                         setsubjectname(result.subjectname)
+        //                         setStartError(2);
+        //                     }
+        //                 }
+        //             )
+        //         }
+        //     )
+        // }catch (err) {
+        //     // console.error(err)
+        //     setStartError(1);
+        // }
     };
     
     const setStartError2 = (e) => {
@@ -103,13 +103,11 @@ function AppUploadAnswerSheet(){
         }
        
     }, []);
-
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accepts: "image/*",
         multiple: true,
     })
-
     const handleFileInputChange = (files) => {
         setFile(files)
         setNameFileUpload('')
@@ -133,13 +131,12 @@ function AppUploadAnswerSheet(){
         console.log(namefileupload)
         console.log(indexitem)
     }
-
     async function handleSubmitFile(e) {
         e.preventDefault();
         if (File.length > 0) {
             Swal.fire({
                 title: "",
-                text: `กดยืนยันเพื่อจะทำการประมวลผลกระดาษคำตอบ`,
+                text: `กดยืนยันเพื่อจะทำการประมวลผลแบบสอบถาม`,
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonColor: "#341699",
@@ -215,49 +212,15 @@ function AppUploadAnswerSheet(){
             });
             return err; // รีเทิร์น error เมื่อเกิดข้อผิดพลาด
         }
-    }
-    
+    } 
     async function loading(){
         try {
-            // const loadingSwal = Swal.fire({
-            //     title: 'กำลังประมวลผล...',
-            //     allowOutsideClick: false,
-            //     showConfirmButton: false,
-            //     didOpen: async () => { 
-            //         Swal.showLoading();
-            //         try {
-            //             const check = await saveUpload()
-            //             console.log("check :",check)
-            //            if(check === undefined){
-            //                 Swal.close();
-            //                 fetchDataStartExam();
-            //                 Swal.fire({
-            //                     title: "อัปโหลดกระดาษคำตอบเสร็จสิ้น",
-            //                     text: "ระหว่างที่รอกระดาษคำตอบประมวลผลสามารถทำอย่างอื่นก่อนได้",
-            //                     icon: "success",
-            //                     confirmButtonColor: "#341699",
-            //                     confirmButtonText: "ยืนยัน",  
-            //                 }).then((result) => {
-            //                     // window.location.reload();
-                               
-            //                 });
-            //             }else{
-            //                 Swal.close();
-            //                 Swal.fire('เกิดข้อผิดพลาด '+check);
-            //             }
-            //         } catch (error) {
-            //             Swal.close();
-            //             Swal.fire('เกิดข้อผิดพลาด '+error);
-            //         }
-            //     }
-            // });
-            // await loadingSwal;
             const check = await saveUpload()
             if(check === undefined){
                 fetchDataStartExam();
                 let timerInterval;
                 Swal.fire({
-                title: "กำลังอัปโหลดกระดาษคำตอบ",
+                title: "กำลังอัปโหลดแบบสอบถาม",
                 html: "รอประมาณ <b></b> มิลลิวินาที.",
                 timer: 2000,
                 timerProgressBar: true,
@@ -274,8 +237,8 @@ function AppUploadAnswerSheet(){
                 }).then((result) => {
                 if (result.dismiss === Swal.DismissReason.timer) {
                     Swal.fire({
-                        title: "อัปโหลดกระดาษคำตอบเสร็จสิ้น",
-                        text: "ระหว่างที่รอกระดาษคำตอบประมวลผลสามารถทำอย่างอื่นรอก่อนได้",
+                        title: "อัปโหลดแบบสอบถามเสร็จสิ้น",
+                        text: "ระหว่างที่รอแบบสอบถามประมวลผลสามารถทำอย่างอื่นรอก่อนได้",
                         icon: "success",
                         confirmButtonColor: "#341699",
                         confirmButtonText: "ยืนยัน",  
@@ -329,14 +292,14 @@ function AppUploadAnswerSheet(){
                 }
                 <div className={StartError === 2 ? 'box-content-view': 'box-content-view none'}>
                     <div className='bx-topic light'>
-                            <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / อัปโหลดกระดาษคำตอบ</p>
+
                         <div className='bx-grid2-topic'>
-                            <h2>อัปโหลดกระดาษคำตอบ</h2>
+                            <h2>อัปโหลดแบบสอบถาม</h2>
                         
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                        <div>รูปแบบฟอร์มกระดาษคำตอบ</div>
+                        <div>รูปแบบฟอร์มแบบสอบถาม</div>
                         <div className="gtc2-CAS">
                             <div className="jc-center">
                                 <div className="mw300px fit-content">
@@ -380,46 +343,18 @@ function AppUploadAnswerSheet(){
                             {sequencesteps === 3 || sequencesteps === "3" ? (
                                 <div className="center loading-process">
                                     <div>
-                                        กำลังประมวลผลกระดาษคำตอบ ระหว่างที่รอกระดาษคำตอบประมวลผลสามารถทำอย่างอื่นรอก่อนได้
+                                        กำลังประมวลผลแบบสอบถาม ระหว่างที่รอแบบสอบถามประมวลผลสามารถทำอย่างอื่นรอก่อนได้
                                     </div>
                                     <div id="loadingDiv" className="loading"> </div>
                                 </div>
                             ) : (
                                 sequencesteps === 4 || sequencesteps === "4" ? 
-                                <div className="success-text"><FontAwesomeIcon icon={faCheck} /> การอัปโหลดกระดาษคำตอบก่อนหน้าประมวลผลเสร็จสิ้น</div>
+                                <div className="success-text"><FontAwesomeIcon icon={faCheck} /> การอัปโหลดแบบสอบถามก่อนหน้าประมวลผลเสร็จสิ้น</div>
                                 : 
                                 ''
                             )}
-
-                                
-                            {/* <div className="TB">
-                                <div className="TB-box">
-                                    <h3>แสดงตัวอย่างรูปแบบฟอร์มกระดาษคำตอบ</h3>
-                                    <SRLWrapper options={options}>
-                                    {File !== ''? 
-                                        <div className="container">
-                                        {ShowFile.map((file, index) => (
-                                            <div key={index} className="image-card" style={index>=1?{ display: 'none' }:{}}>
-                                                {console.log(file)}
-                                                <a href={file} >
-                                                    <img className="image" src={file} alt={namefileupload[index]} />
-                                                </a>
-                                            </div>
-                                        ))}
-                                        </div>
-                                    :
-                                        <div className="container">
-                                        </div>
-                                    }
-                                    </SRLWrapper> 
-                                </div>
-                            </div> */}
                         </div>
                     </div>
-                    {/* <div className="loading-container">
-                        <div className="spinner"></div>
-                    </div> */}
-                    
                 </div>
             </div>
         </main>

@@ -10,7 +10,7 @@ function AppCreateExam(){
     const { id } = useParams();
 
     const [NameExam, setNameExam] = useState('');
-    const [ExamNo, setExamNo] = useState('');
+    const [ExamNo, setExamNo] = useState(1);
     const [NumExam, setNumExam] = useState(40);
     const [SetExam, setSetExam] = useState(1);
 
@@ -36,6 +36,7 @@ function AppCreateExam(){
                         examno: ExamNo,
                         numberofexams: NumExam,
                         numberofexamsets: SetExam,
+                        sequencesteps:"1",
                         userid : Cookies.get('userid')
                     }),
                 });
@@ -47,11 +48,14 @@ function AppCreateExam(){
                         title: "สร้างการสอบเสร็จสิ้น",
                         icon: "success",//error,question,warning,success
                         confirmButtonColor: "#341699",
+                    }).then((result) => {
+                        setNameExam([]);
+                        setExamNo(1);
+                        setNumExam(40)
+                        setSetExam(1);
+                        window.location.href = '/Subject/SubjectNo/'+id;
                     });
-                    setNameExam([]);
-                    setExamNo([]);
-                    setNumExam('40')
-                    setSetExam('1');
+                  
                 } else {
                     console.log(result)
                     Swal.fire({
