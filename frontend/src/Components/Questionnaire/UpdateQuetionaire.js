@@ -26,14 +26,12 @@ function AppUpdateQuetionaire(){
     const [QueSheetTopicName, setQueSheetTopicName] = useState('');
     const [DetailsLineOne, setDetailsLineOne] = useState('');
     const [DetailsLinetwo, setDetailsLinetwo] = useState('');
-    const [Explanation, setExplanation] = useState('');
     // const [Symbolposition, setSymbolposition] = useState('');
 
     const handleInputQueSheetName = (e) => { setQueSheetName(e.target.value); };
     const handleInputQueSheetTopicName = (e) => {setQueSheetTopicName(e.target.value);};
     const handleInputDetailsLineOne = (e) => { setDetailsLineOne(e.target.value); };
     const handleInputDetailsLinetwo = (e) => {setDetailsLinetwo(e.target.value);};
-    const handleInputExplanation = (e) => {setExplanation(e.target.value);};
     // const handleInputSymbolposition = (e) => {setSymbolposition(e.target.value);};
 
 
@@ -152,40 +150,8 @@ function AppUpdateQuetionaire(){
                     setQueSheetTopicName(result.quesheettopicname)
                     setDetailsLineOne(result.detailslineone)
                     setDetailsLinetwo(result.detailslinetwo)
-                    setExplanation(result.explanation)
                 }
             )
-            fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
-                method: "GET",
-                headers: {
-                    'Accept': 'application/json, text/plain',
-                    'Content-Type': 'application/json;charset=UTF-8'
-                },
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.err !== undefined){
-                        setStartError(1);
-                    }
-                    console.log(result)
-                }
-            )
-            fetch(variables.API_URL+"quetopicdetails/detail/"+id+"/", {
-                method: "GET",
-                headers: {
-                    'Accept': 'application/json, text/plain',
-                    'Content-Type': 'application/json;charset=UTF-8'
-                },
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.err !== undefined){
-                        setStartError(1);
-                    }
-                    console.log(result)
-                }
-            )
-            
         }catch (err) {
             console.error(err)
             setStartError(1);
@@ -205,44 +171,45 @@ function AppUpdateQuetionaire(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        const quehead1 = result.quehead1.split(',');
+                        const quehead2 = result.quehead2.split(',');
+                        const quehead3 = result.quehead3.split(',');
+                        const quehead4 = result.quehead4.split(',');
+                        const quehead5 = result.quehead5.split(',');
+                        setQH1C1(quehead1[0])
+                        setQH1C2(quehead1[1])
+                        setQH1C3(quehead1[2])
+                        setQH1C4(quehead1[3])
+                        setQH1C5(quehead1[4])
+                        setQH2C1(quehead2[0])
+                        setQH2C2(quehead2[1])
+                        setQH2C3(quehead2[2])
+                        setQH2C4(quehead2[3])
+                        setQH2C5(quehead2[4])
+                        setQH3C1(quehead3[0])
+                        setQH3C2(quehead3[1])
+                        setQH3C3(quehead3[2])
+                        setQH3C4(quehead3[3])
+                        setQH3C5(quehead3[4])
+                        setQH4C1(quehead4[0])
+                        setQH4C2(quehead4[1])
+                        setQH4C3(quehead4[2])
+                        setQH4C4(quehead4[3])
+                        setQH4C5(quehead4[4])
+                        setQH5C1(quehead5[0])
+                        setQH5C2(quehead5[1])
+                        setQH5C3(quehead5[2])
+                        setQH5C4(quehead5[3])
+                        setQH5C5(quehead5[4])
                     }
                     console.log(result)
-                    const quehead1 = result.quehead1.split(',');
-                    const quehead2 = result.quehead2.split(',');
-                    const quehead3 = result.quehead3.split(',');
-                    const quehead4 = result.quehead4.split(',');
-                    const quehead5 = result.quehead5.split(',');
-                    setQH1C1(quehead1[0])
-                    setQH1C2(quehead1[1])
-                    setQH1C3(quehead1[2])
-                    setQH1C4(quehead1[3])
-                    setQH1C5(quehead1[4])
-                    setQH2C1(quehead2[0])
-                    setQH2C2(quehead2[1])
-                    setQH2C3(quehead2[2])
-                    setQH2C4(quehead2[3])
-                    setQH2C5(quehead2[4])
-                    setQH3C1(quehead3[0])
-                    setQH3C2(quehead3[1])
-                    setQH3C3(quehead3[2])
-                    setQH3C4(quehead3[3])
-                    setQH3C5(quehead3[4])
-                    setQH4C1(quehead4[0])
-                    setQH4C2(quehead4[1])
-                    setQH4C3(quehead4[2])
-                    setQH4C4(quehead4[3])
-                    setQH4C5(quehead4[4])
-                    setQH5C1(quehead5[0])
-                    setQH5C2(quehead5[1])
-                    setQH5C3(quehead5[2])
-                    setQH5C4(quehead5[3])
-                    setQH5C5(quehead5[4])
+                    
                 }
             )
         }catch (err) {
             console.error(err)
             setStartError(1);
-           
         }
     };
     const fetchDataUpdatequetopicdetails = async () => {
@@ -258,12 +225,14 @@ function AppUpdateQuetionaire(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log(result)
+                        setInputValues(result.quetopicdetails.split(','))
+                        const array = result.quetopicformat.split(',');
+                        const booleanArray = array.map(item => item === '1');
+                        setCheckboxValues(booleanArray)
                     }
-                    console.log(result)
-                    setInputValues(result.quetopicnum.split(','))
-                    const array = result.quetopicformat.split(',');
-                    const booleanArray = array.map(item => item === 'true');
-                    setCheckboxValues(booleanArray)
+                  
                 }
             )
         }catch (err) {
@@ -311,6 +280,20 @@ function AppUpdateQuetionaire(){
             fetchDataUpdatequetopicdetails();
         });
     }
+    function checkPath1(array){
+        if(array[0] === '' || array[1] === ''){
+            return true; 
+        }else{
+            return false; 
+        }
+    }
+    function checkPath2(array){
+        if(array[0] === '' || array[1] === ''){
+            return true; 
+        }else{
+            return false; 
+        }
+    }
     function checkConsecutiveTrue(array) {
         for (let i = 0; i < array.length - 1; i++) {
           if (array[i] && array[i + 1]) {
@@ -338,7 +321,6 @@ function AppUpdateQuetionaire(){
         console.log('QueSheetTopicName:', QueSheetTopicName);
         console.log('DetailsLineOne:', DetailsLineOne);
         console.log('DetailsLinetwo:', DetailsLinetwo);
-        console.log('Explanation:', Explanation);
         
         console.log('QH1:', QH1.join(','));
         console.log('QH2:', QH2.join(','));
@@ -348,18 +330,39 @@ function AppUpdateQuetionaire(){
         
         console.log('inputValues:', inputValues.join(','))
         console.log('checkboxValues:', checkboxValues.join(','))
-        if(
-            checkConsecutiveStrings(QH1) === false &&
-            checkConsecutiveStrings(QH2) === false &&
-            checkConsecutiveStrings(QH3) === false &&
-            checkConsecutiveStrings(QH4) === false &&
-            checkConsecutiveStrings(QH5) === false){
-            if(checkConsecutiveTrue(checkboxValues) === false){
-                loading()
+        if(checkPath1(QH1) === false){
+            if(checkPath2(inputValues) === false){
+                if(
+                    checkConsecutiveStrings(QH1) === false &&
+                    checkConsecutiveStrings(QH2) === false &&
+                    checkConsecutiveStrings(QH3) === false &&
+                    checkConsecutiveStrings(QH4) === false &&
+                    checkConsecutiveStrings(QH5) === false){
+                    if(checkConsecutiveTrue(checkboxValues) === false){
+                        loading()
+                    }else{
+                        Swal.fire({
+                            title: "",
+                            text: "ส่วนที่ 2 ไม่สามารถกำหนดหัวข้อใหญ่ติดกันได้",
+                            icon: "error",
+                            confirmButtonColor: "#341699",
+                            confirmButtonText: "ยืนยัน",  
+                        })
+                    }
+
+                }else{
+                    Swal.fire({
+                        title: "",
+                        text: "ส่วนที่ 1 ในแต่ละหัวข้อสามารถมี อื่นๆ ได้เพียงแค่อันเดียว",
+                        icon: "error",
+                        confirmButtonColor: "#341699",
+                        confirmButtonText: "ยืนยัน",  
+                    })
+                }
             }else{
                 Swal.fire({
                     title: "",
-                    text: "ส่วนที่ 2 ไม่สามารถกำหนดหัวข้อใหญ่ติดกันได้",
+                    text: "ส่วนที่ 2 ต้องมีหัวข้อใหญ่อย่างน้อย 1 หัวข้อและหัวข้อย่อยอย่างน้อย 1 หัวข้อ โดยเริ่มจากบนลงล่าง",
                     icon: "error",
                     confirmButtonColor: "#341699",
                     confirmButtonText: "ยืนยัน",  
@@ -369,7 +372,7 @@ function AppUpdateQuetionaire(){
         }else{
             Swal.fire({
                 title: "",
-                text: "ส่วนที่ 1 ในแต่ละหัวข้อสามารถมี อื่นๆ ได้เพียงแค่อันเดียว",
+                text: "ส่วนที่ 1 ต้องมีหัวข้ออย่างน้อย 1 หัวข้อและตัวเลือกอย่างน้อย 1 ตัวเลือก โดยเริ่มจากหัวข้อบนลงล่าง และตัวเลือกจากซ้ายไปขวา",
                 icon: "error",
                 confirmButtonColor: "#341699",
                 confirmButtonText: "ยืนยัน",  
@@ -398,7 +401,7 @@ function AppUpdateQuetionaire(){
                                 confirmButtonColor: "#341699",
                                 confirmButtonText: "ยืนยัน",  
                             }).then((result) => {
-                                window.location.href = '/Questionnaire';
+                                window.location.href = '/Questionnaire/QuestionnaireNo/ShowQuestionnaire/'+id;
                             });
                         }else{
                             Swal.close();
@@ -424,7 +427,7 @@ function AppUpdateQuetionaire(){
             quesheettopicname : QueSheetTopicName,
             detailslineone : DetailsLineOne,
             detailslinetwo : DetailsLinetwo,
-            explanation : Explanation,
+
         }
         const queheaddetails_data = {
             quehead1 : QH1.join(','),
@@ -434,9 +437,8 @@ function AppUpdateQuetionaire(){
             quehead5 : QH5.join(','),
         }
         const quetopicdetails_data = {
-            quetopicnum : inputValues.join(','),
             quetopicdetails : inputValues.join(','),
-            quetopicformat : checkboxValues.join(','),
+            quetopicformat : checkboxValues.map(value => value ? 1 : 0).join(','),
         }
         formData.append("logo", File);
         formData.append("userid", Cookies.get('userid'));
@@ -455,11 +457,11 @@ function AppUpdateQuetionaire(){
                 if(result.err === undefined){
                     return true
                 }else{
-                    return false
+                    return result.err
                 }
                 
             }else{
-                return false
+                return result.err
             }
         }
         catch (err) {
@@ -575,6 +577,7 @@ function AppUpdateQuetionaire(){
                                                 value={QueSheetName}
                                                 onChange={handleInputQueSheetName}
                                                 placeholder="กรอกชื่อแบบสอบถาม"
+                                       
                                             />
                                         </div>
                                         <div className="bx-input-fix">
@@ -586,6 +589,7 @@ function AppUpdateQuetionaire(){
                                                 value={QueSheetTopicName}
                                                 onChange={handleInputQueSheetTopicName}
                                                 placeholder="กรอกชื่อหัวข้อแบบสอบถาม"
+                                                maxLength={60}
                                             />
                                         </div>
                                         <div className="bx-input-fix">
@@ -597,6 +601,7 @@ function AppUpdateQuetionaire(){
                                                 value={DetailsLineOne}
                                                 onChange={handleInputDetailsLineOne}
                                                 placeholder="กรอกรายละเอียดบรรทัดที่ 1"
+                                                maxLength={90}
                                             />
                                         </div>
                                         <div className="bx-input-fix">
@@ -608,22 +613,11 @@ function AppUpdateQuetionaire(){
                                                 value={DetailsLinetwo}
                                                 onChange={handleInputDetailsLinetwo}
                                                 placeholder="กรอกรายละเอียดบรรทัดที่ 2"
-                                            />
-                                        </div>
-
-                                        <div className="bx-input-fix none">
-                                        <label htmlFor="Explanation" className="w150px">คำชี้แจง</label>
-                                            <input className="mw300px"
-                                                type="text"
-                                                id="Explanation"
-                                                name="Explanation"
-                                                value={Explanation}
-                                                onChange={handleInputExplanation}
-                                                placeholder="กรอกคำชี้แจง"
+                                                maxLength={90}
                                             />
                                         </div>
                                         <div className="space5"></div>
-                                        <div className="fb">ปรับแต่งตราสัญลักษณ์</div>
+                                        <div className="fb">ปรับแต่งตราสัญลักษณ์ (ขนาดรูปภาพที่แนะนำ 300 x 135 Pixels)</div>
                                         <div className="mw300px">
                                             <div className="dropzone">
                                                 <div className="dz-box"{...getRootProps()}>
@@ -669,6 +663,7 @@ function AppUpdateQuetionaire(){
                                 <div>
                                     <div>
                                         <p>ส่วนที่ 1 : ข้อมูลทั่วไปของผู้ตอบแบบสอบถาม </p>
+                                        <p className="danger-font fs12">*หากพิมพ์ตัวเลือกเป็น "อื่นๆ" เพื่อต้องการให้มีการระบุได้ ไม่ต้องพิมพ์ ... หรือ ___ ตามหลัง</p>
                                         <div className="tableQue ">
                                         <table className="">
                                                 <thead>
@@ -681,40 +676,40 @@ function AppUpdateQuetionaire(){
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr >
-                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C1} onChange={handleQH1C1} placeholder="" /></td>
-                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C2} onChange={handleQH1C2} placeholder="" /></td>
-                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C3} onChange={handleQH1C3} placeholder="" /></td>
-                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C4} onChange={handleQH1C4} placeholder="" /></td>
-                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C5} onChange={handleQH1C5} placeholder="" /></td>
+                                                <tr >
+                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C1} onChange={handleQH1C1} placeholder="" maxLength={20}/></td>
+                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C2} onChange={handleQH1C2} placeholder="" maxLength={15}/></td>
+                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C3} onChange={handleQH1C3} placeholder="" maxLength={15}/></td>
+                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C4} onChange={handleQH1C4} placeholder="" maxLength={15}/></td>
+                                                        <td className="w150px"><input type="text" id="" name="" value={QH1C5} onChange={handleQH1C5} placeholder="" maxLength={15}/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><input type="text" id="" name="" value={QH2C1} onChange={handleQH2C1} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH2C2} onChange={handleQH2C2} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH2C3} onChange={handleQH2C3} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH2C4} onChange={handleQH2C4} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH2C5} onChange={handleQH2C5} placeholder="" /></td>
+                                                        <td><input type="text" id="" name="" value={QH2C1} onChange={handleQH2C1} placeholder="" maxLength={20}/></td>
+                                                        <td><input type="text" id="" name="" value={QH2C2} onChange={handleQH2C2} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH2C3} onChange={handleQH2C3} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH2C4} onChange={handleQH2C4} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH2C5} onChange={handleQH2C5} placeholder="" maxLength={15}/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><input type="text" id="" name="" value={QH3C1} onChange={handleQH3C1} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH3C2} onChange={handleQH3C2} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH3C3} onChange={handleQH3C3} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH3C4} onChange={handleQH3C4} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH3C5} onChange={handleQH3C5} placeholder="" /></td>
+                                                        <td><input type="text" id="" name="" value={QH3C1} onChange={handleQH3C1} placeholder="" maxLength={20}/></td>
+                                                        <td><input type="text" id="" name="" value={QH3C2} onChange={handleQH3C2} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH3C3} onChange={handleQH3C3} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH3C4} onChange={handleQH3C4} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH3C5} onChange={handleQH3C5} placeholder="" maxLength={15}/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><input type="text" id="" name="" value={QH4C1} onChange={handleQH4C1} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH4C2} onChange={handleQH4C2} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH4C3} onChange={handleQH4C3} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH4C4} onChange={handleQH4C4} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH4C5} onChange={handleQH4C5} placeholder="" /></td>
+                                                        <td><input type="text" id="" name="" value={QH4C1} onChange={handleQH4C1} placeholder="" maxLength={20}/></td>
+                                                        <td><input type="text" id="" name="" value={QH4C2} onChange={handleQH4C2} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH4C3} onChange={handleQH4C3} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH4C4} onChange={handleQH4C4} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH4C5} onChange={handleQH4C5} placeholder="" maxLength={15}/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td><input type="text" id="" name="" value={QH5C1} onChange={handleQH5C1} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH5C2} onChange={handleQH5C2} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH5C3} onChange={handleQH5C3} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH5C4} onChange={handleQH5C4} placeholder="" /></td>
-                                                        <td><input type="text" id="" name="" value={QH5C5} onChange={handleQH5C5} placeholder="" /></td>
+                                                        <td><input type="text" id="" name="" value={QH5C1} onChange={handleQH5C1} placeholder="" maxLength={20}/></td>
+                                                        <td><input type="text" id="" name="" value={QH5C2} onChange={handleQH5C2} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH5C3} onChange={handleQH5C3} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH5C4} onChange={handleQH5C4} placeholder="" maxLength={15}/></td>
+                                                        <td><input type="text" id="" name="" value={QH5C5} onChange={handleQH5C5} placeholder="" maxLength={15}/></td>
                                                     </tr>
                                                 
                                                 </tbody>
@@ -725,6 +720,7 @@ function AppUpdateQuetionaire(){
                                         overflow: auto;
                                         min-width: 790px; */}
                                         <p>ส่วนที่ 2: ความคิดเห็นเกี่ยวกับแบบสอบถาม (5: มากที่สุด, 4: มาก, 3: ปานกลาง, 2: น้อย, 1: น้อยที่สุด, 0: ไม่ประเมิน)</p>
+                                        <p className="danger-font fs12">*หากเลือก "หัวข้อใหญ่" หัวข้อนั้นจะไม่มีช้อยสำหรับฝนระดับความคิดเห็น</p>
                                         <div className="tableQue">
                                             <table className="">
                                                 <thead>
@@ -753,6 +749,7 @@ function AppUpdateQuetionaire(){
                                                                         value={inputValues[index]}
                                                                         onChange={(e) => handleInputChange(index, e.target.value)}
                                                                         placeholder=""
+                                                                        maxLength={100}
                                                                         />
                                                                     </div>
                                                                 </td>
@@ -763,6 +760,7 @@ function AppUpdateQuetionaire(){
                                                                         type="checkbox"
                                                                         checked={checkboxValues[index]}
                                                                         onChange={() => handleCheckboxChange(index)}
+                                                                        disabled={index===0?true:false}
                                                                         />
                                                                     </div>
                                                                 </td>

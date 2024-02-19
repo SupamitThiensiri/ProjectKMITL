@@ -5,18 +5,38 @@ import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'
+import Cookies from "js-cookie";
 function AppSetDateTimeQuesionnaire(){
     const { id } = useParams();
 
+    const URLOnline = window.location.host+"/OnlineQuestionnaire/"+id;
+    const currentDate = new Date();
+    const minDateISO = currentDate.toISOString().slice(0, 16);
+
+
     const [QueSheetName, setQueSheetName] = useState('');
-    //OnlineQuestionnaire
-    const [URLOnline, setURLOnline] = useState(window.location.host+"/OnlineQuestionnaire/"+id);
-    const [dateTime, setDateTime] = useState('');
+    const [QueSheetTopicName, setQueSheetTopicName] = useState('');
+    const [DetailsLineOne, setDetailsLineOne] = useState('');
+    const [DetailsLinetwo, setDetailsLinetwo] = useState('');
+
+    const [quehead1, setquehead1] = useState('');
+    const [quehead2, setquehead2] = useState('');
+    const [quehead3, setquehead3] = useState('');
+    const [quehead4, setquehead4] = useState('');
+    const [quehead5, setquehead5] = useState('');
+
+    const [quetopicdetails, setquetopicdetails] = useState('');
+    const [quetopicformat, setquetopicformat] = useState('');
+
+    const [dateTimeStart, setDateTimeStart] = useState('');
+    const [dateTimeend, setDateTimeend] = useState('');
     const [isChecked, setIsChecked] = useState(false);
 
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
 
+    const handleChangeDateStart = (event) => { setDateTimeStart(event.target.value);};
+    const handleChangeDateend= (event) => {setDateTimeend(event.target.value); };
     const handleCheckboxChange = () => {setIsChecked(!isChecked);};
 
     const fetchDataquesheet = async () => {
@@ -32,9 +52,15 @@ function AppSetDateTimeQuesionnaire(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log("quesheet :",result)
+                        setQueSheetName(result.quesheetname)
+                        setQueSheetTopicName(result.quesheettopicname)
+                        setDetailsLineOne(result.detailslineone)
+                        setDetailsLinetwo(result.detailslinetwo)
+                        setDateTimeStart(result.datetimestart)
+                        setDateTimeend(result.datetimeend)
                     }
-                    console.log("quesheet :",result)
-                    setQueSheetName(result.quesheetname)
                    
                 }
             )
@@ -49,8 +75,15 @@ function AppSetDateTimeQuesionnaire(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log(result)
+                        setquehead1(result.quehead1)
+                        setquehead2(result.quehead2)
+                        setquehead3(result.quehead3)
+                        setquehead4(result.quehead4)
+                        setquehead5(result.quehead5)
                     }
-                    console.log(result)
+                    
                 }
             )
             fetch(variables.API_URL+"quetopicdetails/detail/"+id+"/", {
@@ -64,11 +97,13 @@ function AppSetDateTimeQuesionnaire(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log(result)
+                        setquetopicdetails(result.quetopicdetails)
+                        setquetopicformat(result.quetopicformat)
                     }
-                    console.log(result)
                 }
             )
-            
         }catch (err) {
             console.error(err)
             setStartError(1);
@@ -87,10 +122,6 @@ function AppSetDateTimeQuesionnaire(){
             }
         }, 500); 
     }, []);
-
-    const handleDateTimeChange = (event) => {
-        setDateTime(event.target.value);
-    };
 
     const handleCopyClick = () => {
         navigator.clipboard.writeText(URLOnline)
@@ -111,7 +142,107 @@ function AppSetDateTimeQuesionnaire(){
 
     async function handleSubmit(e) {
         e.preventDefault();
-        console.log("dateTime :",dateTime)
+        console.log("dateTimeStart :",dateTimeStart)
+        console.log("dateTimeend :",dateTimeend)
+        if(isChecked === true){
+            console.log("ยกเลิก")
+        }else{
+            if(dateTimeStart < dateTimeend){
+                console.log("ถูกต้อง")
+                loading()
+            }else{
+                console.log("วันที่เริ่มต้องไม่น้อยกว่าวันที่ปิด")
+            }
+        }
+        
+    }
+    async function loading(){
+        try {
+            const loadingSwal = Swal.fire({
+                title: 'กำลังประมวลผล...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: async () => { 
+                    Swal.showLoading();
+                    try {
+                        const check = await UpdateQue()
+                        console.log(check)
+                       if(check === true){
+                            Swal.close();
+                            Swal.fire({
+                                title: "",
+                                text: "ตั้งค่าการใช้งานแบบสอบถามออนไลน์เสร็จสิ้น",
+                                icon: "success",
+                                confirmButtonColor: "#341699",
+                                confirmButtonText: "ยืนยัน",  
+                            }).then((result) => {
+                                // window.location.href = '/Questionnaire/QuestionnaireNo/ShowQuestionnaire/'+id;
+                            });
+                        }else{
+                            Swal.close();
+                            Swal.fire('เกิดข้อผิดพลาด'+check);
+                        }
+                    } catch (error) {
+                        Swal.close();
+                        Swal.fire('เกิดข้อผิดพลาด'+error);
+                    }
+                }
+            });
+            await loadingSwal;
+        } catch (error) {
+            console.error(error);
+            Swal.fire('เกิดข้อผิดพลาด');
+        }
+    }
+    async function UpdateQue() {
+        const formData = new FormData();
+        const quesheet_data = {
+            userid : Cookies.get('userid'),
+            quesheetname : QueSheetName,
+            quesheettopicname : QueSheetTopicName,
+            detailslineone : DetailsLineOne,
+            detailslinetwo : DetailsLinetwo,
+            datetimestart : dateTimeStart,
+            datetimeend : dateTimeend,
+        }
+        const queheaddetails_data = {
+            quehead1 :quehead1,
+            quehead2 :quehead2,
+            quehead3 :quehead3,
+            quehead4 :quehead4,
+            quehead5 :quehead5,
+        }
+        const quetopicdetails_data = {
+            quetopicdetails : quetopicdetails,
+            quetopicformat : quetopicformat,
+        }
+        formData.append("logo", '');
+        formData.append("userid", Cookies.get('userid'));
+        formData.append("quesheet", JSON.stringify(quesheet_data))
+        formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
+        formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
+        console.log(formData)
+
+        try{
+            const quecreate = await fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+                method: "PUT",
+                body: formData,
+            });
+            const result = await quecreate.json()
+            if (result) {
+                if(result.err === undefined){
+                    return true
+                }else{
+                    return result.err
+                }
+                
+            }else{
+                return result.err
+            }
+        }
+        catch (err) {
+            return false
+        }
     }
     return(
 
@@ -141,7 +272,7 @@ function AppSetDateTimeQuesionnaire(){
                         <form>
                             <div className="">
                                 <div className="bx-input-fix flex ">
-                                    <label htmlFor="datetime" className="pdr10px">ใช้งานแบบสอบถามออนไลน์</label>
+                                    <label htmlFor="myCheckbox" className="pdr10px">ปิดแบบสอบถามออนไลน์</label>
                                     <input className=""
                                         type="checkbox"
                                         id="myCheckbox"
@@ -150,24 +281,27 @@ function AppSetDateTimeQuesionnaire(){
                                     />
                                 </div>
                                 <div className="bx-input-fix">
-                                    <label htmlFor="datetime" className="w100px">เวลาเปิด</label>
-                                    <input className="mw300px"
-                                        type="datetime-local"
-                                        id="datetime"
-                                        name="datetime"
-                                        value={dateTime}
-                                        onChange={handleDateTimeChange}
+                                    <label htmlFor="datetimeStart" className="w100px">เวลาเปิด</label>
+                                    <input
+                                    type="datetime-local"
+                                    id="datetimeStart"
+                                    name="datetimeStart"
+                                    min={minDateISO}
+                                    // min={currentDateStart} // Set minimum date to current date
+                                    value={dateTimeStart}
+                                    onChange={handleChangeDateStart}
                                     />
                                 </div>
                                 <div className="bx-input-fix">
-                                    <label htmlFor="datetime" className="w100px">เวลาเปิด</label>
-                                    <input className="mw300px"
-                                        type="datetime-local"
-                                        id="datetime"
-                                        name="datetime"
-                                        value={dateTime}
-                                        onChange={handleDateTimeChange}
-                                    />      
+                                    <label htmlFor="datetimeend" className="w100px">เวลาปิด</label>
+                                    <input
+                                    type="datetime-local"
+                                    id="datetimeend"
+                                    name="datetimeend"
+                                    min={minDateISO} // Set minimum date to current date
+                                    value={dateTimeend}
+                                    onChange={handleChangeDateend}
+                                    />
                                 </div>
                                 <div className="bx-button"><button type="reset" className="button-reset">รีเซ็ท</button>
                                 <button type="submit" className="button-submit" onClick={handleSubmit}>บันทึก</button></div>

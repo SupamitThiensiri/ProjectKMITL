@@ -130,11 +130,10 @@ function AppUpdateExam(){
                             fetchDataUpdateExam();
                         } else {
                             Swal.fire({
-                                title: "เกิดข้อผิดพลาด"+result.msg,
+                                title: "เกิดข้อผิดพลาด"+result.err,
                                 icon: "error",//error,question,warning,success
                                 confirmButtonColor: "#341699",
                             });
-                            console.error(result.msg || response.statusText);
                         }
                     } catch (err) {
                         Swal.fire({

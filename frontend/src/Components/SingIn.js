@@ -96,7 +96,9 @@ function AppSingIn(){
       Cookies.set('email', result.email, { expires: 5 / 24 });
       Cookies.set('fullname', result.fullname, { expires: 5 / 24 });
       Cookies.set('googleid', result.googleid, { expires: 5 / 24 });
-      Cookies.set('usageformat', result.usageformat, { expires: 5 / 24 });
+      const usage_list = eval(result.usageformat)
+      Cookies.set('usageformat1', usage_list[0], { expires: 5 / 24 });
+      Cookies.set('usageformat2', usage_list[1], { expires: 5 / 24 });
       Cookies.set('e_kyc', result.e_kyc, { expires: 5 / 24 });
       Cookies.set('typesid', result.typesid, { expires: 5 / 24 });
       Cookies.set('clientId', clientId, { expires: 5 / 24 });
@@ -144,7 +146,9 @@ function AppSingIn(){
         Cookies.set('email', result.email, { expires: 5 / 24 });
         Cookies.set('fullname', result.fullname, { expires: 5 / 24 });
         Cookies.set('googleid', result.googleid, { expires: 5 / 24 });
-        Cookies.set('usageformat', result.usageformat, { expires: 5 / 24 });
+        const usage_list = eval(result.usageformat)
+        Cookies.set('usageformat1', usage_list[0], { expires: 5 / 24 });
+        Cookies.set('usageformat2', usage_list[1], { expires: 5 / 24 });
         Cookies.set('e_kyc', result.e_kyc, { expires: 5 / 24 });
         Cookies.set('typesid', result.typesid, { expires: 5 / 24 });
         Cookies.set('clientId', clientId, { expires: 5 / 24 });
@@ -170,57 +174,55 @@ function AppSingIn(){
   return(
     <div>
       <AppHeaderOutSide />
-      <div>
-        <div className="box-contents-SingIn">
-            <div className={Cookies.get('email') !== undefined || Cookies.get('email') === "undefined" ? "box-contents-form wait" :"box-contents-form"}>
-              <div className="box-contents-form-view light">
-                <h3 className="center">เข้าสู่ระบบ</h3>
-                <div className='light'>
-                  <div className='center'>
-                    <GoogleLogin 
-                      clientId={clientId}
-                      buttonText="Sing in with Google"
-                      onSuccess={onSuccess}
-                      onFailure={onFailure}
-                      cookiePolicy={"single_host_origin"}
-                      isSignedIn={false}
-                    />
-                  </div> 
-                  <form onSubmit={handleSubmit}>
-                      <div className="bx-input-fix">
-                          <label htmlFor="Email">อีเมล์</label>
-                          <input
-                              type="email"
-                              id="Email"
-                              name="Email"
-                              value={Email}
-                              onChange={handleInputEmail}
-                              placeholder="example@mail.com"
-                          />
-                      </div>
-                      <div className="bx-input-fix">
-                          <label htmlFor="password">รหัสผ่าน</label>
-                          <input
-                              type="password"
-                              id="password"
-                              name="password"
-                              value={password}
-                              onChange={handleInputpassword}
-                              placeholder="กรอกรหัสผ่าน"
-                          />
-                      </div>
+      <div className="box-contents-SingIn">
+        <div className={Cookies.get('email') !== undefined || Cookies.get('email') === "undefined" ? "box-contents-form wait" :"box-contents-form"}>
+          <div className="box-contents-form-view light">
+            <h3 className="center">เข้าสู่ระบบ</h3>
+            <div className='light'>
+              <div className='center'>
+                <GoogleLogin 
+                  clientId={clientId}
+                  buttonText="Sing in with Google"
+                  onSuccess={onSuccess}
+                  onFailure={onFailure}
+                  cookiePolicy={"single_host_origin"}
+                  isSignedIn={false}
+                />
+              </div> 
+              <form onSubmit={handleSubmit}>
+                  <div className="bx-input-fix">
+                      <label htmlFor="Email">อีเมล์</label>
+                      <input
+                          type="email"
+                          id="Email"
+                          name="Email"
+                          value={Email}
+                          onChange={handleInputEmail}
+                          placeholder="example@mail.com"
+                      />
+                  </div>
+                  <div className="bx-input-fix">
+                      <label htmlFor="password">รหัสผ่าน</label>
+                      <input
+                          type="password"
+                          id="password"
+                          name="password"
+                          value={password}
+                          onChange={handleInputpassword}
+                          placeholder="กรอกรหัสผ่าน"
+                      />
+                  </div>
 
-                      <div>
-                        <div className='width100 bx-button' style={{ width: '100%' }}>
-                          {/* <button type="reset" className='button-cancel'>รีเซ็ท</button> */}
-                          <button type="submit"  className='button-submit width100'>ยืนยัน</button>
-                        </div>
-                      </div>
-                  </form>            
-                  <div className="center">สร้างบัญชีใหม่ได้ที่นี่ <Link to="/SingUp">สมัครสมาชิก</Link></div>
-                </div>
-              </div>
+                  <div>
+                    <div className='width100 bx-button' style={{ width: '100%' }}>
+                      {/* <button type="reset" className='button-cancel'>รีเซ็ท</button> */}
+                      <button type="submit"  className='button-submit width100'>ยืนยัน</button>
+                    </div>
+                  </div>
+              </form>            
+              <div className="center">สร้างบัญชีใหม่ได้ที่นี่ <Link to="/SingUp">สมัครสมาชิก</Link></div>
             </div>
+          </div>
         </div>
       </div>
     </div>

@@ -199,7 +199,7 @@ function AppExam(){
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps >= 2 && data.length === SetExam && sequencesteps <= 4? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps >= 2 && data.length === SetExam && sequencesteps <= 4 && std_csv_path !== null? "bx-show":"bx-show wait" }>
                                 <Link to={"/Subject/SubjectNo/Exam/UploadAnswerSheet/"+id}>
                                     <div className="box">
                                         <div className="box-img">
@@ -219,6 +219,7 @@ function AppExam(){
                                     <div className="box">
                                         <div className="box-img">
                                             {/* <span className="fb num-stap">5</span> */}
+                                            {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/step5.png' alt=''/>
                                             <p>ประมวลผล</p>
                                         </div>
@@ -230,6 +231,7 @@ function AppExam(){
                                     <div className="box">
                                         <div className="box-img">
                                             {/* <span className="fb num-stap">6</span> */}
+                                            {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/step6.png' alt=''/>
                                             <p>ผลลัพธ์คะแนน</p>
                                         </div>
@@ -241,6 +243,7 @@ function AppExam(){
                                     <div className="box">
                                         <div className="box-img">
                                             {/* <span className="fb num-stap">7</span> */}
+                                            {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/step7.png' alt=''/>
                                             <p>วิเคราะห์ผล</p>
                                         </div>

@@ -97,7 +97,7 @@ function AppCheckAnswerSheet(){
                     }
                     console.log("result __",result)
                     setdata(result.non_duplicate_records)
-                    setdataduplicate(result.duplicate_records)
+                    setdataduplicate(sortObjectsByProperty(result.duplicate_records,'stdid'))
                 }
             )
         }catch (err) {
@@ -295,8 +295,8 @@ function AppCheckAnswerSheet(){
         let optionsHTML = '';
         optionsHTML += `<option value="">กรุณาเลือกรหัสนักศึกษา...</option>`;
         data.forEach(entry => {
-            const isSelected = String(entry['Student ID']) === String(selectedValue) ? 'selected' : '';
-            optionsHTML += `<option value="${entry['Student ID']}" ${isSelected}>${entry['Student ID']}</option>`;
+            const isSelected = String(entry['รหัสนักศึกษา']) === String(selectedValue) ? 'selected' : '';
+            optionsHTML += `<option value="${entry['รหัสนักศึกษา']}" ${isSelected}>${entry['รหัสนักศึกษา']}</option>`;
         });
         return optionsHTML;
     }
@@ -368,7 +368,17 @@ function AppCheckAnswerSheet(){
             },
         });
     };
-
+    function sortObjectsByProperty(array, property) {
+        return array.slice().sort((a, b) => {
+          if (a[property] < b[property]) {
+            return -1;
+          }
+          if (a[property] > b[property]) {
+            return 1;
+          }
+          return 0;
+        });
+      }
     return(
 
         <div className='content'>
@@ -424,7 +434,8 @@ function AppCheckAnswerSheet(){
                                                 (item.stdid !== '' && item.stdid !== null && item.stdid !== "0" && item.stdid !== 0 ) &&
                                                 (item.subjectidstd !== '' && item.subjectidstd !== null && item.subjectidstd !== "0" && item.setexaminfo !== 0 ) && 
                                                 (item.setexaminfo !== '' && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0) && 
-                                                (item.anschoicestd !== '' && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0) 
+                                                (item.anschoicestd !== '' && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0) &&
+                                                (item.errorstype === '')
                                                 ? (
                                                 <tr key={index}>
                                                     <td className="center">{item.stdid} </td>
@@ -432,7 +443,7 @@ function AppCheckAnswerSheet(){
                                                     <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null && item.subjectidstd !== "0" && item.subjectidstd !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                     <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                     <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                    <td className="hover-trigger center green-font"><p className="hover-content">รายละเอียดถูกต้อง</p><FontAwesomeIcon icon={faCircleCheck} /></td>
+                                                    <td className="hover-trigger center green-font"><p className="hover-content">รายละเอียดถูกต้อง{item.errorstype}</p><FontAwesomeIcon icon={faCircleCheck} /></td>
                                                     <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
                                                     <td className="center mw80px"> 
                                                         <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, '3')} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
@@ -466,7 +477,8 @@ function AppCheckAnswerSheet(){
                                                         (item.stdid === '' || item.stdid === null || item.stdid === "0" || item.stdid === 0) ||
                                                         (item.subjectidstd === '' || item.subjectidstd === null || item.subjectidstd === "0" || item.subjectidstd === 0) ||
                                                         (item.setexaminfo === '' || item.setexaminfo === null || item.setexaminfo === "0" || item.setexaminfo === 0) ||
-                                                        (item.anschoicestd === '' || item.anschoicestd === null || item.anschoicestd === "0" || item.anschoicestd === 0)
+                                                        (item.anschoicestd === '' || item.anschoicestd === null || item.anschoicestd === "0" || item.anschoicestd === 0)||
+                                                        (item.errorstype !== '' )
                                                     ) {
                                                         return (
                                                             <tr key={index}>

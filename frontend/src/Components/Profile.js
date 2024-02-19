@@ -2,8 +2,9 @@ import {
     Link
 } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faCloudArrowUp,faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faCloudArrowUp,faTrashCan,faTriangleExclamation,faCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useCallback} from "react";
+
 import Cookies from 'js-cookie';
 import {variables} from "../Variables";
 import { useDropzone } from 'react-dropzone';
@@ -16,16 +17,12 @@ function AppProfile(){
     const [email, setemail] = useState('');
     const [tel, settel] = useState('');
     const [fullname,setfullname]  = useState('');
-    // const [password, setpassword] = useState('');
-    // const [Confirmpassword, setConfirmpassword] = useState('');
-    
     const [job, setjob] = useState('');
     const [Department, setDepartment] = useState('');
     const [Faculty, setFaculty] = useState('');
     const [Workplace, setWorkplace] = useState('');
 
-    const [usageformat1, setusageformat1] = useState('');
-    const [usageformat2, setusageformat2] = useState('');
+    const [datarequest,setdatarequest] = useState([]);
 
     const [checkbox1, setCheckbox1] = useState(false);
     const [checkbox2, setCheckbox2] = useState(false);
@@ -43,7 +40,7 @@ function AppProfile(){
     const handleCheckbox2 = (e) => { setCheckbox2(!checkbox2);};
     // const handleInputpassword = (e) => { setpassword(e.target.value); };
     // const handleInputConfirmpassword = (e) => {setConfirmpassword(e.target.value);};
-
+    
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
 
@@ -61,20 +58,18 @@ function AppProfile(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log("result :",result)
+                        setemail(result.email)
+                        settel(result.tel)
+                        setfullname(result.fullname)
+                        setjob(result.job)
+                        setDepartment(result.department)
+                        setFaculty(result.faculty)
+                        setWorkplace(result.workplace)
+                        setCheckbox1(parseInt(Cookies.get("usageformat1")))
+                        setCheckbox2(parseInt(Cookies.get("usageformat2")))
                     }
-                    console.log("result :",result)
-                    setemail(result.email)
-                    settel(result.tel)
-                    setfullname(result.fullname)
-                    setjob(result.job)
-                    setDepartment(result.department)
-                    setFaculty(result.faculty)
-                    setWorkplace(result.workplace)
-                    const usage_list = eval(result.usageformat)
-                    setusageformat1(usage_list[0])
-                    setusageformat2(usage_list[1])
-                    setCheckbox1(usage_list[0])
-                    setCheckbox2(usage_list[1])
                 }
             )
         }catch (err) {
@@ -84,8 +79,35 @@ function AppProfile(){
         }
     };
 
+    const fetchDataRequest = async () => {
+        try{
+            fetch(variables.API_URL+"request/detail/user/"+Cookies.get('userid')+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                        console.log("result request: ",result)
+                    }else{
+                        console.log("result request: ",result)
+                        setdatarequest(result)
+                    }
+                }
+            )
+        }catch (err) {
+            // console.error(err)
+            setStartError(1);
+           
+        }
+    };
     if(Start === 0){
         fetchDataUser();
+        fetchDataRequest();
         setStart(1);
     }
 
@@ -114,19 +136,82 @@ function AppProfile(){
         seterrortext(errorMessage);
       }, [email,tel,fullname, Department, Faculty, Workplace, job]);
       
-
-    const handleUpdateUser = (e) => {
+     
+    async function handleUpdateUser(e){
         e.preventDefault();
         console.log('email:', email);
         console.log('tel:', tel);
         console.log('email:', email);
         console.log('tel:', tel);
         console.log('errortext:', errortext);
-        // console.log('Confirmpassword:', Confirmpassword);
+        if(errortext === 'กรุณากรอก'){
+            try {
+                const response = await fetch(variables.API_URL + "user/update/"+Cookies.get("userid")+"/", {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json, text/plain',
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify({
+                        fullname: fullname,
+                        tel: tel,
+                        job: job,
+                        department: Department,
+                        faculty: Faculty,
+                        workplace: Workplace,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (result.err === undefined) {
+                    fetchDataUser();
+                    setClickUpdate(false);
+                    Swal.fire({
+                        title: "แก้ไขข้อมูลผู้ใช้เสร็จสิ้น",
+                        icon: "success",//error,question,warning,success
+                        confirmButtonColor: "#341699",
+                    });
+                } else {
+                    Swal.fire({
+                        title: "เกิดข้อผิดพลาด"+result.err,
+                        icon: "error",//error,question,warning,success
+                        confirmButtonColor: "#341699",
+                    });
+                }
+            } catch (err) {
+                Swal.fire({
+                    title: "เกิดข้อผิดพลาด"+err,
+                    icon: "error",//error,question,warning,success
+                    confirmButtonColor: "#341699",
+                });
+              
+            }
+        }else{
+            Swal.fire({
+                title: errortext,
+                icon: "warning",//error,question,warning,success
+                confirmButtonColor: "#341699",
+            });
+        }
     };
     const  handleResetUser = (e) => {
         e.preventDefault();
-        fetchDataUser();
+        Swal.fire({
+            title: "",
+            text: `คุณต้องการรีเซ็ทเป็นค่าเริ่มต้นหรือไม่`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#341699",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonColor: "#d33",
+            cancelButtonText:"ยกเลิก"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetchDataUser();
+            }
+        });
+       
         // console.log('Confirmpassword:', Confirmpassword);
     };
    
@@ -165,12 +250,12 @@ function AppProfile(){
 
     const handleFileInputChange = (e) => {
         const file = e;
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            setFile(reader.result);
-        }
-
+        // const reader = new FileReader();
+        // reader.readAsDataURL(file);
+        // reader.onloadend = () => {
+        //     setFile(reader.result);
+        // }
+        setFile(file);
         setStatusItem(true);
         setNameFileUpload(file.path);
 
@@ -186,26 +271,98 @@ function AppProfile(){
             cancelButtonColor: "#d33",
             cancelButtonText:"ยกเลิก"
         }).then((result) => {
-        if (result.isConfirmed) {
-            setNameFileUpload('');
-            setFile('');
-            setStatusItem(false);
-            console.log("File",File);
-        }
+            if (result.isConfirmed) {
+                setNameFileUpload('');
+                setFile('');
+                setStatusItem(false);
+                console.log("File",File);
+            }
         });
     }
 
-    const handSwal = (e) => {
-        Swal.fire({
-            title: "",
-            text: e,
-            icon: "error",//error,question,warning,success
-            confirmButtonColor: "#341699",
-            confirmButtonText: "ยืนยัน",
-        }).then((result) => {
-        });
+    function extractFilenameFromURL(url) {
+        const parts = url.split('/');
+        const filenameWithSpaces = parts[parts.length - 1];
+        const decodedFilename = decodeURIComponent(filenameWithSpaces);
+        return decodedFilename;
     }
+
+    async function handlesubmitRequest(e) {
+        e.preventDefault();
+        if(File !== ''){
+            Swal.fire({
+                title: "",
+                text: `คุณต้องการขอใช้งานการจัดการรายวิชาใช่หรือไม่`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#341699",
+                confirmButtonText: "ยืนยัน",
+                cancelButtonColor: "#d33",
+                cancelButtonText:"ยกเลิก"
+            }).then(async (result) => {
+                try{
+                    if (result.isConfirmed) {
+                        const formDataRequest = new FormData();
+                        formDataRequest.append("userid", Cookies.get("userid"));
+                        formDataRequest.append("file", File);
+                        formDataRequest.append("status_request", "1");
     
+                        const responseRequest = await fetch(variables.API_URL + "request/create/", {
+                            method: "POST",
+                            body: formDataRequest,
+                        });
+            
+                        const resultRequest = await responseRequest.json();
+                        if(resultRequest.err === undefined){
+                            console.log("resultRequest : ",resultRequest)
+                            fetchDataRequest();
+                            setNameFileUpload('');
+                            setFile('');
+                            setStatusItem(false);
+                            setCheckbox1(false);
+                            Swal.fire({
+                                title: "",
+                                text: "คุณร้องขอการใช้งานรายวิชาไปยังระบบ รอการตรวจสอบการใช้งานรายวิชา",
+                                icon: "success",//error,question,warning,success
+                                confirmButtonColor: "#341699",
+                                confirmButtonText: "ยืนยัน",
+                            }).then((result) => {
+                            });
+                        }else{
+                            Swal.fire({
+                                title: "",
+                                text: "เกิดข้อผิดพลาด "+resultRequest.err,
+                                icon: "error",//error,question,warning,success
+                                confirmButtonColor: "#341699",
+                                confirmButtonText: "ยืนยัน",
+                            }).then((result) => {
+                            });
+                        }
+                       
+                    }
+                } catch (err) {
+                    Swal.fire({
+                        title: "",
+                        text: "เกิดข้อผิดพลาด "+err,
+                        icon: "error",//error,question,warning,success
+                        confirmButtonColor: "#341699",
+                        confirmButtonText: "ยืนยัน",
+                    }).then((result) => {
+                    });
+                }
+                
+            });
+        }else{
+            Swal.fire({
+                title: "",
+                text: "กรุณาใส่รูปภาพเพื่อยืนยันตัวตน",
+                icon: "error",//error,question,warning,success
+                confirmButtonColor: "#341699",
+                confirmButtonText: "ยืนยัน",
+            }).then((result) => {
+            });
+        }
+    }
     return(
 
         <div className='content'>
@@ -216,12 +373,13 @@ function AppProfile(){
                         <p><Link to="/Subject">ประวัติส่วนตัว</Link></p>
                         <div className='bx-grid-topic'>
                             <div className="flex">
-                                <h2>ประวัติส่วนตัว</h2><div className="hfc pdl10px"> <p className='button-update cursor-p' onClick={handClickUpdate}>แก้ไข</p></div>
+                                <h2>ประวัติส่วนตัว</h2>
+                                {(Cookies.get("typesid") === '1' || Cookies.get("typesid") === 1)? 
+                                    null
+                                :
+                                    <div className="hfc pdl10px"> <p className='button-update cursor-p' onClick={handClickUpdate}>แก้ไข</p></div>
+                                }
                             </div>
-                            {/* <div className='flex-end'  onClick={handClickUpdate}>
-                                <p className='button-update'>แก้ไข</p>
-                            </div> */}
-                            
                         </div> 
                     </div>
                     <div className='bx-details light'>
@@ -252,7 +410,6 @@ function AppProfile(){
                                         placeholder="ชื่อ"
                                         disabled={ClickUpdate ? '':"disabled"}
                                     />
-                                        {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
                                 </div>
                                 <div className="bx-input inline-grid">
                                     <label htmlFor="tel">เบอร์โทร</label>
@@ -263,133 +420,176 @@ function AppProfile(){
                                         value={tel}
                                         onChange={handleInputtel}
                                         placeholder="เบอร์โทร"
+                                        maxLength="10"
                                         disabled={ClickUpdate ? '':"disabled"}
                                     />
                                 </div>
-                                {/* <div className="bx-input inline-grid">
-                                    <label htmlFor="password">รหัสผ่าน</label>
-                                    <input
-                                        type="password"
-                                        id="password"
-                                        name="password"
-                                        value={password}
-                                        onChange={handleInputpassword}
-                                        placeholder="รหัสผ่าน"
-                                       
-                                    />
-                                    {ClickUpdate ? <FontAwesomeIcon icon={faEyeSlash} />:''}
-                                </div>
-                                <div className="bx-input inline-grid">
-                                    <label htmlFor="Confirmpassword">ยืนยันรหัสผ่าน</label>
-                                    <input
-                                        type="password"
-                                        id="Confirmpassword"
-                                        name="Confirmpassword"
-                                        value={Confirmpassword}
-                                        onChange={handleInputConfirmpassword}
-                                        placeholder="ยืนยันรหัสผ่าน"
-                                        disabled={ClickUpdate ? '':"disabled"}
-                                    />
-                                </div> */}
                                 <div className='space10'></div>
-                                <h3>ข้อมูลอาชีพ</h3>
-                                <div className="bx-input inline-grid">
-                                    <label htmlFor="job">อาชีพ</label>
-                                    <input
-                                        type="text"
-                                        id="job"
-                                        name="job"
-                                        value={job}
-                                        onChange={handleInputjob}
-                                        placeholder="อาชีพ"
-                                        disabled={ClickUpdate ? '':"disabled"}
-                                    />
-                                    {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
-                                </div>
-                                
-                                <div className="bx-input inline-grid">
-                                    <label htmlFor="Faculty">สังกัด/คณะ</label>
-                                    <input
-                                        type="text"
-                                        id="Faculty"
-                                        name="Faculty"
-                                        value={Faculty}
-                                        onChange={handleInputFaculty}
-                                        placeholder="สังกัด/คณะ"
-                                        disabled={ClickUpdate ? '':"disabled"}
-                                    />
-                                    {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
-                                </div>
-                                <div className="bx-input inline-grid">
-                                    <label htmlFor="Department">ภาค/สาขา/สาย</label>
-                                    <input
-                                        type="text"
-                                        id="Department"
-                                        name="Department"
-                                        value={Department}
-                                        onChange={handleInputDepartment}
-                                        placeholder="ภาค/สาขา"
-                                        disabled={ClickUpdate ? '':"disabled"}
-                                    />
-                                    {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
-                                </div>
-                                <div className="bx-input inline-grid">
-                                    <label htmlFor="Workplace">องค์กรการศึกษา/สถานที่ทำงาน</label>
-                                    <input
-                                        type="text"
-                                        id="Workplace"
-                                        name="Workplace"
-                                        value={Workplace}
-                                        onChange={handleInputWorkplace}
-                                        placeholder="สถานที่ทำงาน"
-                                        disabled={ClickUpdate ? '':"disabled"}
-                                    />
-                                    {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
-                                </div>
-                                
+                                {(Cookies.get("typesid") === '1' || Cookies.get("typesid") === 1)? 
+                                    null
+                                :
+                                    <div>
+                                        <h3>ข้อมูลอาชีพ</h3>
+                                        <div className="bx-input inline-grid">
+                                            <label htmlFor="job">อาชีพ</label>
+                                            <input
+                                                type="text"
+                                                id="job"
+                                                name="job"
+                                                value={job}
+                                                onChange={handleInputjob}
+                                                placeholder="อาชีพ"
+                                                disabled={ClickUpdate ? '':"disabled"}
+                                            />
+                                            {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
+                                        </div>
+                                        
+                                        <div className="bx-input inline-grid">
+                                            <label htmlFor="Faculty">สังกัด/คณะ</label>
+                                            <input
+                                                type="text"
+                                                id="Faculty"
+                                                name="Faculty"
+                                                value={Faculty}
+                                                onChange={handleInputFaculty}
+                                                placeholder="สังกัด/คณะ"
+                                                disabled={ClickUpdate ? '':"disabled"}
+                                            />
+                                            {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
+                                        </div>
+                                        <div className="bx-input inline-grid">
+                                            <label htmlFor="Department">ภาค/สาขา/สาย</label>
+                                            <input
+                                                type="text"
+                                                id="Department"
+                                                name="Department"
+                                                value={Department}
+                                                onChange={handleInputDepartment}
+                                                placeholder="ภาค/สาขา"
+                                                disabled={ClickUpdate ? '':"disabled"}
+                                            />
+                                            {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
+                                        </div>
+                                        <div className="bx-input inline-grid">
+                                            <label htmlFor="Workplace">องค์กรการศึกษา/สถานที่ทำงาน</label>
+                                            <input
+                                                type="text"
+                                                id="Workplace"
+                                                name="Workplace"
+                                                value={Workplace}
+                                                onChange={handleInputWorkplace}
+                                                placeholder="สถานที่ทำงาน"
+                                                disabled={ClickUpdate ? '':"disabled"}
+                                            />
+                                            {/* {ClickUpdate ? <FontAwesomeIcon icon={faPenToSquare} />:''} */}
+                                        </div>
+                                    </div>
+                                }
                                 {ClickUpdate ?  
                                     <div className={ClickUpdate ? 'bx-button':'none bx-button'}>
                                         <div onClick={handleResetUser} className='button-reset'>รีเซ็ท</div>
                                         <div onClick={handleUpdateUser} className='button-submit'>บันทึก</div>
                                     </div>
                                 :
-                                     <div className='space10'></div>  
+                                   Cookies.get("typesid") === '1' || Cookies.get("typesid") === 1? 
+                                        null
+                                    :
+                                        <div className='space10'></div>  
                                 }
                             </div>
                         </form>
-                        
-                        <hr></hr>
-                        <div className='space10'></div>
-                        เลือกประเภทสิทธิ์การใช้งานที่ต้องการในระบบ (กรณีเลือกจัดการรายวิชา ต้องทำการยืนยันตัวตน ไม่สามารถเลือกดูคะแนนได้)
-                        <div className="bx-input-fix">
-                            <span className="flex"><input className="mgR10" value = "0" type = "checkbox" checked={checkbox1} onChange={handleCheckbox1} />จัดการรายวิชา </span>
-                        </div>
-                        {checkbox1 && (usageformat1 === 0 || usageformat1 === '0') ? 
-                            <div className="mw300px">
-                                <div className="dropzone">
-                                    <div className="dz-box"{...getRootProps()}>
-                                        <input className="test" {...getInputProps()} />
-                                        <div className="dz-icon blue-font"><FontAwesomeIcon icon={faCloudArrowUp} /></div>
-                                        { isDragActive ?
-                                                <div>วางไฟล์ที่นี่ ...</div>:
-                                                <div>ลากไฟล์มาที่นี่หรืออัปโหลด<p className="">รองรับ .PNG .JPG และ JPEG</p></div>  
-                                        }
-                                    </div>
-                                </div>
-                                {
-                                    statusitem?
-                                    <div className="box-item-name-trash space-between">
-                                        <div>{namefileupload}</div>
-                                        <div onClick={handleDelFileUpload} className="icon-Trash danger-font"><FontAwesomeIcon icon={faTrashCan} /></div>
-                                    </div>
+                        {(Cookies.get("typesid") === '1' || Cookies.get("typesid") === 1)? 
+                                null
+                        :
+                            <>
+                                <hr></hr>
+                                <div className='space10'></div>
+                                {(Cookies.get("usageformat1") === '1' )? 
+                                        null
                                     :
-                                    ''
+                                        "เลือกประเภทสิทธิ์การใช้งานที่ต้องการในระบบ (กรณีเลือกจัดการรายวิชา ต้องทำการยืนยันตัวตน ไม่สามารถเลือกดูคะแนนได้)"
                                 }
+                                <div className="bx-input-fix">
+                                    <span className="flex"><input className="mgR10 wait" value = "1" type = "checkbox" checked={checkbox2} onChange={handleCheckbox2} />จัดการแบบสอบถาม </span>
+                                </div>
+                                {(Cookies.get("usageformat1") === '1' )?
+                                    <div className="bx-input-fix">
+                                        <span className="flex"><input className="mgR10 wait" value = "0" type = "checkbox" checked={checkbox1} onChange={handleCheckbox1}/>จัดการรายวิชา </span>
+                                    </div>
+                                :
+                                    <div className="bx-input-fix">
+                                        <span className="flex"><input className={(Cookies.get("usageformat1") === '0' && datarequest.length !== 0 && datarequest.some(item => item.status_request === "1") === true) ? "mgR10 wait" :"mgR10"} value = "0" type = "checkbox" checked={checkbox1} onChange={handleCheckbox1}/>จัดการรายวิชา </span>
+                                    </div>
+                                }
+                            
+                                {checkbox1 && (Cookies.get("usageformat1") === 0 || Cookies.get("usageformat1") === '0') ? 
+                                    <div className="mw300px">
+                                        <div className="dropzone">
+                                            <div className="dz-box"{...getRootProps()}>
+                                                <input className="test" {...getInputProps()} />
+                                                <div className="dz-icon blue-font"><FontAwesomeIcon icon={faCloudArrowUp} /></div>
+                                                { isDragActive ?
+                                                        <div>วางไฟล์ที่นี่ ...</div>:
+                                                        <div>ลากไฟล์มาที่นี่หรืออัปโหลด<p className="">รองรับ .PNG .JPG และ JPEG</p></div>  
+                                                }
+                                            </div>
+                                        </div>
+                                        {
+                                            statusitem?
+                                            <div className="box-item-name-trash space-between">
+                                                <div>{namefileupload}</div>
+                                                <div onClick={handleDelFileUpload} className="icon-Trash danger-font"><FontAwesomeIcon icon={faTrashCan} /></div>
+                                            </div>
+                                            :
+                                            ''
+                                        }
+                                        <div className='bx-button width100 flex-end'>
+                                            <div className='button-submit' onClick={handlesubmitRequest}>บันทึก</div>
+                                        </div>
+                                    </div>
+                                
+                                :""}
+                            </>
+                        }
+                        {(Cookies.get("usageformat1") === '1' )? 
+                            null:
+                            <div>
+                                <div className="fb">ตารางแสดงสถานะการขอใช้งานการจัดการรายวิชา</div>
+                                <div className="tableSub">
+                                    <table className="width100">
+                                        <thead>
+                                            <tr>
+                                                <th>ลำดับ</th>
+                                                <th>รูปที่แนบ</th>
+                                                <th>สถานะ</th>
+                                                <th>หมายเหตุ</th>
+                                                {/* <th>การจัดการ</th> */}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {datarequest.map((item, index) => (
+                                                item.status_request === "1" || item.status_request === 1 ?
+                                                    <tr key={index}>
+                                                        <td className="center">{index+1} </td>
+                                                        <td className="center">{extractFilenameFromURL(item.imgrequest_path)} </td>
+                                                        <td className="center">{item.status_request === "1" ? <p><FontAwesomeIcon icon={faTriangleExclamation} className="warning-font"/> อยู่ระหว่างรอดำเนินการให้แอดมินตรวจสอบยืนยันการใช้งานการจัดการรายวิชา</p>:""} </td>
+                                                        <td className="center">{item.notes === null || item.notes === ''? "-" : item.notes}</td>
+                                                    </tr>
+                                                :
+                                                item.status_request === "2" ?
+                                                    <tr key={index}>
+                                                        <td className="center">{index+1} </td>
+                                                        <td className="center">{extractFilenameFromURL(item.imgrequest_path)} </td>
+                                                        <td className="center">{item.status_request === "2" ? <p><FontAwesomeIcon  className="danger-font" icon={faCircleXmark} /> ไม่ผ่านการตรวจสอบ</p>:""} </td>
+                                                        <td className="center">{item.notes === null || item.notes === ''? "-" : item.notes}</td>
+                                                    </tr>
+                                                : null
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        :""}
-                        <div className="bx-input-fix">
-                            <span className="flex"><input className="mgR10 wait" value = "1" type = "checkbox" checked={checkbox2} onChange={handleCheckbox2} />จัดการแบบสอบถาม </span>
-                        </div>
+                        }
                     </div>
                 </div>
             </div>

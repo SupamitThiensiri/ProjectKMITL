@@ -198,6 +198,17 @@ function AppUploadAnswerSheet(){
                 return true; // รีเทิร์นค่า true เพื่อสื่อว่าการส่งข้อมูลเสร็จสิ้น
             })
             .catch(error => {
+                fetch(variables.API_URL + "exam/update/"+id+"/", {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json, text/plain',
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify({
+                        sequencesteps:"2",
+                        userid : Cookies.get('userid')
+                    }),
+                });
                 return error; // รีเทิร์น error เพื่อจัดการกับข้อผิดพลาดในการส่งข้อมูล
             });
     

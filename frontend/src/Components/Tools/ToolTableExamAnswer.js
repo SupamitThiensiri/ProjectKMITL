@@ -42,7 +42,7 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                 .then(response => response.json())
                 .then(result => {
  
-
+                    console.log(result)
                     const output2Map = result.reduce((map, item) => {
                         map[item.examnoanswers] = item;
                         return map;
@@ -179,7 +179,59 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
         fetchDataExamAnswer();
         setStart(1);
     }
+    
 
+    const showcountOccurrences= (data) => {
+
+        Swal.fire({
+            title: 'ข้อมูลเฉลยคำตอบ',
+            html: `
+              <div>
+                <div > คะแนนรวม <span style='color:red'>${sumAns(data)}</span> คะแนน</div><br>
+                ${countOccurrences(data)}
+              </div>
+            `,
+        
+            showCancelButton: false,
+            confirmButtonColor: "#341699",
+            confirmButtonText: 'ตกลง',
+            cancelButtonText: 'ยกเลิก',
+            customClass: {
+                popup: 'custom-alert-popup-small',
+            },
+            preCironfm: () => {
+            }
+        })
+    }
+    const sumAns = (inputString) => {
+        // [1,2,3,4,5,6,7,1,1,2,2,3,4,5]
+        const resultArray = inputString.split(",");
+        console.log("resultArray :",resultArray)
+        let sum = 0;
+        for (let i = 0; i < resultArray.length; i++) {
+            const resultArrayRemove =  resultArray[i].split(":");
+            console.log("thirdCharacter :",resultArrayRemove)
+            const thirdCharacter = parseInt(resultArrayRemove[2]); // Parse the third character as an integer
+            console.log("thirdCharacter :",thirdCharacter)
+            sum += thirdCharacter; // Add the parsed value to the sum
+        }
+        console.log("sum :",sum)
+        return sum;
+    };
+    function countOccurrences(array) {
+        const counts = {};
+        const arrayelement = [];
+        const resultArray = array.split(",");
+        for (let i = 0; i < resultArray.length; i++) {
+            const resultArrayRemove =  resultArray[i].split(":");
+            arrayelement.push(parseInt(resultArrayRemove[2]))
+        }
+        arrayelement.forEach(element => {
+            counts[element] = (counts[element] || 0) + 1;
+        });
+        return Object.entries(counts).map(([element, count]) => `คำตอบ ${element} คะแนน = ${count} ข้อ`).join('<br>');
+    }
+      
     return (
         <div>
             <div className='InputSize space-between'>
@@ -219,6 +271,7 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                                     </th>
                                 ) : null
                             ))}
+                            <th>จำนวนคะแนนเต็ม</th>
                             <th>สถานะ</th>
                             <th>การจัดการ</th>
                         </tr>
@@ -236,8 +289,9 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                             return (
                                 row.values.examanswersid !== null ?
                                     <tr {...row.getRowProps()} key={row.id} className='LCshow'>
-                                        <td className='center'><Link to={"" + row.values.examanswersid}>{Number(row.id) + 1}</Link></td>
-                                        <td><Link to={"" + row.values.examanswersid}>{row.values.examnoanswers}</Link></td>
+                                        <td className='center'><Link to={""}>{Number(row.id) + 1}</Link></td>
+                                        <td><Link to={""}>{row.values.examnoanswers}</Link></td>
+                                        <td onClick={() =>showcountOccurrences(row.values.scoringcriteria)}><Link to={""} ><p>{sumAns(row.values.scoringcriteria) } คะแนน</p></Link></td>
                                         <td className='statustable'><Link to={""}><p className='succeed'><FontAwesomeIcon icon={faCircleCheck} />{"สร้างเฉลยเสร็จสิ้น"}</p></Link></td>
                                         <td className='center mw80px '>
                                             <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/UpdateExamAnswer/" + row.values.examanswersid +"/"+ id +"/"+ row.values.examnoanswers} className='' style={{ display: 'contents' }}>
@@ -250,8 +304,9 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                                     </tr>  
                                     :
                                     <tr {...row.getRowProps()} key={row.id} className='LCnotshow' onClick={() => showAlertCreate(id,Number(row.id) + 1)}>
-                                        <td className='center'><Link to={"" + row.values.examanswersid}>{Number(row.id) + 1}</Link></td>
-                                        <td><Link to={"" + row.values.examanswersid}>{row.values.examnoanswers}</Link></td>
+                                        <td className='center'><Link to={""}>{Number(row.id) + 1}</Link></td>
+                                        <td><Link to={""}>{row.values.examnoanswers}</Link></td>
+                                        <td><Link to={""}>-</Link></td>
                                         <td className='statustable'><Link to={""}><p className='warning'><FontAwesomeIcon icon={faTriangleExclamation} />{"รอดำเนินการสร้าง"}</p></Link></td>
                                         <td className='center mw80px'>
                                             <span className='primary-blue light-font' >

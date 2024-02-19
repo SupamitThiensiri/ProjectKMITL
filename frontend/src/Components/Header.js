@@ -31,7 +31,8 @@ function AppHeader(){
         Cookies.remove('email');
         Cookies.remove('fullname');
         Cookies.remove('googleid');
-        Cookies.remove('usageformat');
+        Cookies.remove('usageformat1');
+        Cookies.remove('usageformat2');
         Cookies.remove('e_kyc');
         Cookies.remove('typesid');
         Cookies.remove('clientId');
@@ -80,6 +81,7 @@ function AppHeader(){
                 {/* <input type="checkbox" id="theme-toggle" hidden/>
                 <label htmlFor="theme-toggle" className="theme-toggle"></label> */}
                 {/* <Link to="#" className="notif"><div className='bx bx-bell'><FontAwesomeIcon icon={faCircleUser} /></div><span className="count">1   </span></Link> */}
+                <p style={{ textAlign: 'end' }}>{Cookies.get("fullname")}</p>
                 <Link to="Profile" className="profile"><div className='profile-icon'><FontAwesomeIcon icon={faCircleUser} /></div></Link>
             </nav>
         </div>

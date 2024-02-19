@@ -115,6 +115,9 @@
 .h35px{
     height: 35px;
 }
+.wfc{
+    width: fit-content;
+}
 .hfc{
     display: flex;
     height: fit-content;
@@ -148,6 +151,9 @@
 }
 .fs16{
     font-size: 16px;
+}
+.fs24{
+    font-size: 24px;
 }
 .fb{
     font-weight: bold;

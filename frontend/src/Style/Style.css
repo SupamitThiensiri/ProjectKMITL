@@ -135,6 +135,9 @@ body{
 .right{
     text-align: right;
 }
+.left{
+    text-align: left;
+}
 .content main{
     width: 100%;
     padding: 55px 0px 0px 0px;
@@ -212,8 +215,8 @@ input[type="checkbox"]:checked {
     background-color: red;
 }
 input[type=radio]{
-    width: 25px;
-    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
 }
 .bx-input-fix select{
     font-size: 16px;
@@ -528,7 +531,7 @@ input[type=radio]{
         justify-content: center;
         display: flex;
         width: 100%;
-        min-height: 100vh;
+        min-height: 90.8vh;
 
         & .box-contents-form-view{
             width: 340px;
@@ -987,6 +990,10 @@ input[type=radio]{
     width: 1100px; /* Set the desired width */
     max-width: 100%; /* Ensure it doesn't exceed the screen width */
   }
+.custom-alert-popup-small {
+    width: 500px; /* Set the desired width */
+    max-width: 100%; /* Ensure it doesn't exceed the screen width */
+}
 /* CreateAnswerSheet */
 
 /* UpdateExamAnswer */
@@ -1159,7 +1166,7 @@ input[type=radio]{
     padding: 20px;
     z-index: 1;
     border-radius: 10px;
-    left: 50%;
+    left: auto;
   }
   
   .hover-trigger:hover .hover-content {

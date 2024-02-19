@@ -1,4 +1,4 @@
-.bx-img-banner img{
+/* .bx-img-banner img{
     width: 100%;
 }
 .bx-content-home{
@@ -49,5 +49,40 @@
         background-color: var(--primary-blue);
         color: var(--light);
         padding: 10px;
+    }
+} */
+
+.bx-home-g2 {
+    display: grid;
+    grid-template-columns: 50% auto;
+    grid-gap: 10px;
+    padding: 5px 0;
+    & .div1{
+        display: grid;
+        align-content: center;
+    }
+    & .div2{
+        
+        & img{
+            max-width: 400px;
+            min-width: 250px;
+            width: 100%;
+
+            @media (max-width: 780px){
+                min-width: 200px;
+            }
+        }
+    }
+    & .div1box{
+        border-radius: 10px;
+        border:1px solid var(--light-grey);
+        padding: 10px;
+
+        & a{
+            color: var(--dark);
+        }
+    }
+    @media (max-width: 780px){
+        grid-template-columns: auto;
     }
 }

@@ -81,7 +81,12 @@ function AppCreateExam(){
             });
         }
     }
-
+    const handleReset = (e) => {
+        setNameExam('');
+        setExamNo(1);
+        setNumExam(40)
+        setSetExam(1);
+    }
     return(
         <div className='content'>
             <main>
@@ -145,8 +150,8 @@ function AppCreateExam(){
                                 </div>
 
                                 <div className='bx-button'>
-                                    <button type="reset" className='button-reset'>รีเซ็ท</button>
-                                    <button type="submit"  className='button-submit'>บันทึก</button>
+                                    <div onClick={handleReset} className='button-reset'>รีเซ็ท</div>
+                                    <button type="submit" className='button-submit'>บันทึก</button>
                                 </div>
                             </form>
                         </div>

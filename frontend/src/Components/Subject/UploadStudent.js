@@ -82,14 +82,12 @@ function AppUploadStudent(){
             setStartError(1);
         }
     };
-    const setStartError2 = (e) => {
-        setStartError(2);
-    }
+
     if(Start === 0){
         fetchDataStart();
         setStart(1);
         setTimeout(function() {
-            setStartError2()
+            setStartError(2)
         }, 800);
     }
 
@@ -308,7 +306,6 @@ function AppUploadStudent(){
                                 <table>
                                     <thead>
                                         <tr >
-                                            {/* Render table header based on the first row of CSV data */}
                                             {csvData.length > 0 && Object.keys(csvData[0]).map((key, index) => (
                                                 <th key={index}>{key}</th>
                                             ))}

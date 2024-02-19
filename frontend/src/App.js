@@ -2,6 +2,7 @@ import './App.css';
 import './Style/StyleProperty.css'
 import './Style/Style.css'
 import './Style/Loading.css';
+import './Style/Home.css'
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -59,7 +60,7 @@ function App() {
         <Route path='/verify/:id' element={<Appverify />}></Route>
         <Route path='/SingIn' element={<AppSingIn />}></Route>
         <Route path='/SingUp' element={<AppSingUp />}></Route>
-        <Route path='/OnlineQuestionnaire' element={<AppOnlineQuestionnaire />}></Route>
+        <Route path='/OnlineQuestionnaire/:id' element={<AppOnlineQuestionnaire />}></Route>
         <Route path='*' element={<AppHeader />}></Route>
       </Routes>
       <Routes>

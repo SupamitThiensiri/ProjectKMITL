@@ -247,9 +247,20 @@ function AppSingUp(){
             if (response.ok) {
                 console.log(result)
                 if(checkbox1 === true && (File !== '' || File != null)){
-                    console.log("Email : ",Email)
-                    console.log("getekyc :", getekyc)
-                    console.log("userid :",result.userid)
+                    console.log("file : ",File)
+                    console.log("userid : ",result.userid)
+                    const formDataRequest = new FormData();
+                    formDataRequest.append("userid", result.userid);
+                    formDataRequest.append("file", File);
+                    formDataRequest.append("status_request", "1");
+                    
+                    const responseRequest = await fetch(variables.API_URL + "request/create/", {
+                        method: "POST",
+                        body: formDataRequest,
+                    });
+        
+                    const resultRequest = await responseRequest.json();
+                    console.log("resultRequest : ",resultRequest)
                     return true
                 }
                 return true
@@ -344,12 +355,12 @@ function AppSingUp(){
 
     const handleFileInputChange = (e) => {
         const file = e;
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            setFile(reader.result);
-        }
-
+        // const reader = new FileReader();
+        // reader.readAsDataURL(file);
+        // reader.onloadend = () => {
+        //     setFile(reader.result);
+        // }
+        setFile(file)
         setStatusItem(true);
         setNameFileUpload(file.path);
 
@@ -365,12 +376,11 @@ function AppSingUp(){
             cancelButtonColor: "#d33",
             cancelButtonText:"ยกเลิก"
         }).then((result) => {
-        if (result.isConfirmed) {
-            setNameFileUpload('');
-            setFile('');
-            setStatusItem(false);
-            console.log("File",File);
-        }
+            if (result.isConfirmed) {
+                setNameFileUpload('');
+                setFile('');
+                setStatusItem(false);
+            }
         });
     }
 
@@ -546,6 +556,9 @@ function AppSingUp(){
                                             </div>
                                         )}
                                     </div>
+                                    <div className="bx-input-fix">
+                                        <span className="flex"><input className="mgR10 wait" value = "1" type = "checkbox" checked={checkbox2} onChange={handleCheckbox2} />จัดการแบบสอบถาม </span>
+                                    </div>
                                     {selectedRole === 'นักเรียน' ? '':
                                         <div className="bx-input-fix">
                                             <span className="flex"><input className="mgR10" value = "0" type = "checkbox" checked={checkbox1} onChange={handleCheckbox1} />จัดการรายวิชา </span>
@@ -575,9 +588,7 @@ function AppSingUp(){
                                     </div>
                                     :""}
                                     
-                                    <div className="bx-input-fix">
-                                        <span className="flex"><input className="mgR10 wait" value = "1" type = "checkbox" checked={checkbox2} onChange={handleCheckbox2} />จัดการแบบสอบถาม </span>
-                                    </div>
+                                  
                                     <div className="bx-input-fix">
                                         <label htmlFor="Faculty">สังกัด/คณะ <span className="danger-font">*</span></label>
                                         <input

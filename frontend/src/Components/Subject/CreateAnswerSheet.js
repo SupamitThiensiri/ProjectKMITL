@@ -399,7 +399,7 @@ function AppCreateAnswerSheet(){
                                             </div>
                                         </div>
                                         <div className="bx-input-fix">
-                                            <span className="flex"><input className={isoriginal ? "mgR10 wait":"mgR10"} value = "Tree" type = "checkbox" checked={isChecked} onChange = {handleCheckboxChange} /> เพิ่มรูปโลโก้ <p className="fs10 flexJACenter">&nbsp;(ขนาดรูปภาพที่แนะนำ 480 x 280 Pixels)</p> </span>
+                                            <span className="flex"><input className={isoriginal ? "mgR10 wait":"mgR10"} value = "Tree" type = "checkbox" checked={isChecked} onChange = {handleCheckboxChange} /> เพิ่มรูปโลโก้ <p className="fs10 flexJACenter">&nbsp;(ขนาดรูปภาพที่แนะนำ 300 x 300 Pixels)</p> </span>
                                         </div>
                                         <div className={isChecked ? "dropzone":"dropzone wait"}>
                                             <div className="dz-box"{...getRootProps()}>
