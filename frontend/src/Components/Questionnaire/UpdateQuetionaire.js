@@ -27,7 +27,20 @@ function AppUpdateQuetionaire(){
     const [DetailsLineOne, setDetailsLineOne] = useState('');
     const [DetailsLinetwo, setDetailsLinetwo] = useState('');
     // const [Symbolposition, setSymbolposition] = useState('');
+    const [checknonelogo, setchecknonelogo] = useState(false);
 
+    const handlenonelogo = (e) => {
+        if(e.target.checked === true){
+            setNameFileUpload('');
+            setFile('');
+            setStatusItem(false);
+            setFileShow('')
+        }else{
+
+        }
+        setchecknonelogo(e.target.checked);
+    
+    };
     const handleInputQueSheetName = (e) => { setQueSheetName(e.target.value); };
     const handleInputQueSheetTopicName = (e) => {setQueSheetTopicName(e.target.value);};
     const handleInputDetailsLineOne = (e) => { setDetailsLineOne(e.target.value); };
@@ -287,13 +300,6 @@ function AppUpdateQuetionaire(){
             return false; 
         }
     }
-    function checkPath2(array){
-        if(array[0] === '' || array[1] === ''){
-            return true; 
-        }else{
-            return false; 
-        }
-    }
     function checkConsecutiveTrue(array) {
         for (let i = 0; i < array.length - 1; i++) {
           if (array[i] && array[i + 1]) {
@@ -331,44 +337,34 @@ function AppUpdateQuetionaire(){
         console.log('inputValues:', inputValues.join(','))
         console.log('checkboxValues:', checkboxValues.join(','))
         if(checkPath1(QH1) === false){
-            if(checkPath2(inputValues) === false){
-                if(
-                    checkConsecutiveStrings(QH1) === false &&
-                    checkConsecutiveStrings(QH2) === false &&
-                    checkConsecutiveStrings(QH3) === false &&
-                    checkConsecutiveStrings(QH4) === false &&
-                    checkConsecutiveStrings(QH5) === false){
-                    if(checkConsecutiveTrue(checkboxValues) === false){
-                        loading()
-                    }else{
-                        Swal.fire({
-                            title: "",
-                            text: "ส่วนที่ 2 ไม่สามารถกำหนดหัวข้อใหญ่ติดกันได้",
-                            icon: "error",
-                            confirmButtonColor: "#341699",
-                            confirmButtonText: "ยืนยัน",  
-                        })
-                    }
-
+           
+            if(
+                checkConsecutiveStrings(QH1) === false &&
+                checkConsecutiveStrings(QH2) === false &&
+                checkConsecutiveStrings(QH3) === false &&
+                checkConsecutiveStrings(QH4) === false &&
+                checkConsecutiveStrings(QH5) === false){
+                if(checkConsecutiveTrue(checkboxValues) === false){
+                    loading()
                 }else{
                     Swal.fire({
                         title: "",
-                        text: "ส่วนที่ 1 ในแต่ละหัวข้อสามารถมี อื่นๆ ได้เพียงแค่อันเดียว",
+                        text: "ส่วนที่ 2 ไม่สามารถกำหนดหัวข้อใหญ่ติดกันได้",
                         icon: "error",
                         confirmButtonColor: "#341699",
                         confirmButtonText: "ยืนยัน",  
                     })
                 }
+
             }else{
                 Swal.fire({
                     title: "",
-                    text: "ส่วนที่ 2 ต้องมีหัวข้อใหญ่อย่างน้อย 1 หัวข้อและหัวข้อย่อยอย่างน้อย 1 หัวข้อ โดยเริ่มจากบนลงล่าง",
+                    text: "ส่วนที่ 1 ในแต่ละหัวข้อสามารถมี อื่นๆ ได้เพียงแค่อันเดียว",
                     icon: "error",
                     confirmButtonColor: "#341699",
                     confirmButtonText: "ยืนยัน",  
                 })
             }
-
         }else{
             Swal.fire({
                 title: "",
@@ -440,11 +436,15 @@ function AppUpdateQuetionaire(){
             quetopicdetails : inputValues.join(','),
             quetopicformat : checkboxValues.map(value => value ? 1 : 0).join(','),
         }
+        const nonelogo = {
+            nonelogo : checknonelogo,
+        }
         formData.append("logo", File);
         formData.append("userid", Cookies.get('userid'));
         formData.append("quesheet", JSON.stringify(quesheet_data))
         formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
         formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
+        formData.append("nonelogo", JSON.stringify(nonelogo))
         console.log(formData)
 
         try{
@@ -617,8 +617,19 @@ function AppUpdateQuetionaire(){
                                             />
                                         </div>
                                         <div className="space5"></div>
+                                        <div className="bx-input-fix">
+                                            <span className="flex">
+                                                <input className="mgR10"
+                                                    type="checkbox"
+                                                    id="myCheckbox"
+                                                    checked={checknonelogo}
+                                                    onChange={handlenonelogo}
+                                                />
+                                                <label htmlFor="myCheckbox">เอาตราสัญลักษณ์ออก</label>
+                                            </span>
+                                        </div>
                                         <div className="fb">ปรับแต่งตราสัญลักษณ์ (ขนาดรูปภาพที่แนะนำ 300 x 135 Pixels)</div>
-                                        <div className="mw300px">
+                                        <div className={checknonelogo === true ?"mw300px wait":"mw300px"}>
                                             <div className="dropzone">
                                                 <div className="dz-box"{...getRootProps()}>
                                                     <input className="test" {...getInputProps()} />
@@ -760,7 +771,6 @@ function AppUpdateQuetionaire(){
                                                                         type="checkbox"
                                                                         checked={checkboxValues[index]}
                                                                         onChange={() => handleCheckboxChange(index)}
-                                                                        disabled={index===0?true:false}
                                                                         />
                                                                     </div>
                                                                 </td>

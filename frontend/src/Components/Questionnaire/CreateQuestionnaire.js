@@ -184,13 +184,6 @@ function AppCreateQuestionnaire(){
             return false; 
         }
     }
-    function checkPath2(array){
-        if(array[0] === '' || array[1] === ''){
-            return true; 
-        }else{
-            return false; 
-        }
-    }
     // FORM Submit
     async function handleSubmit(e) {
         e.preventDefault();
@@ -212,38 +205,29 @@ function AppCreateQuestionnaire(){
         // console.log('checkboxValues:', checkboxValues.join(','))
         // console.log('checkboxValues:', checkConsecutiveTrue(checkboxValues))
         if(checkPath1(QH1) === false){
-            if(checkPath2(inputValues) === false){
-                if(
-                    checkConsecutiveStrings(QH1) === false &&
-                    checkConsecutiveStrings(QH2) === false &&
-                    checkConsecutiveStrings(QH3) === false &&
-                    checkConsecutiveStrings(QH4) === false &&
-                    checkConsecutiveStrings(QH5) === false){
-                    if(checkConsecutiveTrue(checkboxValues) === false){
-                        loading()
-                    }else{
-                        Swal.fire({
-                            title: "",
-                            text: "ส่วนที่ 2 ไม่สามารถกำหนดหัวข้อใหญ่ติดกันได้",
-                            icon: "error",
-                            confirmButtonColor: "#341699",
-                            confirmButtonText: "ยืนยัน",  
-                        })
-                    }
-
+           
+            if(
+                checkConsecutiveStrings(QH1) === false &&
+                checkConsecutiveStrings(QH2) === false &&
+                checkConsecutiveStrings(QH3) === false &&
+                checkConsecutiveStrings(QH4) === false &&
+                checkConsecutiveStrings(QH5) === false){
+                if(checkConsecutiveTrue(checkboxValues) === false){
+                    loading()
                 }else{
                     Swal.fire({
                         title: "",
-                        text: "ส่วนที่ 1 ในแต่ละหัวข้อสามารถมี อื่นๆ ได้เพียงแค่อันเดียว",
+                        text: "ส่วนที่ 2 ไม่สามารถกำหนดหัวข้อใหญ่ติดกันได้",
                         icon: "error",
                         confirmButtonColor: "#341699",
                         confirmButtonText: "ยืนยัน",  
                     })
                 }
+
             }else{
                 Swal.fire({
                     title: "",
-                    text: "ส่วนที่ 2 ต้องมีหัวข้อใหญ่อย่างน้อย 1 หัวข้อและหัวข้อย่อยอย่างน้อย 1 หัวข้อ โดยเริ่มจากบนลงล่าง",
+                    text: "ส่วนที่ 1 ในแต่ละหัวข้อสามารถมี อื่นๆ ได้เพียงแค่อันเดียว",
                     icon: "error",
                     confirmButtonColor: "#341699",
                     confirmButtonText: "ยืนยัน",  
@@ -427,18 +411,18 @@ function AppCreateQuestionnaire(){
         });
     }
     function path1(){
-        // setQueSheetName("CE SmartCamp")
-        // setQueSheetTopicName("CE SmartCamp")
-        // setDetailsLineOne("30 พฤษภาคม 2566 - 4 มิถุนายน 2566")
-        // setDetailsLinetwo("ภาควิชาคอมพิวเตอร์")
-        setQueSheetName("")
-        setQueSheetTopicName("")
-        setDetailsLineOne("")
-        setDetailsLinetwo("")
-        setFile('')
-        setFileShow('')
-        setStatusItem(false)
-        setNameFileUpload('')
+        setQueSheetName("CE SmartCamp")
+        setQueSheetTopicName("CE SmartCamp")
+        setDetailsLineOne("30 พฤษภาคม 2566 - 4 มิถุนายน 2566")
+        setDetailsLinetwo("ภาควิชาคอมพิวเตอร์")
+        // setQueSheetName("")
+        // setQueSheetTopicName("")
+        // setDetailsLineOne("")
+        // setDetailsLinetwo("")
+        // setFile('')
+        // setFileShow('')
+        // setStatusItem(false)
+        // setNameFileUpload('')
     };
     function processData(data) {
         const newInputValues = [...inputValues];
@@ -455,14 +439,11 @@ function AppCreateQuestionnaire(){
         console.log("inputValues:", newInputValues);
         console.log("checkboxValues:", newCheckboxValues);
     }
-    
     if(start === 0){
         path1();
         processData(dataPart2)
-
         setstart(1)
     }
-
     const handlereset1 = async (e) => {
         // setQueSheetName("CE SmartCamp")
         // setQueSheetTopicName("CE SmartCamp")
@@ -702,7 +683,6 @@ function AppCreateQuestionnaire(){
                                                                             // value={dataPart2[index].checkbox}
                                                                             checked={checkboxValues[index]}
                                                                             onChange={() => handleCheckboxChange(index)}
-                                                                            disabled={index===0?true:false}
                                                                         />
                                                                     </div>
                                                                 </td>
