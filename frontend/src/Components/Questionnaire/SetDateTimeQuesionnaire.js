@@ -238,8 +238,8 @@ function AppSetDateTimeQuesionnaire(){
             quesheettopicname : QueSheetTopicName,
             detailslineone : DetailsLineOne,
             detailslinetwo : DetailsLinetwo,
-            datetimestart : isChecked === true ? null : dtstart,
-            datetimeend : isChecked === true ? null : dtend,
+            datetimestart : isChecked === true ? null : dateTimeStart,
+            datetimeend : isChecked === true ? null : dateTimeend,
         }
         const queheaddetails_data = {
             quehead1 :quehead1,
