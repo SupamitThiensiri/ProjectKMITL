@@ -323,19 +323,6 @@ function AppUpdateQuetionaire(){
     // FORM Submit
     async function handleSubmit(e) {
         e.preventDefault();
-        console.log('QueSheetName:', QueSheetName);
-        console.log('QueSheetTopicName:', QueSheetTopicName);
-        console.log('DetailsLineOne:', DetailsLineOne);
-        console.log('DetailsLinetwo:', DetailsLinetwo);
-        
-        console.log('QH1:', QH1.join(','));
-        console.log('QH2:', QH2.join(','));
-        console.log('QH3:', QH3.join(','));
-        console.log('QH4:', QH4.join(','));
-        console.log('QH5:', QH5.join(','));
-        
-        console.log('inputValues:', inputValues.join(','))
-        console.log('checkboxValues:', checkboxValues.join(','))
         if(checkPath1(QH1) === false){
            
             if(
@@ -416,6 +403,21 @@ function AppUpdateQuetionaire(){
         }
     }
     async function UpdateQue() {
+        console.log('File:', File);
+        console.log('QueSheetName:', QueSheetName);
+        console.log('QueSheetTopicName:', QueSheetTopicName);
+        console.log('DetailsLineOne:', DetailsLineOne);
+        console.log('DetailsLinetwo:', DetailsLinetwo);
+        
+        console.log('QH1:', QH1.join(','));
+        console.log('QH2:', QH2.join(','));
+        console.log('QH3:', QH3.join(','));
+        console.log('QH4:', QH4.join(','));
+        console.log('QH5:', QH5.join(','));
+        
+        console.log('inputValues:', inputValues.join(','))
+        console.log('checkboxValues:', checkboxValues.join(','))
+
         const formData = new FormData();
         const quesheet_data = {
             userid : Cookies.get('userid'),
@@ -423,6 +425,7 @@ function AppUpdateQuetionaire(){
             quesheettopicname : QueSheetTopicName,
             detailslineone : DetailsLineOne,
             detailslinetwo : DetailsLinetwo,
+            sequencesteps : 1,
 
         }
         const queheaddetails_data = {
@@ -436,15 +439,12 @@ function AppUpdateQuetionaire(){
             quetopicdetails : inputValues.join(','),
             quetopicformat : checkboxValues.map(value => value ? 1 : 0).join(','),
         }
-        const nonelogo = {
-            nonelogo : checknonelogo,
-        }
         formData.append("logo", File);
         formData.append("userid", Cookies.get('userid'));
         formData.append("quesheet", JSON.stringify(quesheet_data))
         formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
         formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
-        formData.append("nonelogo", JSON.stringify(nonelogo))
+        formData.append("nonelogo",checknonelogo)
         console.log(formData)
 
         try{

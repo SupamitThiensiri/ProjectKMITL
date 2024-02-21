@@ -149,79 +149,54 @@ function AppScoreResults() {
     };
     
     const fetchDataExaminfo = async () => {
-        try {
-            const response = await fetch(variables.API_URL + "examinformation/result/" + id + "/", {
-                method: "POST",
+        try{
+            const response = await fetch(variables.API_URL + "exam/detail/" + id + "/", {
+                method: "GET",
                 headers: {
                     'Accept': 'application/json, text/plain',
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
-                body: JSON.stringify({
-                    userid: Cookies.get('userid'),
-                }),
             });
-
             const result = await response.json();
-
+    
             if (result.err !== undefined) {
                 setStartError(1);
-                setTextError(result.err)
-                console.log(result)
             } else {
                 console.log(result)
-                setlink_result(result.link_result)
-                const csvResponse = await fetch(result.link_result);
+                setExamNo(result.examno);
+                setExamNoShow(result.examid);
+                setsubid(result.subid);
+                setlink_result(result.result_csv_path)
+                const csvResponse = await fetch(result.result_csv_path);
                 const csvText = await csvResponse.text();
 
                 parseCSVData(csvText);
-                try{
-                    const response = await fetch(variables.API_URL + "exam/detail/" + id + "/", {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json, text/plain',
-                            'Content-Type': 'application/json;charset=UTF-8'
-                        },
-                    });
-                    const result = await response.json();
-            
-                    if (result.err !== undefined) {
-                        setStartError(1);
-                    } else {
-                        console.log(result)
-                        setExamNo(result.examno);
-                        setExamNoShow(result.examid);
-                        setsubid(result.subid);
-                        // setshowscores(result.showscores)
-                        const statu_showscores = result.showscores
-                        if(statu_showscores === null){
-                            setshowscores(false)
-                        }else{
-                            setshowscores(true)
-                        }
-                        const statu_sendemail = result.sendemail
-                        if(statu_sendemail === null){
-                            setsendemail(null)
-                        }else{
-                            setsendemail(true)
-                        }
-                        
-                    }
-                    const subjectResponse = await fetch(variables.API_URL + "subject/detail/" + result.subid + "/", {
-                        method: "GET",
-                        headers: {
-                            'Accept': 'application/json, text/plain',
-                            'Content-Type': 'application/json;charset=UTF-8'
-                        },
-                    });
-                    const subjectResult = await subjectResponse.json();
-                    if (subjectResult.err !== undefined) {
-                        setStartError(1);
-                    }else{
-                        setsubjectname(subjectResult.subjectname);
-                    }
-                } catch (err) {
-                    setStartError(1);
+                const statu_showscores = result.showscores
+                if(statu_showscores === null){
+                    setshowscores(false)
+                }else{
+                    setshowscores(true)
                 }
+                const statu_sendemail = result.sendemail
+                if(statu_sendemail === null){
+                    setsendemail(null)
+                }else{
+                    setsendemail(true)
+                }
+                
+            }
+            const subjectResponse = await fetch(variables.API_URL + "subject/detail/" + result.subid + "/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+            });
+            const subjectResult = await subjectResponse.json();
+            if (subjectResult.err !== undefined) {
+                setStartError(1);
+            }else{
+                setsubjectname(subjectResult.subjectname);
             }
         } catch (err) {
             setStartError(1);

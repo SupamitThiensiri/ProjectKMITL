@@ -18,65 +18,75 @@ function AppUploadAnswerSheet(){
     const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
     const [namefileupload, setNameFileUpload] = useState(''); // สำหรับชื่อไฟล์อัปโหลด
 
-    // const [ExamNo, setExamNo] = useState('');
-    // const [ExamNoShow, setExamNoShow] = useState('');
-    // const [subid, setsubid] = useState('');
-    // const [subjectname, setsubjectname] = useState('');
+    const [QueSheetName, setQueSheetName] = useState('');
     const [sequencesteps, setsequencesteps] = useState('');
     
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
     
-    const fetchDataStartExam = async () => {
-        // try{
-        //     fetch(variables.API_URL+"exam/detail/"+id+"/", {
-        //         method: "GET",
-        //         headers: {
-        //             'Accept': 'application/json, text/plain',
-        //             'Content-Type': 'application/json;charset=UTF-8'
-        //         },
-        //         })
-        //         .then(response => response.json())
-        //         .then(result => {
-        //             // console.log(result)
-        //             if(result.err !== undefined){
-        //                 setStartError(1);
-        //             }
-        //             setExamNo(result.examno)
-        //             setExamNoShow(result.examid)
-        //             setsubid(result.subid)
-        //             setsequencesteps(result.sequencesteps)
-        //             fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
-        //                 method: "GET",
-        //                 headers: {
-        //                     'Accept': 'application/json, text/plain',
-        //                     'Content-Type': 'application/json;charset=UTF-8'
-        //                 },
-        //                 })
-        //                 .then(response => response.json())
-        //                 .then(result => {
-        //                     if(result.err !== undefined){
-        //                         setStartError(1);
-        //                     }
-        //                     else{
-        //                         setsubjectname(result.subjectname)
-        //                         setStartError(2);
-        //                     }
-        //                 }
-        //             )
-        //         }
-        //     )
-        // }catch (err) {
-        //     // console.error(err)
-        //     setStartError(1);
-        // }
+    const fetchDataquesheet = async () => {
+        try{
+            fetch(variables.API_URL+"quesheet/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log("quesheet :",result)
+                    setQueSheetName(result.quesheetname)
+                    setsequencesteps(result.sequencesteps)
+                   
+                }
+            )
+            fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                }
+            )
+            fetch(variables.API_URL+"quetopicdetails/detail/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }
+                    console.log(result)
+                }
+            )
+            
+        }catch (err) {
+            console.error(err)
+            setStartError(1);
+           
+        }
     };
     
     const setStartError2 = (e) => {
         setStartError(2);
     }
     if(Start === 0){
-        fetchDataStartExam();
+        fetchDataquesheet();
         setStart(1);
         setTimeout(function() {
             setStartError2()
@@ -217,7 +227,7 @@ function AppUploadAnswerSheet(){
         try {
             const check = await saveUpload()
             if(check === undefined){
-                fetchDataStartExam();
+                // fetchDataStartExam();
                 let timerInterval;
                 Swal.fire({
                 title: "กำลังอัปโหลดแบบสอบถาม",
@@ -260,7 +270,7 @@ function AppUploadAnswerSheet(){
 
     // const options = {}
     useEffect(() => {
-        const intervalId = setInterval(fetchDataStartExam, 30000);
+        const intervalId = setInterval(fetchDataquesheet, 30000);
         return () => clearInterval(intervalId);
     }, []);
 
@@ -268,34 +278,34 @@ function AppUploadAnswerSheet(){
         <div className='content'>
         <main>
             <div className='box-content'>
-                {StartError === 0 || StartError === 1 ? 
-                        StartError === 0 ? 
-                            <div className='box-content-view'>
-                                <div className='bx-topic light '>
-                                    <div className='skeleton-loading'>
-                                        <div className='skeleton-loading-topic'></div>
-                                    </div> 
-                                </div>
-                                <div className='bx-details light '>
-                                    <div className='skeleton-loading'>
-                                        <div className='skeleton-loading-content'></div>
-                                    </div> 
-                                </div>
+            {StartError === 0 || StartError === 1 ? 
+                    StartError === 0 ? 
+                        <div className='box-content-view'>
+                            <div className='bx-topic light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-topic'></div>
+                                </div> 
                             </div>
-                        :
-                            <div className='box-content-view'>
-                                <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
-                                <div className='bx-details light'><h2>Not Found</h2></div>
+                            <div className='bx-details light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-content'></div>
+                                </div> 
                             </div>
+                        </div>
+                    :
+                        <div className='box-content-view'>
+                            <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
+                            <div className='bx-details light'><h2>Not Found</h2></div>
+                        </div>
                 :
                     null
                 }
-                <div className={StartError === 2 ? 'box-content-view': 'box-content-view none'}>
+                <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                     <div className='bx-topic light'>
+                    <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / <Link to={"/Questionnaire/"}>แบบสอบถามทั้งหมด</Link> / <Link to={"/Questionnaire/QuestionnaireNo/"+id}>{QueSheetName}</Link> / อัปโหลดแบบสอบถาม</p>
 
                         <div className='bx-grid2-topic'>
                             <h2>อัปโหลดแบบสอบถาม</h2>
-                        
                         </div> 
                     </div>
                     <div className='bx-details light'>

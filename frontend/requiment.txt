@@ -12,3 +12,4 @@ simple-react-lightbox
 js-cookie
 papaparse
 react-loading-skeleton
+chart.js

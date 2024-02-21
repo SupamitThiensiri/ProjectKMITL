@@ -230,39 +230,6 @@ function AppUploadAnswerSheet(){
     
     async function loading(){
         try {
-            // const loadingSwal = Swal.fire({
-            //     title: 'กำลังประมวลผล...',
-            //     allowOutsideClick: false,
-            //     showConfirmButton: false,
-            //     didOpen: async () => { 
-            //         Swal.showLoading();
-            //         try {
-            //             const check = await saveUpload()
-            //             console.log("check :",check)
-            //            if(check === undefined){
-            //                 Swal.close();
-            //                 fetchDataStartExam();
-            //                 Swal.fire({
-            //                     title: "อัปโหลดกระดาษคำตอบเสร็จสิ้น",
-            //                     text: "ระหว่างที่รอกระดาษคำตอบประมวลผลสามารถทำอย่างอื่นก่อนได้",
-            //                     icon: "success",
-            //                     confirmButtonColor: "#341699",
-            //                     confirmButtonText: "ยืนยัน",  
-            //                 }).then((result) => {
-            //                     // window.location.reload();
-                               
-            //                 });
-            //             }else{
-            //                 Swal.close();
-            //                 Swal.fire('เกิดข้อผิดพลาด '+check);
-            //             }
-            //         } catch (error) {
-            //             Swal.close();
-            //             Swal.fire('เกิดข้อผิดพลาด '+error);
-            //         }
-            //     }
-            // });
-            // await loadingSwal;
             const check = await saveUpload()
             if(check === undefined){
                 fetchDataStartExam();

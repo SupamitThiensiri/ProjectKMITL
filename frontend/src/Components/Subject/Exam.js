@@ -214,36 +214,37 @@ function AppExam(){
                         </div>
                         <div className="fb">ขั้นตอนการประมวลผล</div>
                         <div className="bx-step-content">
-                            <div className={sequencesteps >= 4 && sequencesteps <= 4? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps >= 4 && sequencesteps <= 5? "bx-show":"bx-show wait" }>
                                 <Link to={"/Subject/SubjectNo/Exam/CheckAnswerSheet/"+id}>
                                     <div className="box">
                                         <div className="box-img">
-                                            {/* <span className="fb num-stap">5</span> */}
-                                            {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
+                                            {sequencesteps === 5 || sequencesteps === '5'?<img src="/img/loading.webp" alt="Your GIF" className="icon-wait-gif" style={{ height: '30px' }}/>:(sequencesteps >= 6|| sequencesteps === '6'? <FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:'')}
+
+                                            {/* {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''} */}
                                             <img src='/img/step5.png' alt=''/>
                                             <p>ประมวลผล</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps >= 5 ? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps >= 6 ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Subject/SubjectNo/Exam/ScoreResults/"+id}>
                                     <div className="box">
                                         <div className="box-img">
                                             {/* <span className="fb num-stap">6</span> */}
-                                            {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
+                                            {sequencesteps >= 6 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/step6.png' alt=''/>
                                             <p>ผลลัพธ์คะแนน</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps >= 5 ? "bx-show":"bx-show wait" }>
-                                <Link to="">
+                            <div className={sequencesteps >= 6 ? "bx-show":"bx-show wait" }>
+                                <Link to={"/Subject/SubjectNo/Exam/AnalyzeResults/"+id}>
                                     <div className="box">
                                         <div className="box-img">
                                             {/* <span className="fb num-stap">7</span> */}
-                                            {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
+                                            {sequencesteps >= 6 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/step7.png' alt=''/>
                                             <p>วิเคราะห์ผล</p>
                                         </div>

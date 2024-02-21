@@ -2,10 +2,10 @@ import {
     Link
 } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faCircleCheck, faCircleXmark, faTrashCan, faPen, faTriangleExclamation} from "@fortawesome/free-solid-svg-icons";
+import {faCircleCheck, faCircleXmark, faTrashCan, faPen, faTriangleExclamation, faCheck} from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.css';
-import { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
@@ -25,6 +25,8 @@ function AppCheckAnswerSheet(){
     const [subjectname, setsubjectname] = useState('');
 
     const [csvData, setcsvData] = useState([]);
+
+    const [sequencesteps, setsequencesteps] = useState('');
 
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
@@ -48,6 +50,8 @@ function AppCheckAnswerSheet(){
                 setExamNoShow(result.examid)
                 setsubid(result.subid)
                 setnumberofexamsets(result.numberofexamsets)
+                setsequencesteps(parseInt(result.sequencesteps))
+
 
                 if (result.std_csv_path !== null) {
                     const csvResponse = await fetch(result.std_csv_path);
@@ -79,8 +83,6 @@ function AppCheckAnswerSheet(){
             setStartError(1);
         }
     };
-
-
     const fetchDataExamInfo = async () => {
         try{
             fetch(variables.API_URL+"examinformation/detail/exam/"+id+"/", {
@@ -96,7 +98,7 @@ function AppCheckAnswerSheet(){
                         setStartError(1);
                     }
                     console.log("result __",result)
-                    setdata(result.non_duplicate_records)
+                    setdata(sortObjectsByProperty(result.non_duplicate_records,'stdid'))
                     setdataduplicate(sortObjectsByProperty(result.duplicate_records,'stdid'))
                 }
             )
@@ -104,14 +106,8 @@ function AppCheckAnswerSheet(){
             setdata([])
         }
 
-     };
-     
-    if(Start === 0){
-        fetchDataStartExam();
-        fetchDataExamInfo();
-        setStart(1);
-    }
-    
+    };
+
     function extractFilenameFromURL(url) {
         const parts = url.split('/');
         const filenameWithSpaces = parts[parts.length - 1];
@@ -290,6 +286,15 @@ function AppCheckAnswerSheet(){
             }
         });
     };
+    function nameRepeat(dataarray) {
+        const Repeat = dataarray.split(",")
+        for (let i = 0; i < Repeat.length; i++) {
+            if(Repeat[i] === "ไม่พบรหัสนักศึกษาในรายชื่อ"){
+                return true
+            }
+        }
+        return false
+    }
     function generateOptionsStd(data, selectedValue) {
         console.log('selectedValuestd:',selectedValue)
         let optionsHTML = '';
@@ -378,45 +383,281 @@ function AppCheckAnswerSheet(){
           }
           return 0;
         });
-      }
+    }
+    async function handleSubmitAnalyzeresults(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "วิเคราะห์ผล",
+            text: `โปรดมั่นใจว่าคุณได้แก้ไขข้อผิดพลาดของข้อมูลเสร็จสิ้นแล้วหากกดยืนยันแล้วจะไม่สามารถกลับมาแก้ไขข้อมูลได้ \nกดยืนยันเพื่อทำการวิเคราะห์ผล `,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#341699",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "ยกเลิก"
+        }).then(async (result) => {
+            if(result.isConfirmed){
+                loading();
+            }
+        });
+    }
+    async function loading(){
+        try {
+            const check = await Analyzeresults()
+            if(check === undefined){
+                fetchDataStartExam();
+                let timerInterval;
+                Swal.fire({
+                title: "กำลังส่งผลคะแนนเพื่อวิเคราะห์ผลลัพธ์",
+                html: "รอประมาณ <b></b> มิลลิวินาที.",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                    timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+                }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    Swal.fire({
+                        title:"ส่งผลคะแนนเสร็จสิ้น",
+                        text: "ระหว่างที่รอวิเคราะห์ผลสามารถทำอย่างอื่นรอก่อนได้",
+                        icon: "success",
+                        confirmButtonColor: "#341699",
+                        confirmButtonText: "ยืนยัน",  
+                    }).then((result) => {
+                        
+                    });
+                }
+                });
+
+                
+            }else{
+                Swal.fire('เกิดข้อผิดพลาด '+check);
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire('เกิดข้อผิดพลาด');
+        }
+    }
+    async function Analyzeresults(){
+        try {
+            fetch(variables.API_URL + "exam/update/"+id+"/", {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    sequencesteps:"5",
+                    userid : Cookies.get('userid')
+                }),
+            });
+            fetchDataStartExam();
+            fetch(variables.API_URL + "examinformation/result/"+id+"/", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    userid : Cookies.get('userid'),
+                    examid : id
+                }),
+            }).then(response => {
+                console.log("1")
+                return true; // รีเทิร์นค่า true เพื่อสื่อว่าการส่งข้อมูลเสร็จสิ้น
+                
+            }).catch(error => {
+                console.log("2")
+                fetch(variables.API_URL + "exam/update/"+id+"/", {
+                    method: "PUT",
+                    headers: {
+                        'Accept': 'application/json, text/plain',
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify({
+                        sequencesteps:"4",
+                        userid : Cookies.get('userid')
+                    }),
+                });
+                return error; // รีเทิร์น error เพื่อจัดการกับข้อผิดพลาดในการส่งข้อมูล
+            });
+    
+        } catch (err) {
+            await fetch(variables.API_URL + "exam/update/"+id+"/", {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    sequencesteps:"4",
+                    userid : Cookies.get('userid')
+                }),
+            });
+            return err; // รีเทิร์น error เมื่อเกิดข้อผิดพลาด
+        }
+    }
+    // async function checkanalyzeresults(e){
+    //     console.log("checkanalyzeresults")
+    //     try {
+    //         const resultexaminfo = await fetch(variables.API_URL + "examinformation/result/"+id+"/", {
+    //             method: "POST",
+    //             headers: {
+    //                 'Accept': 'application/json, text/plain',
+    //                 'Content-Type': 'application/json;charset=UTF-8'
+    //             },
+    //             body: JSON.stringify({
+    //                 userid : Cookies.get('userid'),
+    //                 examid : id
+    //             }),
+    //         });
+
+    //         console.log(resultexaminfo)
+    
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // }
+    
+    useEffect(() => {
+        const intervalId = setInterval(fetchDataStartExam, 30000);
+        return () => clearInterval(intervalId);
+    }, []);
+
+    if(Start === 0){
+        fetchDataStartExam();
+        fetchDataExamInfo();
+        setStart(1);
+        setTimeout(function() {
+            setStartError(2)
+        }, 800);
+    }
     return(
 
         <div className='content'>
         <main>
             <div className='box-content'>
-                {StartError === 1 ?
-                    <div className='box-content-view'>
-                        <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
-                        <div className='bx-details light'><h2>Not Found</h2></div>
-                    </div>
-                :
-                    <div className='box-content-view'>
-                        <div className='bx-topic light'>
-                        <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / ตรวจความถูกต้องกระดาษคำตอบ</p>
-                            <div className='bx-grid-topic'>
-                                <div className="flex">
-                                    <h2>ตรวจความถูกต้องกระดาษคำตอบ</h2>
-                                    <div className="pdl10px">
-                                        <Link to="#">
-                                            <p className='button-process'><span className="fb">วิเคราะห์ผล</span></p>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div> 
+                {StartError === 0 || StartError === 1 ? 
+                    StartError === 0 ? 
+                        <div className='box-content-view'>
+                            <div className='bx-topic light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-topic'></div>
+                                </div> 
+                            </div>
+                            <div className='bx-details light '>
+                                <div className='skeleton-loading'>
+                                    <div className='skeleton-loading-content'></div>
+                                </div> 
+                            </div>
                         </div>
-                        <div className='bx-details light'>
-                            <div>
-                                {/* <div style={{ width: '200px', height: '450px', overflow: 'hidden' }}>
-                                    <img 
-                                        src="/img/answersheet_eng.jpg" 
-                                        alt="Image" 
-                                        style={{ width: '584px', height: '413px', marginLeft: '0px', marginTop: '0' }} 
-                                    />
+                    :
+                        <div className='box-content-view'>
+                            <div className='bx-topic light'>เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง</div>
+                            <div className='bx-details light'><h2>Not Found</h2></div>
+                        </div>
+                :
+                    null
+                }
+                    <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
+                    <div className='bx-topic light'>
+                    <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / ตรวจความถูกต้องกระดาษคำตอบ</p>
+                        <div className='bx-grid-topic'>
+                            <div className="flex">
+                                <h2>ตรวจความถูกต้องกระดาษคำตอบ</h2>
+                                <div className="pdl10px" onClick={handleSubmitAnalyzeresults}>
+                                    <Link to="#">
+                                        <p className={sequencesteps >= 5 ?"button-process wait":"button-process"}><span className="fb">วิเคราะห์ผล</span></p>
+                                    </Link>
+                                </div>
+                                {/* <div className="pdl10px" onClick={checkanalyzeresults}>
+                                    <Link to="#">
+                                        <p className='button-process'><span className="fb">วิเคราะห์ผล</span></p>
+                                    </Link>
                                 </div> */}
+                            </div>
+                        </div> 
+                    </div>
+                    <div className='bx-details light'>
+                        <div>
+                            {/* <div style={{ width: '200px', height: '450px', overflow: 'hidden' }}>
+                                <img 
+                                    src="/img/answersheet_eng.jpg" 
+                                    alt="Image" 
+                                    style={{ width: '584px', height: '413px', marginLeft: '0px', marginTop: '0' }} 
+                                />
+                            </div> */}
+                                <div className="space5"></div>
+                                {sequencesteps === 5 || sequencesteps === "5" ? (
+                                    <div>
+                                        <div className="center loading-process">
+                                            <div>
+                                                กำลังวิเคราะห์ผล ระหว่างที่รอวิเคราะห์ผลสามารถทำอย่างอื่นรอก่อนได้
+                                            </div>
+                                            <div id="loadingDiv" className="loading"> </div>
+                                            
+                                        </div>
+                                        <div className="space5"></div>
+                                    </div>
+                                ) : (
+                                    sequencesteps === 6 ?
+                                        <Link to={"/Subject/SubjectNo/Exam/ScoreResults/"+id} className="light-font"> <div className="success-text light-font"><FontAwesomeIcon icon={faCheck} />คลิกดูผลการวิเคราะห์</div></Link>
+                                    :
+                                    null
+                                )}
+
+                                <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษคำตอบ ที่ถูกต้อง</div>
+                                <div className="tableSub">
+                                <table className={sequencesteps >= 5 ? "wait" : ""}>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ minWidth: '150px',maxWidth: '150px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>#</th>
+                                            <th style={{ minWidth: '150px',maxWidth: '150px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>รหัสนักศึกษา</th>
+                                            <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>รหัสวิชา</th>
+                                            <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>ชุดข้อสอบ</th>
+                                            <th style={{ minWidth: '170px',maxWidth: '170px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การตรวจคำตอบ</th>
+                                            <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>สาเหตุ</th>
+                                            <th style={{ minWidth: '180px',maxWidth: '180px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
+                                            <th style={{ minWidth: '100px',maxWidth: '100px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การจัดการ</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {data.map((item, index) => (
+                                            (item.stdid !== '' && item.stdid !== null && item.stdid !== "0" && item.stdid !== 0 ) &&
+                                            (item.subjectidstd !== '' && item.subjectidstd !== null && item.subjectidstd !== "0" && item.setexaminfo !== 0 ) && 
+                                            (item.setexaminfo !== '' && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0) && 
+                                            (item.anschoicestd !== '' && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0) &&
+                                            (item.errorstype === '')
+                                            ? (
+                                            <tr key={index}>
+                                                <td className="center">{item.stdid} </td>
+                                                <td className="center" >{item.stdid !== "" && item.stdid !== null && item.subjectidstd !== "0" && item.stdid !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null && item.subjectidstd !== "0" && item.subjectidstd !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                <td className="hover-trigger center green-font"><p className="hover-content">รายละเอียดถูกต้อง{item.errorstype}</p><FontAwesomeIcon icon={faCircleCheck} /></td>
+                                                <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
+                                                <td className="center mw80px"> 
+                                                    <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, '3')} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
+                                                    <span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span>
+                                                </td>
+                                            </tr>
+                                            ) : null
+                                        ))}
+                                    </tbody>
+                                </table>
+                                
+                                <div>
                                     <div className="space10"></div>
-                                    <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษคำตอบ ที่ถูกต้อง</div>
-                                    <div className="tableSub">
-                                    <table className="">
+                                    <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษคำตอบ ที่ไม่ถูกต้อง</div>
+                                    <table className={sequencesteps >= 5 ? "wait" : ""}>
                                         <thead>
                                             <tr>
                                                 <th style={{ minWidth: '150px',maxWidth: '150px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>#</th>
@@ -428,99 +669,77 @@ function AppCheckAnswerSheet(){
                                                 <th style={{ minWidth: '180px',maxWidth: '180px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
                                                 <th style={{ minWidth: '100px',maxWidth: '100px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การจัดการ</th>
                                             </tr>
-                                            </thead>
-                                            <tbody>
-                                            {data.map((item, index) => (
-                                                (item.stdid !== '' && item.stdid !== null && item.stdid !== "0" && item.stdid !== 0 ) &&
-                                                (item.subjectidstd !== '' && item.subjectidstd !== null && item.subjectidstd !== "0" && item.setexaminfo !== 0 ) && 
-                                                (item.setexaminfo !== '' && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0) && 
-                                                (item.anschoicestd !== '' && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0) &&
-                                                (item.errorstype === '')
-                                                ? (
-                                                <tr key={index}>
-                                                    <td className="center">{item.stdid} </td>
-                                                    <td className="center" >{item.stdid !== "" && item.stdid !== null && item.subjectidstd !== "0" && item.stdid !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                    <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null && item.subjectidstd !== "0" && item.subjectidstd !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                    <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                    <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                    <td className="hover-trigger center green-font"><p className="hover-content">รายละเอียดถูกต้อง{item.errorstype}</p><FontAwesomeIcon icon={faCircleCheck} /></td>
-                                                    <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
-                                                    <td className="center mw80px"> 
-                                                        <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, '3')} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
-                                                        <span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span>
-                                                    </td>
-                                                </tr>
-                                                ) : null
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                   
-                                    <div>
-                                        <div className="space10"></div>
-                                        <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษคำตอบ ที่ไม่ถูกต้อง</div>
-                                        <table className="">
-                                            <thead>
-                                                <tr>
-                                                    <th style={{ minWidth: '150px',maxWidth: '150px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>#</th>
-                                                    <th style={{ minWidth: '150px',maxWidth: '150px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>รหัสนักศึกษา</th>
-                                                    <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>รหัสวิชา</th>
-                                                    <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>ชุดข้อสอบ</th>
-                                                    <th style={{ minWidth: '170px',maxWidth: '170px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การตรวจคำตอบ</th>
-                                                    <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>สาเหตุ</th>
-                                                    <th style={{ minWidth: '180px',maxWidth: '180px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
-                                                    <th style={{ minWidth: '100px',maxWidth: '100px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การจัดการ</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {data.map((item, index) => {
-                                                    if (
-                                                        (item.stdid === '' || item.stdid === null || item.stdid === "0" || item.stdid === 0) ||
-                                                        (item.subjectidstd === '' || item.subjectidstd === null || item.subjectidstd === "0" || item.subjectidstd === 0) ||
-                                                        (item.setexaminfo === '' || item.setexaminfo === null || item.setexaminfo === "0" || item.setexaminfo === 0) ||
-                                                        (item.anschoicestd === '' || item.anschoicestd === null || item.anschoicestd === "0" || item.anschoicestd === 0)||
-                                                        (item.errorstype !== '' )
-                                                    ) {
-                                                        return (
-                                                            <tr key={index}>
-                                                                <td className="center">{item.stdid } </td>
-                                                                <td className="center">{item.stdid !== "" && item.stdid !== null  && item.stdid !== "0" && item.stdid !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                                <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                                <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                                <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                                {/* <td className="center"><div className="floating-box">สาเหตุ</div></td> */}
-                                                                <td className="hover-trigger center warning-font"><FontAwesomeIcon icon={faTriangleExclamation} /><p className="hover-content">{item.errorstype}</p></td>
-
-                                                                <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
-                                                                <td className="center mw80px"> <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path,item.anschoicestd !== "" && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ? "1" : "2")} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link><span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span></td>
-                                                            </tr>
-                                                        );
-                                                    } else {
-                                                        return null;
-                                                    }
-                                                })}
-                                                {dataduplicate.map((item, index) => {   
-                                                    return (  
+                                        </thead>
+                                        <tbody>
+                                            {data.map((item, index) => {
+                                                if (
+                                                    (item.stdid === '' || item.stdid === null || item.stdid === "0" || item.stdid === 0) ||
+                                                    (item.subjectidstd === '' || item.subjectidstd === null || item.subjectidstd === "0" || item.subjectidstd === 0) ||
+                                                    (item.setexaminfo === '' || item.setexaminfo === null || item.setexaminfo === "0" || item.setexaminfo === 0) ||
+                                                    (item.anschoicestd === '' || item.anschoicestd === null || item.anschoicestd === "0" || item.anschoicestd === 0)||
+                                                    (item.errorstype !== '' )
+                                                ) {
+                                                    return (
                                                         <tr key={index}>
-                                                            <td className="center danger-font">{item.stdid } </td>
-                                                            <td className="center">{item.stdid !== "" && item.stdid !== null  && item.stdid !== "0" && item.stdid !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                            <td className="center">{item.stdid } </td>
+                                                            <td className="center">
+                                                                {/* {nameRepeat(item.errorstype) === true ?
+                                                                    <FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />
+                                                                :
+                                                                    {item.stdid !== "" && item.stdid !== null  && item.stdid !== "0" && item.stdid !== 0? <p>
+                                                                        <FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> 
+                                                                    :
+                                                                        <FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />
+                                                                    }
+                                                                } */}
+                                                                {
+                                                                nameRepeat(item.errorstype) ? (
+                                                                    <FontAwesomeIcon className="danger-font" icon={faCircleXmark} />
+                                                                ) : (
+                                                                    (item.stdid !== "" && item.stdid !== null && item.stdid !== "0" && item.stdid !== 0) ? (
+                                                                        <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>
+                                                                    ) : (
+                                                                        <FontAwesomeIcon className="danger-font" icon={faCircleXmark} />
+                                                                    )
+                                                                )
+                                                                }
+                                                            </td>
                                                             <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                             <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                             <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                            <td className="hover-trigger center warning-font"><p className="hover-content">รหัสนักศึกษาซ้ำกัน{item.errorstype}</p><FontAwesomeIcon icon={faTriangleExclamation} /></td>
+                                                            {/* <td className="center"><div className="floating-box">สาเหตุ</div></td> */}
+                                                            <td className="hover-trigger center warning-font"><FontAwesomeIcon icon={faTriangleExclamation} /><p className="hover-content">{item.errorstype}</p></td>
+
                                                             <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
-                                                            <td className="center mw80px"> <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, "3")} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link><span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span></td>
+                                                            <td className="center mw80px"> <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path,item.anschoicestd !== "" && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ? "1" : "2")} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link><span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span></td>
                                                         </tr>
-                                                    )
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {/* <td className="center">{ true ?<FontAwesomeIcon icon={faCircleCheck} />:<FontAwesomeIcon icon={faCircleXmark} />}</td> */}
+                                                    );
+                                                } else {
+                                                    return null;
+                                                }
+                                            })}
+                                            {dataduplicate.map((item, index) => {   
+                                                return (  
+                                                    <tr key={index}>
+                                                        <td className="center danger-font">{item.stdid } </td>
+                                                        <td className="center">{item.stdid !== "" && item.stdid !== null  && item.stdid !== "0" && item.stdid !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                        <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                        <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                        <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                        <td className="hover-trigger center warning-font"><p className="hover-content">รหัสนักศึกษาซ้ำกัน{item.errorstype}</p><FontAwesomeIcon icon={faTriangleExclamation} /></td>
+                                                        <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
+                                                        <td className="center mw80px"> <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, "3")} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link><span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span></td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
                                 </div>
+                                {/* <td className="center">{ true ?<FontAwesomeIcon icon={faCircleCheck} />:<FontAwesomeIcon icon={faCircleXmark} />}</td> */}
                             </div>
                         </div>
                     </div>
-                }
+                </div>
             </div>
         </main>
     </div>

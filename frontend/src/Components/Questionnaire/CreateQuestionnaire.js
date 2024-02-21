@@ -16,14 +16,12 @@ function AppCreateQuestionnaire(){
     const [QueSheetTopicName, setQueSheetTopicName] = useState('');
     const [DetailsLineOne, setDetailsLineOne] = useState('');
     const [DetailsLinetwo, setDetailsLinetwo] = useState('');
-    const [Explanation, setExplanation] = useState('');
     // const [Symbolposition, setSymbolposition] = useState('');
 
     const handleInputQueSheetName = (e) => { setQueSheetName(e.target.value); };
     const handleInputQueSheetTopicName = (e) => {setQueSheetTopicName(e.target.value);};
     const handleInputDetailsLineOne = (e) => { setDetailsLineOne(e.target.value); };
     const handleInputDetailsLinetwo = (e) => {setDetailsLinetwo(e.target.value);};
-    const handleInputExplanation = (e) => {setExplanation(e.target.value);};
     // const handleInputSymbolposition = (e) => {setSymbolposition(e.target.value);};
     const handstep = (e) => {
         e.preventDefault();
@@ -192,7 +190,6 @@ function AppCreateQuestionnaire(){
         // console.log('QueSheetTopicName:', QueSheetTopicName);
         // console.log('DetailsLineOne:', DetailsLineOne);
         // console.log('DetailsLinetwo:', DetailsLinetwo);
-        // console.log('Explanation:', Explanation);
         // console.log('QH1:', QH1);
         // console.log('QH1:', checkConsecutiveStrings(QH1));
         // console.log('QH1:', QH1.join(','));
@@ -288,7 +285,6 @@ function AppCreateQuestionnaire(){
         console.log('QueSheetTopicName:', QueSheetTopicName);
         console.log('DetailsLineOne:', DetailsLineOne);
         console.log('DetailsLinetwo:', DetailsLinetwo);
-        console.log('Explanation:', Explanation);
         
         console.log('QH1:', QH1.join(','));
         console.log('QH2:', QH2.join(','));
@@ -306,7 +302,7 @@ function AppCreateQuestionnaire(){
             quesheettopicname : QueSheetTopicName,
             detailslineone : DetailsLineOne,
             detailslinetwo : DetailsLinetwo,
-            explanation : Explanation,
+            sequencesteps : 1,
         }
         const queheaddetails_data = {
             quehead1 : QH1.join(','),
@@ -524,17 +520,7 @@ function AppCreateQuestionnaire(){
                                             />
                                         </div>
 
-                                        <div className="bx-input-fix none">
-                                        <label htmlFor="Explanation" className="w150px">คำชี้แจง</label>
-                                            <input className="mw300px"
-                                                type="text"
-                                                id="Explanation"
-                                                name="Explanation"
-                                                value={Explanation}
-                                                onChange={handleInputExplanation}
-                                                placeholder="กรอกคำชี้แจง"
-                                            />
-                                        </div>
+
                                         <div className="space5"></div>
                                         <div className="fb">ปรับแต่งตราสัญลักษณ์ (ขนาดรูปภาพที่แนะนำ 300 x 135 Pixels)</div>
                                         <div className="mw300px">

@@ -46,6 +46,7 @@ import AppShowQuestionaire from './Components/Questionnaire/ShowQuestionaire';
 import AppSetDateTimeQuesionnaire from './Components/Questionnaire/SetDateTimeQuesionnaire';
 import AppOnlineQuestionnaire from './Components/Questionnaire/OnlineQuestionnaire';
 import Appverify from './Components/verify';
+import AppAnalyzeResults from './Components/Subject/AnalyzeResults';
 
 
 function App() {
@@ -82,6 +83,8 @@ function App() {
         <Route path='/Subject/SubjectNo/Exam/UploadAnswerSheet/:id' element={<AppUploadAnswerSheet />}></Route>
         <Route path='/Subject/SubjectNo/Exam/CheckAnswerSheet/:id' element={<AppCheckAnswerSheet />}></Route>
         <Route path='/Subject/SubjectNo/Exam/ScoreResults/:id' element={<AppScoreResults />}></Route>
+        <Route path='/Subject/SubjectNo/Exam/AnalyzeResults/:id' element={<AppAnalyzeResults />}></Route>
+        
         
 
         <Route path='/Questionnaire' element={<AppQuestionnaire />}></Route>

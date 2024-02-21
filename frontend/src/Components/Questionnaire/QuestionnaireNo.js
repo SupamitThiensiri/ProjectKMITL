@@ -5,6 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import Swal from 'sweetalert2'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faCircleCheck} from "@fortawesome/free-solid-svg-icons";
+
 function AppQuestionnaireNo(){
     const { id } = useParams();
     const [sequencesteps, setsequencesteps] = useState(1);
@@ -12,7 +15,9 @@ function AppQuestionnaireNo(){
     const [QueSheetName, setQueSheetName] = useState('');
     const [imgquesheet_path, setimgquesheet_path] = useState('');  
 
-    const [URLOnline, setURLOnline] = useState(window.location.host+"/OnlineQuestionnaire/"+id);
+    const URLOnline = window.location.host+"/OnlineQuestionnaire/"+id
+
+    const [dateTimeshow, setdateTimeshow] = useState('');
 
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
@@ -34,6 +39,8 @@ function AppQuestionnaireNo(){
                     console.log(result)
                     setQueSheetName(result.quesheetname)
                     setimgquesheet_path(result.imgquesheet_path)
+                    setsequencesteps(parseInt(result.sequencesteps))
+                    setdateTimeshow(result.datetimestart)
                 }
             )
             fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
@@ -158,22 +165,7 @@ function AppQuestionnaireNo(){
                                     <div className="bx-bx-details">
                                         <div className="bx-details-box-small inline-grid"><p className="text-overflow">ชื่อแบบสอบถาม : {QueSheetName}</p></div>
                                     </div>
-                                    {/* <div className="bx-bx-details">
-                                        <div className="bx-details-box-small inline-grid"><p className="text-overflow">ชื่อหัวข้อแบบสอบถาม : {QueSheetTopicName}</p></div>
-                                    </div>
-                                    <div className="bx-bx-details">
-                                        <div className="bx-details-box-small inline-grid"><p className="text-overflow">รายละเอียดบรรทัดที่ 1 : {DetailsLineOne}</p></div>
-                                    </div>
-                                    <div className="bx-bx-details">
-                                        <div className="bx-details-box-small inline-grid"><p className="text-overflow">รายละเอียดบรรทัดที่ 2 : {DetailsLinetwo}</p></div>
-                                    </div>
-                                    <div className="bx-bx-details">
-                                        <div className="bx-details-box-small inline-grid"><p className="text-overflow">คำชี้แจง : {Explanation}</p></div>
-                                    </div> */}
-                                    {/* <div className="bx-bx-details">
-                                        <div className="bx-details-box-small inline-grid"><p className="text-overflow">แบบสอบถามออนไลน์ :</p></div>
-                                    </div> */}
-                                    <div className="bx-bx-details flexCenter">
+                                    <div className={dateTimeshow === null || dateTimeshow === ''? "none":"bx-bx-details flexCenter"}>
                                         <div className="button-submit center w200px" onClick={handleCopyClick}>URL แบบสอบถามออนไลน์</div>
                                     </div>
                                     <div className="bx-bx-details flexCenter">
@@ -187,20 +179,22 @@ function AppQuestionnaireNo(){
                         <div className="bx-step-content">
                             {/* <div className={sequencesteps ? "bx-show":"bx-show wait" }><Link to={"/Questionnaire/QuestionnaireNo/ShowQuestionnaire/1"+id}><div className="box"><div className="box-img"><img src='/img/DownloadsQuz.png' alt=''/><p>กระดาษแบบสอบถาม</p></div></div></Link></div> */}
 
-                            <div className={sequencesteps ? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps === 1  ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/ShowQuestionnaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
+                                            {sequencesteps === 1 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/QueStep1.png' alt=''/>
                                             <p>กระดาษแบบสอบถาม</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps ? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps === 1 ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/SetDateTimeQuestionnaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
+                                            {sequencesteps === 1 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/QueStep2.png' alt=''/>
                                             <p>แบบสอบถามออนไลน์</p>
                                         </div>

@@ -30,8 +30,10 @@ function AppSetDateTimeQuesionnaire(){
 
     const [dateTimeStart, setDateTimeStart] = useState('');
     const [dateTimeend, setDateTimeend] = useState('');
+    const [dateTimeshow, setdateTimeshow] = useState('');
+    
     const [isChecked, setIsChecked] = useState(false);
-
+    const checknonelogo = useState(false);
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
 
@@ -58,8 +60,20 @@ function AppSetDateTimeQuesionnaire(){
                         setQueSheetTopicName(result.quesheettopicname)
                         setDetailsLineOne(result.detailslineone)
                         setDetailsLinetwo(result.detailslinetwo)
-                        setDateTimeStart(result.datetimestart)
-                        setDateTimeend(result.datetimeend)
+                        setdateTimeshow(result.datetimestart)
+                        if(result.datetimestart === null){
+
+                        }else{
+                            setDateTimeStart(result.datetimestart.replace("+07:00", ""))
+                            // setDateTimeStart(new Date(result.datetimestart.replace("+07:00", "")))
+                        }
+                        if(result.datetimeend === null){
+
+                        }else{
+                            setDateTimeend(result.datetimeend.replace("+07:00", ""))
+                            // setDateTimeend(new Date(result.datetimeend.replace("+07:00", "")))
+                        }
+                        
                     }
                    
                 }
@@ -145,13 +159,32 @@ function AppSetDateTimeQuesionnaire(){
         console.log("dateTimeStart :",dateTimeStart)
         console.log("dateTimeend :",dateTimeend)
         if(isChecked === true){
-            console.log("ยกเลิก")
+            loading()
+            // fetchDataquesheet()
+            setIsChecked(false)
         }else{
-            if(dateTimeStart < dateTimeend){
-                console.log("ถูกต้อง")
-                loading()
+            if (dateTimeend === '' || dateTimeStart === ''){
+                Swal.fire({
+                    title: "",
+                    text: "กรุณาเลือกวันที่ต้องการเปิดและปิดแบบสอบถามออนไลน์",
+                    icon: "error",
+                    confirmButtonColor: "#341699",
+                    confirmButtonText: "ยืนยัน",  
+                });
             }else{
-                console.log("วันที่เริ่มต้องไม่น้อยกว่าวันที่ปิด")
+                if(dateTimeStart < dateTimeend){
+                    loading()
+                    // fetchDataquesheet()
+                }else{
+                    console.log("วันที่เริ่มต้องไม่น้อยกว่าวันที่ปิด")
+                    Swal.fire({
+                        title: "",
+                        text: "วันที่เริ่มต้องไม่น้อยกว่าวันที่ปิด",
+                        icon: "error",
+                        confirmButtonColor: "#341699",
+                        confirmButtonText: "ยืนยัน",  
+                    });
+                }
             }
         }
         
@@ -171,11 +204,12 @@ function AppSetDateTimeQuesionnaire(){
                             Swal.close();
                             Swal.fire({
                                 title: "",
-                                text: "ตั้งค่าการใช้งานแบบสอบถามออนไลน์เสร็จสิ้น",
+                                text: isChecked === true ? "ปิดการใช้งานแบบสอบถามออนไลน์":"ตั้งค่าการใช้งานแบบสอบถามออนไลน์เสร็จสิ้น สามารถคัดลอกลิงค์ส่งไปให้ผู้ใช้แบบสอบถามได้",
                                 icon: "success",
                                 confirmButtonColor: "#341699",
                                 confirmButtonText: "ยืนยัน",  
                             }).then((result) => {
+                                window.location.reload();
                                 // window.location.href = '/Questionnaire/QuestionnaireNo/ShowQuestionnaire/'+id;
                             });
                         }else{
@@ -196,14 +230,16 @@ function AppSetDateTimeQuesionnaire(){
     }
     async function UpdateQue() {
         const formData = new FormData();
+        const dtstart = addDurationToDateTime(dateTimeStart)
+        const dtend = addDurationToDateTime(dateTimeend)
         const quesheet_data = {
             userid : Cookies.get('userid'),
             quesheetname : QueSheetName,
             quesheettopicname : QueSheetTopicName,
             detailslineone : DetailsLineOne,
             detailslinetwo : DetailsLinetwo,
-            datetimestart : dateTimeStart,
-            datetimeend : dateTimeend,
+            datetimestart : isChecked === true ? null : dtstart,
+            datetimeend : isChecked === true ? null : dtend,
         }
         const queheaddetails_data = {
             quehead1 :quehead1,
@@ -221,6 +257,7 @@ function AppSetDateTimeQuesionnaire(){
         formData.append("quesheet", JSON.stringify(quesheet_data))
         formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
         formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
+        formData.append("nonelogo", checknonelogo)
         console.log(formData)
 
         try{
@@ -244,6 +281,21 @@ function AppSetDateTimeQuesionnaire(){
             return false
         }
     }
+    const handlereset = async (e) => {
+        fetchDataquesheet();
+    };
+
+    function addDurationToDateTime(dateTimeString) {
+        const originalDateTime = new Date(dateTimeString);
+        const newDateTime = new Date(
+          originalDateTime.getTime() + 
+          0 * 24 * 60 * 60 * 1000 + 
+          2 * 60 * 60 * 1000 
+        );
+      
+        // Format the new date-time as a string and return
+        return newDateTime.toISOString();
+      }
     return(
 
         <div className='content'>
@@ -262,16 +314,24 @@ function AppSetDateTimeQuesionnaire(){
                             <div className="bx-bx-topic">
                                 URL สำหรับเข้าทำแบบสอบถาม Online
                             </div>
-                            <div className="bx-bx-details flexCenter">
-                                <p className="text-nowrap">{URLOnline}</p>
-                            </div>
-                            <div className="bx-bx-details flexCenter">
-                                <div className="button-submit center w200px" onClick={handleCopyClick}>URL แบบสอบถามออนไลน์</div>
-                            </div>
+                            {dateTimeshow === '' || dateTimeshow === null?
+                                <div className="bx-bx-details flexCenter">
+                                    <p className="text-nowrap">ยังไม่ได้เปิดการใช้งานแบบสอบถามออนไลน์</p>
+                                </div>
+                            :
+                                <>
+                                    <div className="bx-bx-details flexCenter">
+                                        <p className="text-nowrap">{URLOnline}</p>
+                                    </div>
+                                    <div className="bx-bx-details flexCenter">
+                                        <div className="button-submit center w200px" onClick={handleCopyClick}>URL แบบสอบถามออนไลน์</div>
+                                    </div>
+                                </>
+                            }
                         </div> 
                         <form>
                             <div className="">
-                                <div className="bx-input-fix flex ">
+                                <div className={dateTimeshow === '' || dateTimeshow === null? "bx-input-fix flex none":"bx-input-fix flex "}>
                                     <label htmlFor="myCheckbox" className="pdr10px">ปิดแบบสอบถามออนไลน์</label>
                                     <input className=""
                                         type="checkbox"
@@ -282,29 +342,32 @@ function AppSetDateTimeQuesionnaire(){
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="datetimeStart" className="w100px">เวลาเปิด</label>
-                                    <input
+                                    <input className={isChecked === true ?"wait":""}
                                     type="datetime-local"
                                     id="datetimeStart"
                                     name="datetimeStart"
                                     min={minDateISO}
-                                    // min={currentDateStart} // Set minimum date to current date
                                     value={dateTimeStart}
+                                    placeholder="yyyy-MM-ddThh:mm"
                                     onChange={handleChangeDateStart}
                                     />
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="datetimeend" className="w100px">เวลาปิด</label>
-                                    <input
+                                    <input className={isChecked === true ?"wait":""}
                                     type="datetime-local"
                                     id="datetimeend"
                                     name="datetimeend"
                                     min={minDateISO} // Set minimum date to current date
                                     value={dateTimeend}
+                                    placeholder="yyyy-MM-ddThh:mm"
                                     onChange={handleChangeDateend}
                                     />
                                 </div>
-                                <div className="bx-button"><button type="reset" className="button-reset">รีเซ็ท</button>
-                                <button type="submit" className="button-submit" onClick={handleSubmit}>บันทึก</button></div>
+                                <div className="bx-button">
+                                    <div onClick={handlereset} className='button-reset'>รีเซ็ท</div>
+                                    <button type="submit" className="button-submit" onClick={handleSubmit}>บันทึก</button>
+                                </div>
                             </div>
                         </form>
                     </div>
