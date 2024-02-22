@@ -128,7 +128,7 @@ const AppHome = () => {
                             </div>
 
                         }
-                        <div className='bx-details light'>
+                        {/* <div className='bx-details light'>
                             <p>{Cookies.get('userid')}</p>
                             <p>{Cookies.get('email')}</p>
                             <p>{Cookies.get('fullname')}</p>
@@ -138,7 +138,7 @@ const AppHome = () => {
                             <p>{Cookies.get('e_kyc')}</p>
                             <p>{Cookies.get('typesid')}</p>
                             <p>{Cookies.get('clientId')}</p>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </main>

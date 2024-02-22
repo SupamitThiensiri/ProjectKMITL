@@ -58,7 +58,7 @@ function Appverify(){
                     }
                     {" "+msg}
                     {msg === "ยืนยันอีเมลสำเร็จ" ? 
-                        <div>
+                        <div style={{paddingTop: '10px'}}>
                             {/* <p>เข้าสู่ระบบเพื่อใช้งาน</p> */}
                             <Link to="/SingIn"><div className="button-submit">คลิก เข้าสู่ระบบ</div></Link>
                         </div>

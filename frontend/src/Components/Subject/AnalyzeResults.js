@@ -4,22 +4,27 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { variables } from "../../Variables";
-
+import Papa from "papaparse";
 import {Chart as ChartJS} from "chart.js/auto";
 import {Bar} from "react-chartjs-2";
+import AnalyzeResultsCSV from "../Tools/AnalyzeResultsCSV";
 function AppAnalyzeResults() {
     const { id } = useParams();
     const [ExamNo, setExamNo] = useState('');
     const [ExamNoShow, setExamNoShow] = useState('');
     const [subid, setsubid] = useState('');
     const [subjectname, setsubjectname] = useState('');
-    const [selectedValue, setSelectedValue] = useState('');
+    const [selectedValue, setSelectedValue] = useState('1');
     const [numberofexams, setnumberofexams] = useState('');
     const [numberofexamsets, setnumberofexamsets] = useState('');
-    
+
     const [data, setdata] = useState([]);
 
+    const [csvPathsArray, setcsvPathsArray] = useState('');
 
+    const [csvDataanalysis, setcsvDataanalysis] = useState([]);
+
+    const [Step, setStep] = useState(0);
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
     
@@ -43,9 +48,10 @@ function AppAnalyzeResults() {
                 setExamNo(result.examno);
                 setExamNoShow(result.examid);
                 setsubid(result.subid);
-                // console.log(Array.from({ length: result.numberofexams }, (_, i) => i + 1))
                 setnumberofexams(result.numberofexams)
                 setnumberofexamsets(result.numberofexamsets)
+                setcsvPathsArray(result.analysis_csv_path.split(","))
+                
             }
             const subjectResponse = await fetch(variables.API_URL + "subject/detail/" + result.subid + "/", {
                 method: "GET",
@@ -77,9 +83,11 @@ function AppAnalyzeResults() {
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log("fetchDataExamInfoDetail : ",result)
+                        setdata(result.non_duplicate_records)
                     }
-                    console.log("fetchDataExamInfoDetail : ",result)
-                    setdata(result.non_duplicate_records)
+
                     // setdataduplicate(sortObjectsByProperty(result.duplicate_records,'stdid'))
                 }
             )
@@ -87,32 +95,27 @@ function AppAnalyzeResults() {
             setdata([])
         }
 
-    };
-    useEffect(() => {
-        if (Start === 0) {
-            fetchDataExaminfo();
-            fetchDataExamInfoDetail();
-            setStart(1);
-            setTimeout(function() {
-                setStartError(2)
-            }, 800);
-        }
-    }, [Start]); 
-    function findMaxScore(data) {
-        let maxScore = 0;
-        data.forEach(entry => {
-            
-            if (entry.score > maxScore) {
-                maxScore = entry.score;
-            }
-        });
-        return maxScore;
-    }
+    }; 
 
+    // parseCSVData(0)
+    if (Start === 0) {
+        fetchDataExaminfo();
+        fetchDataExamInfoDetail();
+        setStart(1);
+        setTimeout(function() {
+            setStartError(2)
+        }, 800);
+    }
+    useEffect(() => {
+        console.log(csvPathsArray);
+        if(csvPathsArray.length >= 1){
+            setStep(1)
+        }
+    }, [csvPathsArray]);
+    
     function generateNumberArray(n) {
         return Array.from({ length: n }, (_, i) => i + 1);
     }
-
     function generateCorrect(data, set) {
         let result = Array(numberofexams).fill(0)
         for (let i = 0; i < data.length; i++) {
@@ -153,7 +156,6 @@ function AppAnalyzeResults() {
         let uniqueValuesSet = new Set(scoreall);
         let uniqueValuesArray = Array.from(uniqueValuesSet);
         uniqueValuesArray.sort((a, b) => a - b);
-        console.log(uniqueValuesArray)
         return uniqueValuesArray;
     }
     function Numberofstudentspergrade(data) {
@@ -183,9 +185,6 @@ function AppAnalyzeResults() {
 
         return result;
     }
-    console.log(studentspergradeAll(data))
-    console.log(Numberofstudentspergrade(data))
- 
     return (
         <div className='content'>
             <main>
@@ -222,81 +221,102 @@ function AppAnalyzeResults() {
                             </div>
                         </div>
                         <div className='bx-details light'>
-                            <select value={selectedValue} onChange={handleChange}>
-                                {/* <option value="1"></option> */}
-                                <option value="">กรุณาเลือกผลการวิเคราะห์</option>
-                                <option value="1">จำนวนนักเรียนต่อคะแนน</option>
-                                <option value="2">จำนวนนักเรียนที่ตอบถูกในแต่ละข้อ (แต่ละชุดข้อสอบ)</option>
-                                <option value="3">จำนวนนักเรียนที่ตอบผิดในแต่ละข้อ (แต่ละชุดข้อสอบ)</option>
-                                <option value="4">itemanalysis</option>
-                            </select>
+                            <div className="bx-input-fix">
+                                <select value={selectedValue} onChange={handleChange} style={{ width: '230px' }}>
+                                    {/* <option value="1"></option> */}
+                                    {/* <option value="">กรุณาเลือกผลการวิเคราะห์</option> */}
+                                    <option value="1">จำนวนนักเรียนต่อคะแนน</option>
+                                    <option value="2">จำนวนนักเรียนที่ตอบถูกในแต่ละข้อ (แต่ละชุดข้อสอบ)</option>
+                                    <option value="3">จำนวนนักเรียนที่ตอบผิดในแต่ละข้อ (แต่ละชุดข้อสอบ)</option>
+                                    <option value="4">ItemAnalysis</option>
+                                </select>
+                            </div>
                             {selectedValue === '1' ?
 
-                                <div >
-                                    <Bar 
-                                        data={{
-                                            labels: studentspergradeAll(data),
-                                            datasets: [
-                                                {
-                                                    label: "จำนวนนักเรียนต่อคะแนน",
-                                                    data: Numberofstudentspergrade(data),
-                                                    backgroundColor: [
-                                                        'rgba(255, 205, 86, 0.8)',
-                                                    ]
-                                                },
-                                            ],  
-                                        }}
-                                    />
-                                        <p className="center">คะแนน </p>
-                                </div>
-                            :null}
-                            
-                            {selectedValue === '2' ?
-                                 Array.from({ length: numberofexamsets }, (_, index) => (
-                                    <div key={index}>
-                                        <h3>ชุดข้อสอบที่ {index+1}</h3>
+                                <div className="AnalyzeResultsCSV2g">
+                                    <div className="writing-mode">นักเรียน</div>
+                                    <div>
                                         <Bar 
                                             data={{
-                                                labels: generateNumberArray(numberofexams),
+                                                labels: studentspergradeAll(data),
                                                 datasets: [
                                                     {
-                                                        label: "จำนวนนักเรียนที่ตอบถูก",
-                                                        data: generateCorrect(data, index+1),
+                                                        label: "จำนวนนักเรียนต่อคะแนน",
+                                                        data: Numberofstudentspergrade(data),
                                                         backgroundColor: [
-                                                            'rgba(75, 192, 192, 0.8)',
+                                                            'rgba(255, 205, 86, 0.8)',
                                                         ]
                                                     },
                                                 ],  
                                             }}
                                         />
-                                         <p className="center">ข้อ </p>
+                                        <p className="center">คะแนน </p>
+                                    </div>
+                                </div>
+                            :null}
+                            
+                            {selectedValue === '2' ?
+                                 Array.from({ length: numberofexamsets }, (_, index) => (
+                                    <div key={index} className="AnalyzeResultsCSV2g">
+                                        <div className="writing-mode">นักเรียน</div>
+                                        <div>
+                                            <h3>ชุดข้อสอบที่ {index+1}</h3>
+                                            <Bar 
+                                                data={{
+                                                    labels: generateNumberArray(numberofexams),
+                                                    datasets: [
+                                                        {
+                                                            label: "จำนวนนักเรียนที่ตอบถูก",
+                                                            data: generateCorrect(data, index+1),
+                                                            backgroundColor: [
+                                                                'rgba(75, 192, 192, 0.8)',
+                                                            ]
+                                                        },
+                                                    ],  
+                                                }}
+                                            />
+                                            <p className="center">ข้อ </p>
+                                        </div>
                                     </div>
                                 ))
                             :null}
                             
                             {selectedValue === '3' ?
                                  Array.from({ length: numberofexamsets }, (_, index) => (
-                                    <div key={index}>
-                                        <h3>ชุดข้อสอบที่ {index+1}</h3>
-                                        <Bar 
-                                            data={{
-                                                labels: generateNumberArray(numberofexams),
-                                                datasets: [
-                                                    {
-                                                        label: "จำนวนนักเรียนที่ตอบผิด",
-                                                        data: generateWrong(data, index+1),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.8)',
-                                                        ]
-                                                    },
-                                                ],  
-                                            }}
-                                        />
-                                         <p className="center">ข้อ </p>
+                                    <div key={index} className="AnalyzeResultsCSV2g">
+                                        <div className="writing-mode">นักเรียน</div>
+                                        <div>
+                                            <h3>ชุดข้อสอบที่ {index+1}</h3>
+                                            <Bar 
+                                                data={{
+                                                    labels: generateNumberArray(numberofexams),
+                                                    datasets: [
+                                                        {
+                                                            label: "จำนวนนักเรียนที่ตอบผิด",
+                                                            data: generateWrong(data, index+1),
+                                                            backgroundColor: [
+                                                                'rgba(255, 99, 132, 0.8)',
+                                                            ]
+                                                        },
+                                                    ],  
+                                                }}
+                                            />
+                                            <p className="center">ข้อ </p>
+                                        </div>
                                     </div>
                                 ))
                             :null}
-                         
+                            {selectedValue === '4' &&
+                                (Step === 1 &&
+                                    csvPathsArray.map((path, index) => (
+                                        <div key={index}><AnalyzeResultsCSV url={path}/></div>
+                                    ))
+                                )
+                            }
+
+                                
+                            
+
                         </div>
                     </div>
                 </div>

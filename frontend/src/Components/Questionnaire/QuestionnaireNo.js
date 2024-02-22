@@ -19,6 +19,8 @@ function AppQuestionnaireNo(){
 
     const [dateTimeshow, setdateTimeshow] = useState('');
 
+    const [quesheetinfo, setquesheetinfo] = useState('');
+
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
 
@@ -80,9 +82,38 @@ function AppQuestionnaireNo(){
            
         }
     };
+    const fetchDataquesheetinfo = async () => {
+        try{
+            fetch(variables.API_URL+"queinformation/detail/quesheet/"+id+"/", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(result.err !== undefined){
+                        setStartError(1);
+                    }else{
+                        console.log("quesheetinfo :",result)
+                        setquesheetinfo(result)
+                    }
+                    
+                }
+            )
+            
+        }catch (err) {
+            console.error(err)
+            setStartError(1);
+           
+        }
+    };
     if(Start === 0){
         fetchDataquesheet();
+        fetchDataquesheetinfo();
         setStart(1);
+        
     }
 
     const handleCopyClick = () => {
@@ -121,6 +152,10 @@ function AppQuestionnaireNo(){
         }, 500); 
     }, []);
 
+    useEffect(() => {
+        const intervalId = setInterval(fetchDataquesheet, 30000);
+        return () => clearInterval(intervalId);
+    }, []);
     return(
 
         <div className='content'>
@@ -178,33 +213,34 @@ function AppQuestionnaireNo(){
                         <div className="fb">ขั้นตอนเตรียมการก่อนการประมวลผล</div>
                         <div className="bx-step-content">
                             {/* <div className={sequencesteps ? "bx-show":"bx-show wait" }><Link to={"/Questionnaire/QuestionnaireNo/ShowQuestionnaire/1"+id}><div className="box"><div className="box-img"><img src='/img/DownloadsQuz.png' alt=''/><p>กระดาษแบบสอบถาม</p></div></div></Link></div> */}
-
-                            <div className={sequencesteps === 1  ? "bx-show":"bx-show wait" }>
+                            {console.log("quesheetinfo l :",quesheetinfo.length)}
+                            <div className={(sequencesteps >= 1 && sequencesteps <=3) && quesheetinfo.length <= 0  ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/ShowQuestionnaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
-                                            {sequencesteps === 1 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
+                                            {sequencesteps >= 1 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/QueStep1.png' alt=''/>
                                             <p>กระดาษแบบสอบถาม</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps === 1 ? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps >= 1 && sequencesteps <=3 ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/SetDateTimeQuestionnaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
-                                            {sequencesteps === 1 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
+                                            {sequencesteps >= 1 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                             <img src='/img/QueStep2.png' alt=''/>
                                             <p>แบบสอบถามออนไลน์</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps ? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps >= 1 && sequencesteps <=3 ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/UploadQuestionnaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
+                                            {sequencesteps === 2 || sequencesteps === '2'?<img src="/img/loading.webp" alt="Your GIF" className="icon-wait-gif" style={{ height: '30px' }}/>:(sequencesteps >= 3 || sequencesteps === '3'? <FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:'')}
                                             <img src='/img/QueStep3.png' alt=''/>
                                             <p>อัปโหลดแบบสอบถาม</p>
                                         </div>
@@ -215,7 +251,7 @@ function AppQuestionnaireNo(){
                         <div className="fb">ขั้นตอนการประมวลผล</div>
                         <div className="bx-step-content">
                             <div className={sequencesteps ? "bx-show":"bx-show wait" }>
-                                <Link to={"/"+id}>
+                                <Link to={"/Questionnaire/QuestionnaireNo/CheckQuestionaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
                                             <img src='/img/step5.png' alt=''/>

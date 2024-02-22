@@ -18,9 +18,23 @@ function AppUploadAnswerSheet(){
     const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
     const [namefileupload, setNameFileUpload] = useState(''); // สำหรับชื่อไฟล์อัปโหลด
 
-    const [QueSheetName, setQueSheetName] = useState('');
-    const [sequencesteps, setsequencesteps] = useState('');
     
+    const [sequencesteps, setsequencesteps] = useState('');
+    const [QueSheetName, setQueSheetName] = useState('');
+    const [QueSheetTopicName, setQueSheetTopicName] = useState('');
+    const [DetailsLineOne, setDetailsLineOne] = useState('');
+    const [DetailsLinetwo, setDetailsLinetwo] = useState('');
+
+
+    const [quehead1, setquehead1] = useState('');
+    const [quehead2, setquehead2] = useState('');
+    const [quehead3, setquehead3] = useState('');
+    const [quehead4, setquehead4] = useState('');
+    const [quehead5, setquehead5] = useState('');
+
+    const [quetopicdetails, setquetopicdetails] = useState('');
+    const [quetopicformat, setquetopicformat] = useState('');
+
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
     
@@ -41,7 +55,9 @@ function AppUploadAnswerSheet(){
                     console.log("quesheet :",result)
                     setQueSheetName(result.quesheetname)
                     setsequencesteps(result.sequencesteps)
-                   
+                    setQueSheetTopicName(result.quesheettopicname)
+                    setDetailsLineOne(result.detailslineone)
+                    setDetailsLinetwo(result.detailslinetwo)
                 }
             )
             fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
@@ -55,8 +71,16 @@ function AppUploadAnswerSheet(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log(result)
+                        setquehead1(result.quehead1)
+                        setquehead2(result.quehead2)
+                        setquehead3(result.quehead3)
+                        setquehead4(result.quehead4)
+                        setquehead5(result.quehead5)
                     }
-                    console.log(result)
+                    
+
                 }
             )
             fetch(variables.API_URL+"quetopicdetails/detail/"+id+"/", {
@@ -70,8 +94,12 @@ function AppUploadAnswerSheet(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
+                    }else{
+                        console.log(result)
+                        setquetopicdetails(result.quetopicdetails)
+                        setquetopicformat(result.quetopicformat)
                     }
-                    console.log(result)
+                   
                 }
             )
             
@@ -92,7 +120,6 @@ function AppUploadAnswerSheet(){
             setStartError2()
         }, 800);
     }
-
     const onDrop = useCallback((acceptedFiles) => {
         setNameFileUpload('')
         const imageFiles = acceptedFiles.filter(file => (
@@ -172,54 +199,114 @@ function AppUploadAnswerSheet(){
         }
     }
     async function saveUpload(){
-        const formdata = new FormData();
-        for (let i = 0; i < File.length; i++) {
-            formdata.append('file', File[i]);
+        const formData = new FormData();
+        const quesheet_data = {
+            userid : Cookies.get('userid'),
+            quesheetname : QueSheetName,
+            quesheettopicname : QueSheetTopicName,
+            detailslineone : DetailsLineOne,
+            detailslinetwo : DetailsLinetwo,
+            sequencesteps : 2,
         }
-        formdata.append("userid", Cookies.get('userid'));
-        formdata.append("examid", id);
-        
-        console.log("formdata :",formdata);
-        
+        const queheaddetails_data = {
+            quehead1 :quehead1,
+            quehead2 :quehead2,
+            quehead3 :quehead3,
+            quehead4 :quehead4,
+            quehead5 :quehead5,
+        }
+        const quetopicdetails_data = {
+            quetopicdetails : quetopicdetails,
+            quetopicformat : quetopicformat,
+        }
+        formData.append("userid", Cookies.get('userid'));
+        formData.append("quesheet", JSON.stringify(quesheet_data))
+        formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
+        formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
+        formData.append("nonelogo",false)
+        console.log(formData)
+
+        const formDataFalse = new FormData();
+        const quesheet_data_false = {
+            userid : Cookies.get('userid'),
+            quesheetname : QueSheetName,
+            quesheettopicname : QueSheetTopicName,
+            detailslineone : DetailsLineOne,
+            detailslinetwo : DetailsLinetwo,
+            sequencesteps : 1,
+        }
+
+        formDataFalse.append("userid", Cookies.get('userid'));
+        formDataFalse.append("quesheet", JSON.stringify(quesheet_data_false))
+        formDataFalse.append("queheaddetails", JSON.stringify(queheaddetails_data))
+        formDataFalse.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
+        formDataFalse.append("nonelogo",false)
+
         try {
-            await fetch(variables.API_URL + "exam/update/"+id+"/", {
+            const queupdateTime = await fetch(variables.API_URL + "quesheet/update/"+id+"/", {
                 method: "PUT",
                 headers: {
                     'Accept': 'application/json, text/plain',
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
                 body: JSON.stringify({
-                    sequencesteps:"3",
+                    sequencesteps : 2,
                     userid : Cookies.get('userid')
                 }),
             });
 
+            const result = await queupdateTime.json()
+
+            fetchDataquesheet()
             setFile([])
             setShowFile([])
             setNameFileUpload([])
             
-            fetch(variables.API_URL + "examinformation/upload/paper/", {
-                method: "POST",
-                body: formdata,
-            }).then(response => {
-                return true; // รีเทิร์นค่า true เพื่อสื่อว่าการส่งข้อมูลเสร็จสิ้น
-            })
-            .catch(error => {
-                return error; // รีเทิร์น error เพื่อจัดการกับข้อผิดพลาดในการส่งข้อมูล
-            });
+            if (result) {
+                if(result.err === undefined){
+
+                    const formdataQueinfo = new FormData();
+                    for (let i = 0; i < File.length; i++) {
+                        formdataQueinfo.append('file', File[i]);
+                    }
+                    formdataQueinfo.append("userid", Cookies.get('userid'));
+                    formdataQueinfo.append("quesheetid", id);
+
+                    fetch(variables.API_URL + "queinformation/upload/paper/", {
+                        method: "POST",
+                        body: formdataQueinfo,
+                    }).then(response => {
+                        return true; 
+                    })
+                    .catch(error => {
+                        try {
+                            fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+                                method: "PUT",
+                                body: formDataFalse,
+                            });
+                        }catch(error){
+                            return error; 
+                        }
+                        return error; 
+                    });
+                }else{
+                    fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+                        method: "PUT",
+                        body: formDataFalse,
+                    });
+                    return result.err
+                }
+                
+            }else{
+                fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+                    method: "PUT",
+                    body: formDataFalse,
+                });
+                return result.err
+            }
+            
     
         } catch (err) {
-            await fetch(variables.API_URL + "exam/update/"+id+"/", {
-                method: "PUT",
-                headers: {
-                    'Accept': 'application/json, text/plain',
-                    'Content-Type': 'application/json;charset=UTF-8'
-                },
-                body: JSON.stringify({
-                    sequencesteps:"2",
-                    userid : Cookies.get('userid')
-                }),
-            });
             return err; // รีเทิร์น error เมื่อเกิดข้อผิดพลาด
         }
     } 
@@ -267,8 +354,6 @@ function AppUploadAnswerSheet(){
             Swal.fire('เกิดข้อผิดพลาด');
         }
     }
-
-    // const options = {}
     useEffect(() => {
         const intervalId = setInterval(fetchDataquesheet, 30000);
         return () => clearInterval(intervalId);
@@ -314,7 +399,7 @@ function AppUploadAnswerSheet(){
                             <div className="jc-center">
                                 <div className="mw300px fit-content">
                                     <div className="dropzone">
-                                        <div className={sequencesteps === 3 || sequencesteps === "3" ? "dz-box wait":"dz-box"} {...getRootProps()}>
+                                        <div className={sequencesteps === 2 || sequencesteps === "2" ? "dz-box wait":"dz-box"} {...getRootProps()}>
                                             <input className="test" {...getInputProps()} />
                                             <div className="dz-icon blue-font"><FontAwesomeIcon icon={faCloudArrowUp} /></div>
                                             { isDragActive ?
@@ -345,20 +430,20 @@ function AppUploadAnswerSheet(){
                                     }
                                     <form className="flex-end" onSubmit={handleSubmitFile}>
                                         <div className='bx-button' >
-                                            <button type="submit"  className={sequencesteps === 3 || sequencesteps === "3" ? "button-submit wait":"button-submit"}>บันทึก</button>
+                                            <button type="submit"  className={sequencesteps === 2 || sequencesteps === "2" ? "button-submit wait":"button-submit"}>บันทึก</button>
                                         </div>
                                     </form >
                                 </div>
                             </div>
-                            {sequencesteps === 3 || sequencesteps === "3" ? (
+                            {sequencesteps === 2 || sequencesteps === "2" ? (
                                 <div className="center loading-process">
                                     <div>
-                                        กำลังประมวลผลแบบสอบถาม ระหว่างที่รอแบบสอบถามประมวลผลสามารถทำอย่างอื่นรอก่อนได้
+                                        กำลังประมวลผลแบบสอบถาม ระหว่างที่รอแบบสอบถามประมวลผลท่านสามารถดำเนินการอื่นๆก่อนได้
                                     </div>
                                     <div id="loadingDiv" className="loading"> </div>
                                 </div>
                             ) : (
-                                sequencesteps === 4 || sequencesteps === "4" ? 
+                                sequencesteps === 3 || sequencesteps === "3" ? 
                                 <div className="success-text"><FontAwesomeIcon icon={faCheck} /> การอัปโหลดแบบสอบถามก่อนหน้าประมวลผลเสร็จสิ้น</div>
                                 : 
                                 ''

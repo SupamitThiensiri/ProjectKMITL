@@ -47,6 +47,7 @@ import AppSetDateTimeQuesionnaire from './Components/Questionnaire/SetDateTimeQu
 import AppOnlineQuestionnaire from './Components/Questionnaire/OnlineQuestionnaire';
 import Appverify from './Components/verify';
 import AppAnalyzeResults from './Components/Subject/AnalyzeResults';
+import AppCheckQuestionaire from './Components/Questionnaire/CheckQuestionaire';
 
 
 function App() {
@@ -94,8 +95,9 @@ function App() {
         <Route path='/Questionnaire/QuestionnaireNo/SetDateTimeQuestionnaire/:id' element={<AppSetDateTimeQuesionnaire />}></Route>
         <Route path='/Questionnaire/QuestionnaireNo/UploadQuestionnaire/:id' element={<AppUploadQuestionnaire />}></Route>
         <Route path='/Questionnaire/QuestionnaireNo/ShowQuestionnaire/UpdateQuestionnaire/:id' element={<AppUpdateQuetionaire />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/CheckQuestionaire/:id' element={<AppCheckQuestionaire />}></Route>
 
-
+        
         <Route path='/Profile' element={<AppProfile />}></Route>
         <Route path='/Contact' element={<AppContact />}></Route>
 

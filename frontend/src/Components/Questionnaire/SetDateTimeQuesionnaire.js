@@ -229,43 +229,55 @@ function AppSetDateTimeQuesionnaire(){
         }
     }
     async function UpdateQue() {
-        const formData = new FormData();
-        const dtstart = addDurationToDateTime(dateTimeStart)
-        const dtend = addDurationToDateTime(dateTimeend)
-        const quesheet_data = {
-            userid : Cookies.get('userid'),
-            quesheetname : QueSheetName,
-            quesheettopicname : QueSheetTopicName,
-            detailslineone : DetailsLineOne,
-            detailslinetwo : DetailsLinetwo,
-            datetimestart : isChecked === true ? null : dateTimeStart,
-            datetimeend : isChecked === true ? null : dateTimeend,
-        }
-        const queheaddetails_data = {
-            quehead1 :quehead1,
-            quehead2 :quehead2,
-            quehead3 :quehead3,
-            quehead4 :quehead4,
-            quehead5 :quehead5,
-        }
-        const quetopicdetails_data = {
-            quetopicdetails : quetopicdetails,
-            quetopicformat : quetopicformat,
-        }
-        formData.append("logo", '');
-        formData.append("userid", Cookies.get('userid'));
-        formData.append("quesheet", JSON.stringify(quesheet_data))
-        formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
-        formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
-        formData.append("nonelogo", checknonelogo)
-        console.log(formData)
+        // const formData = new FormData();
+        // const quesheet_data = {
+        //     userid : Cookies.get('userid'),
+        //     quesheetname : QueSheetName,
+        //     quesheettopicname : QueSheetTopicName,
+        //     detailslineone : DetailsLineOne,
+        //     detailslinetwo : DetailsLinetwo,
+        //     datetimestart : isChecked === true ? null : dateTimeStart,
+        //     datetimeend : isChecked === true ? null : dateTimeend,
+        // }
+        // const queheaddetails_data = {
+        //     quehead1 :quehead1,
+        //     quehead2 :quehead2,
+        //     quehead3 :quehead3,
+        //     quehead4 :quehead4,
+        //     quehead5 :quehead5,
+        // }
+        // const quetopicdetails_data = {
+        //     quetopicdetails : quetopicdetails,
+        //     quetopicformat : quetopicformat,
+        // }
+        // formData.append("userid", Cookies.get('userid'));
+        // formData.append("quesheet", JSON.stringify(quesheet_data))
+        // formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
+        // formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
+        // formData.append("nonelogo",false)
+
+        // console.log(formData)
 
         try{
-            const quecreate = await fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+        //     const quecreate = await fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+        //         method: "PUT",
+        //         body: formData,
+        //     });
+            const queupdateTime = await fetch(variables.API_URL + "quesheet/update/"+id+"/", {
                 method: "PUT",
-                body: formData,
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    datetimestart : isChecked === true ? null : dateTimeStart,
+                    datetimeend : isChecked === true ? null : dateTimeend,
+                    userid : Cookies.get('userid')
+                }),
             });
-            const result = await quecreate.json()
+
+            const result = await queupdateTime.json()
+
             if (result) {
                 if(result.err === undefined){
                     return true

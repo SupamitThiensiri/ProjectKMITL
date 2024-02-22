@@ -14,7 +14,7 @@ function AppCheckAnswerSheet(){
     const { id } = useParams();
     const [data, setdata] = useState([]);
     const [dataduplicate, setdataduplicate] = useState([]);
-
+    const [non_duplicate_records, setnon_duplicate_records] = useState([]);
 
     const [ExamNo, setExamNo] = useState('');
     const [ExamNoShow, setExamNoShow] = useState('');
@@ -100,6 +100,7 @@ function AppCheckAnswerSheet(){
                     console.log("result __",result)
                     setdata(sortObjectsByProperty(result.non_duplicate_records,'stdid'))
                     setdataduplicate(sortObjectsByProperty(result.duplicate_records,'stdid'))
+                    setnon_duplicate_records(result.non_duplicate_records)
                 }
             )
         }catch (err) {
@@ -107,7 +108,17 @@ function AppCheckAnswerSheet(){
         }
 
     };
-
+    function checknomistake(data) {
+        for (let i = 0; i < data.length; i++) {
+            if(data[i].errorstype !== ''){
+                return false;
+            } 
+        }
+        if(dataduplicate.length !== 0){
+            return false;
+        }
+        return true;
+    }
     function extractFilenameFromURL(url) {
         const parts = url.split('/');
         const filenameWithSpaces = parts[parts.length - 1];
@@ -386,20 +397,25 @@ function AppCheckAnswerSheet(){
     }
     async function handleSubmitAnalyzeresults(e) {
         e.preventDefault();
-        Swal.fire({
-            title: "วิเคราะห์ผล",
-            text: `โปรดมั่นใจว่าคุณได้แก้ไขข้อผิดพลาดของข้อมูลเสร็จสิ้นแล้วหากกดยืนยันแล้วจะไม่สามารถกลับมาแก้ไขข้อมูลได้ \nกดยืนยันเพื่อทำการวิเคราะห์ผล `,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#341699",
-            confirmButtonText: "ยืนยัน",
-            cancelButtonColor: "#d33",
-            cancelButtonText: "ยกเลิก"
-        }).then(async (result) => {
-            if(result.isConfirmed){
-                loading();
-            }
-        });
+        if(checknomistake(non_duplicate_records) === true){
+            Swal.fire({
+                title: "วิเคราะห์ผล",
+                text: `โปรดมั่นใจว่าคุณได้แก้ไขข้อผิดพลาดของข้อมูลเสร็จสิ้นแล้วหากกดยืนยันแล้วจะไม่สามารถกลับมาแก้ไขข้อมูลได้ \nกดยืนยันเพื่อทำการวิเคราะห์ผล `,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#341699",
+                confirmButtonText: "ยืนยัน",
+                cancelButtonColor: "#d33",
+                cancelButtonText: "ยกเลิก"
+            }).then(async (result) => {
+                if(result.isConfirmed){
+                    loading();
+                }
+            });
+        }else{
+            Swal.fire('ยังมีข้อมูลที่ยังรอการแก้ไขไม่สามารถวิเคราะห์ผลได้');
+        }
+       
     }
     async function loading(){
         try {
@@ -525,7 +541,6 @@ function AppCheckAnswerSheet(){
     //         console.log(err)
     //     }
     // }
-    
     useEffect(() => {
         const intervalId = setInterval(fetchDataStartExam, 30000);
         return () => clearInterval(intervalId);
@@ -539,8 +554,61 @@ function AppCheckAnswerSheet(){
             setStartError(2)
         }, 800);
     }
-    return(
 
+    async function submitprocessimg(dataid,pathimg,nameimg) {
+        Swal.fire({
+            title: "",
+            text: `คุณต้องการดูกระดาษคำตอบ `+(nameimg)+` ที่ประมวลผลแล้วใช่หรือไม่`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#341699",
+            confirmButtonText: "ยืนยัน",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "ยกเลิก"
+        }).then(async (result) => {
+            if(result.isConfirmed){
+                const loadingSwal = Swal.fire({
+                    title: 'กำลังประมวลผล...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: async () => { 
+                        Swal.showLoading();
+                        try {
+                            const response = await fetch(variables.API_URL + "examinformation/tableans/"+dataid+"/", {
+                                method: "GET",
+                                headers: {
+                                    'Accept': 'application/json, text/plain',
+                                    'Content-Type': 'application/json;charset=UTF-8'
+                                },
+                            });
+                        
+                            const result = await response.json();
+                            if(result.err === undefined){
+                                Swal.close();
+                                console.log(result)
+                                Swal.fire({
+                                    imageUrl: result.img_path,
+                                    imageAlt: result.img_path,
+                                    customClass: {
+                                        popup: 'custom-alert-popup', // Add your custom class here
+                                    }
+                                });
+                                
+                            }else{
+                                Swal.close();
+                                Swal.fire('เกิดข้อผิดพลาด :'+result.err);
+                            }
+                        }catch(error){
+                            Swal.close();
+                            Swal.fire('เกิดข้อผิดพลาด');
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+    return(
         <div className='content'>
         <main>
             <div className='box-content'>
@@ -577,11 +645,6 @@ function AppCheckAnswerSheet(){
                                         <p className={sequencesteps >= 5 ?"button-process wait":"button-process"}><span className="fb">วิเคราะห์ผล</span></p>
                                     </Link>
                                 </div>
-                                {/* <div className="pdl10px" onClick={checkanalyzeresults}>
-                                    <Link to="#">
-                                        <p className='button-process'><span className="fb">วิเคราะห์ผล</span></p>
-                                    </Link>
-                                </div> */}
                             </div>
                         </div> 
                     </div>
@@ -599,7 +662,7 @@ function AppCheckAnswerSheet(){
                                     <div>
                                         <div className="center loading-process">
                                             <div>
-                                                กำลังวิเคราะห์ผล ระหว่างที่รอวิเคราะห์ผลสามารถทำอย่างอื่นรอก่อนได้
+                                                กำลังวิเคราะห์ผล ระหว่างที่รอวิเคราะห์ผลท่านสามารถดำเนินการอื่นๆก่อนได้
                                             </div>
                                             <div id="loadingDiv" className="loading"> </div>
                                             
@@ -624,7 +687,7 @@ function AppCheckAnswerSheet(){
                                             <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>ชุดข้อสอบ</th>
                                             <th style={{ minWidth: '170px',maxWidth: '170px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การตรวจคำตอบ</th>
                                             <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>สาเหตุ</th>
-                                            <th style={{ minWidth: '180px',maxWidth: '180px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
+                                            <th style={{ minWidth: '200px',maxWidth: '200px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
                                             <th style={{ minWidth: '100px',maxWidth: '100px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การจัดการ</th>
                                         </tr>
                                         </thead>
@@ -641,7 +704,7 @@ function AppCheckAnswerSheet(){
                                                 <td className="center" >{item.stdid !== "" && item.stdid !== null && item.subjectidstd !== "0" && item.stdid !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                 <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null && item.subjectidstd !== "0" && item.subjectidstd !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                 <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                 <td className="hover-trigger center green-font"><p className="hover-content">รายละเอียดถูกต้อง{item.errorstype}</p><FontAwesomeIcon icon={faCircleCheck} /></td>
                                                 <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
                                                 <td className="center mw80px"> 
@@ -666,7 +729,7 @@ function AppCheckAnswerSheet(){
                                                 <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>ชุดข้อสอบ</th>
                                                 <th style={{ minWidth: '170px',maxWidth: '170px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การตรวจคำตอบ</th>
                                                 <th style={{ minWidth: '130px',maxWidth: '130px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>สาเหตุ</th>
-                                                <th style={{ minWidth: '180px',maxWidth: '180px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
+                                                <th style={{ minWidth: '200px',maxWidth: '200px',overflowX: 'auto', whiteSpace: 'nowrap' }}>ชื่อไฟล์</th>
                                                 <th style={{ minWidth: '100px',maxWidth: '100px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>การจัดการ</th>
                                             </tr>
                                         </thead>
@@ -706,7 +769,7 @@ function AppCheckAnswerSheet(){
                                                             </td>
                                                             <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                             <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                            <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                            <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                             {/* <td className="center"><div className="floating-box">สาเหตุ</div></td> */}
                                                             <td className="hover-trigger center warning-font"><FontAwesomeIcon icon={faTriangleExclamation} /><p className="hover-content">{item.errorstype}</p></td>
 
@@ -725,7 +788,7 @@ function AppCheckAnswerSheet(){
                                                         <td className="center">{item.stdid !== "" && item.stdid !== null  && item.stdid !== "0" && item.stdid !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                         <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                         <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                        <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<FontAwesomeIcon className="green-font" icon={faCircleCheck} />:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                        <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                         <td className="hover-trigger center warning-font"><p className="hover-content">รหัสนักศึกษาซ้ำกัน{item.errorstype}</p><FontAwesomeIcon icon={faTriangleExclamation} /></td>
                                                         <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
                                                         <td className="center mw80px"> <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, "3")} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link><span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span></td>

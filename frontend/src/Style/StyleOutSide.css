@@ -86,7 +86,11 @@
     min-height: 100vh;
     display: grid;
     justify-content: center;
-
+    & .Submitadditionalcomments{
+        padding: 20px;
+        border: 1px solid var(--light-grey);
+        height: fit-content;
+    }
     & .box-que{
         border: 1px solid var(--light-grey);
         border-radius: 10px;
@@ -96,6 +100,7 @@
         & .box-que-topicname{
           padding: 10px;  
         }
+        
         & img{
             width: 100%;
         }
