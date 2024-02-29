@@ -15,6 +15,8 @@ function AppCheckAnswerSheet(){
     const [data, setdata] = useState([]);
     const [dataduplicate, setdataduplicate] = useState([]);
     const [non_duplicate_records, setnon_duplicate_records] = useState([]);
+    const [EmptyErrorType, setEmptyErrorType] = useState(0);
+
 
     const [ExamNo, setExamNo] = useState('');
     const [ExamNoShow, setExamNoShow] = useState('');
@@ -101,6 +103,7 @@ function AppCheckAnswerSheet(){
                     setdata(sortObjectsByProperty(result.non_duplicate_records,'stdid'))
                     setdataduplicate(sortObjectsByProperty(result.duplicate_records,'stdid'))
                     setnon_duplicate_records(result.non_duplicate_records)
+                    hasEmptyErrorType(result.non_duplicate_records)
                 }
             )
         }catch (err) {
@@ -554,7 +557,18 @@ function AppCheckAnswerSheet(){
             setStartError(2)
         }, 800);
     }
-
+    const hasEmptyErrorType = (data) => {
+        console.log(data);
+        let numErrorType = 0; // Change const to let
+        for (const item of data) {
+            if (item.errorstype === null || item.errorstype === '') {
+                numErrorType += 1; // Change const to let
+            }
+        }
+        console.log("numErrorType", numErrorType);
+        setEmptyErrorType(numErrorType); // Assuming setEmptyErrorType is properly defined
+    };
+    
     async function submitprocessimg(dataid,pathimg,nameimg) {
         Swal.fire({
             title: "",
@@ -675,7 +689,8 @@ function AppCheckAnswerSheet(){
                                     :
                                     null
                                 )}
-
+                                <div>ไฟล์กระดาษคำตอบที่ถูกต้อง {EmptyErrorType} / {csvData.length}</div>
+                                {/* <div>จำนวนนักศึกษาในไฟล์ที่อัปโหลด {csvData.length} รายชื่อ</div> */}
                                 <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษคำตอบ ที่ถูกต้อง</div>
                                 <div className="tableSub">
                                 <table className={sequencesteps >= 5 ? "wait" : ""}>

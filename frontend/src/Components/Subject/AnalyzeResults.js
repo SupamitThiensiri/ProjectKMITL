@@ -4,8 +4,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { variables } from "../../Variables";
-import Papa from "papaparse";
-import {Chart as ChartJS} from "chart.js/auto";
+import Chart from 'chart.js/auto';
 import {Bar} from "react-chartjs-2";
 import AnalyzeResultsCSV from "../Tools/AnalyzeResultsCSV";
 function AppAnalyzeResults() {
@@ -21,8 +20,6 @@ function AppAnalyzeResults() {
     const [data, setdata] = useState([]);
 
     const [csvPathsArray, setcsvPathsArray] = useState('');
-
-    const [csvDataanalysis, setcsvDataanalysis] = useState([]);
 
     const [Step, setStep] = useState(0);
     const [Start, setStart] = useState(0);
@@ -96,8 +93,6 @@ function AppAnalyzeResults() {
         }
 
     }; 
-
-    // parseCSVData(0)
     if (Start === 0) {
         fetchDataExaminfo();
         fetchDataExamInfoDetail();
@@ -313,10 +308,6 @@ function AppAnalyzeResults() {
                                     ))
                                 )
                             }
-
-                                
-                            
-
                         </div>
                     </div>
                 </div>

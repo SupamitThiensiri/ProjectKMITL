@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 import Cookies from 'js-cookie';
 
 
-function AppUpdateExam(){
+function AppAdminUpdateExam(){
 
     const { id } = useParams();
 
@@ -19,7 +19,14 @@ function AppUpdateExam(){
     const [SetExam, setSetExam] = useState(1);
     const [subid, setsubid] = useState('');
     const [subjectname, setsubjectname] = useState('');
-    
+    const [userid, setuserid] = useState('');
+    const [examid, setexamid] = useState('');
+
+    const [showsequencesteps, setshowsequencesteps] = useState('');
+    const [sequencesteps, setsequencesteps] = useState('');
+    const handlesequencesteps = (event) => {
+        setsequencesteps(event.target.value);
+      };
     const handleInputNameExam = (e) => { setNameExam(e.target.value); };
     const handleInputExamNo = (e) => {setExamNo(e.target.value);};
     const handleInputNumExam = (e) => { setNumExam(e.target.value); };
@@ -47,6 +54,10 @@ function AppUpdateExam(){
                     setNumExam(result.numberofexams)
                     setSetExam(result.numberofexamsets)
                     setsubid(result.subid)
+                    setsequencesteps(result.sequencesteps)
+                    setshowsequencesteps(result.sequencesteps)
+                    setuserid(result.userid)
+                    setexamid(result.examid)
                     fetch(variables.API_URL+"subject/detail/"+result.subid+"/", {
                         method: "GET",
                         headers: {
@@ -112,7 +123,8 @@ function AppUpdateExam(){
                                 examno: ExamNo,
                                 numberofexams: NumExam,
                                 numberofexamsets: SetExam,
-                                userid : Cookies.get('userid')
+                                userid : userid,
+                                sequencesteps : sequencesteps
                             }),
                         });
 
@@ -182,15 +194,16 @@ function AppUpdateExam(){
                     }
                     <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                         <div className='bx-topic light'>
-                            <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด </Link>/ <Link to={"/Subject/SubjectNo/"+subid}>{subjectname}</Link> / การสอบครั้งที่ {ExamNoShow} / แก้ไขการสอบ</p>
-                            <h2>แก้ไขการสอบ</h2>  
+                            <p><Link to="/Admin/AdminSubject">จัดการรายวิชา</Link> / <Link to="/Admin/AdminSubject">รายวิชาทั้งหมด </Link>/ <Link to={"/Admin/AdminSubject/SubjectExam/"+subid}>{subjectname}</Link> / การสอบครั้งที่ {ExamNoShow} / Admin แก้ไขการสอบ</p>
+                            <h2>Admin แก้ไขการสอบ</h2>  
                         </div>
-                    
+                       
                         <div className='bx-details light'>
+                            <div>ID ของแบบสอบถาม : {examid} </div>
                             <form onSubmit={handleSubmit}>
-                                <div className="bx-input-fix">
+                                <div className="bx-input-fix ">
                                     <label htmlFor="NameExam" className="w120px">ชื่อการสอบ</label>
-                                    <input className="mw300px"
+                                    <input className="mw300px wait"
                                         type="text"
                                         id="NameExam"
                                         name="NameExam"
@@ -201,7 +214,7 @@ function AppUpdateExam(){
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="ExamNo" className="w120px">การสอบครั้งที่</label>
-                                    <input className="mw300px"
+                                    <input className="mw300px wait"
                                         type="number"
                                         id="ExamNo"
                                         name="ExamNo"
@@ -214,7 +227,7 @@ function AppUpdateExam(){
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="setNumExam" className="w120px">จำนวนข้อสอบ</label>
-                                    <input className="mw300px"
+                                    <input className="mw300px wait"
                                         type="number"
                                         id="setNumExam"
                                         name="setNumExam"
@@ -227,7 +240,7 @@ function AppUpdateExam(){
                                 </div>
                                 <div className="bx-input-fix">
                                     <label htmlFor="SetExam" className="w120px">จำนวนชุดข้อสอบ</label>
-                                    <input className="mw300px"
+                                    <input className="mw300px wait"
                                         type="number"
                                         id="SetExam"
                                         name="SetExam"
@@ -237,8 +250,28 @@ function AppUpdateExam(){
                                         min="1"
                                         max="30"
                                     />
-                                </div>
+                                </div>  
+                                {showsequencesteps === 1 || showsequencesteps === 2 ||showsequencesteps === "1" || showsequencesteps === "2"?
+                                    <div className="danger-font">ลำดับการทำงาน ณ ปัจจุบัน{}: ค่าเริ่มต้น อัปโหลดรายชื่อนักศึกษาและสร้างกระดาษคำตอบ</div>:null
 
+                                }
+                                {showsequencesteps === 3 || showsequencesteps === 4 ||showsequencesteps === "3" || showsequencesteps === "4"?
+                                    <div className="danger-font">ลำดับการทำงาน ณ ปัจจุบัน{}: อัปโหลดกระดาษคำตอบ</div>:null
+
+                                }
+                                {showsequencesteps === 5 || showsequencesteps === 6 ||showsequencesteps === "5" || showsequencesteps === "6"? 
+                                    <div className="danger-font">ลำดับการทำงาน ณ ปัจจุบัน {}: สรุปผล</div>:null
+                                }
+                                <div className="bx-input-fix">
+                                    <div htmlFor="sequencesteps">เลือกลำดับการทำงาน</div>
+                                    <select id="sequencesteps" value={sequencesteps} onChange={handlesequencesteps} style={{width:250}}>
+                                        <option value="">กรุณาเลือก</option>
+                                        <option value="1">ค่าเริ่มต้น</option>
+                                        <option value="4">ก่อนวิเคราะห์ผล</option>
+                                        <option value="6">สรุปผล</option>
+                                    </select>
+                                </div>
+                              
                                 <div className='bx-button'>
                                     <div onClick={handlereset} className='button-reset'>รีเซ็ท</div>
                                     <button type="submit"  className='button-submit'>บันทึก</button>
@@ -253,4 +286,4 @@ function AppUpdateExam(){
 
 }
 
-export default AppUpdateExam;
+export default AppAdminUpdateExam;

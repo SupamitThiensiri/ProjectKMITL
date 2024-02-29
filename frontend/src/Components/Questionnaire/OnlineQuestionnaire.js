@@ -409,7 +409,7 @@ const AppOnlineQuestionnaire = () => {
         {Step === 2 ?
           <div className="Submitadditionalcomments">
             <Link to="" onClick={resetwindows}>
-              ต้องการส่งความคิดเห็นเพิ่มเติม
+              ต้องการทำแบบสอบถามอีกครั้ง
             </Link>
           </div>
           :null
@@ -418,7 +418,7 @@ const AppOnlineQuestionnaire = () => {
           {dateTimeStart === null
             ?  <p>ไม่พบแบบสอบถาม</p>
             : currenttime < dateTimeStart
-            ? <p>ไม่พบแบบสอบถาม</p>
+            ? <p className="center">ไม่พบแบบสอบถาม</p>
             : ""}
         
         

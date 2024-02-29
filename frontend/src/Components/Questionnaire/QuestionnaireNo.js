@@ -250,19 +250,21 @@ function AppQuestionnaireNo(){
                         </div>
                         <div className="fb">ขั้นตอนการประมวลผล</div>
                         <div className="bx-step-content">
-                            <div className={sequencesteps ? "bx-show":"bx-show wait" }>
+                            <div className={sequencesteps >= 3 && sequencesteps <=4 ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/CheckQuestionaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">
+                                            {sequencesteps === 4 || sequencesteps === '4'?<img src="/img/loading.webp" alt="Your GIF" className="icon-wait-gif" style={{ height: '30px' }}/>:(sequencesteps >= 3 || sequencesteps === '3'? <FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:'')}
                                             <img src='/img/step5.png' alt=''/>
                                             <p>ประมวลผล</p>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
-                            <div className={sequencesteps ? "bx-show":"bx-show wait" }>
-                                <Link to="">
+                            <div className={sequencesteps >= 5 ? "bx-show":"bx-show wait" }>
+                                <Link to={"/Questionnaire/QuestionnaireNo/AnalyzeResultsQue/"+id}>
                                     <div className="box">
+                                        {sequencesteps >= 5 ?<FontAwesomeIcon icon={faCircleCheck} className="icon-success" />:''}
                                         <div className="box-img">
                                             <img src='/img/step7.png' alt=''/>
                                             <p>วิเคราะห์ผล</p>

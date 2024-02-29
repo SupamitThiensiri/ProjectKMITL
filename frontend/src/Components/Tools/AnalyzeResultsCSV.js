@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
-import {Chart as ChartJS} from "chart.js/auto";
+import Chart from 'chart.js/auto';
 import {Scatter} from "react-chartjs-2";
 const AnalyzeResultsCSV = ({ url }) => {
     const [csvData, setCsvData] = useState([]);

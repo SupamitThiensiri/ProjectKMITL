@@ -2,7 +2,7 @@ import {
     Link
 } from "react-router-dom";
 import React, { useState, useMemo } from 'react';
-import TableExamAnswer from "../Tools/ToolTableExamAnswer";
+import TableExamAnswer from "../Tools/ToolsTableExamAnswer";
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 // import Swal from 'sweetalert2'

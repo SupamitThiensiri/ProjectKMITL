@@ -35,7 +35,6 @@ import AppCreateAnswerSheet from './Components/Subject/CreateAnswerSheet';
 import AppExamAnswer from './Components/Subject/ExamAnswer';
 import AppCreateExamAnswer from './Components/Subject/CreateExamAnswer';
 import AppCheckAnswerSheet from './Components/Subject/CheckAnswerSheet';
-import AppCreateType from './Components/Admin/CreateType';
 import AppUploadAnswerSheet from './Components/Subject/UploadAnswerSheet';
 import AppUpdateExamAnswer from './Components/Subject/UpdateExamAnswer';
 import AppScoreResults from './Components/Subject/ScoreResults';
@@ -48,6 +47,23 @@ import AppOnlineQuestionnaire from './Components/Questionnaire/OnlineQuestionnai
 import Appverify from './Components/verify';
 import AppAnalyzeResults from './Components/Subject/AnalyzeResults';
 import AppCheckQuestionaire from './Components/Questionnaire/CheckQuestionaire';
+import AppAnalyzeResultsQue from './Components/Questionnaire/AnalyzeResultsQue';
+import AppType from './Components/Admin/Type';
+import AppCreateType from './Components/Admin/CreateType';
+import AppUpdateType from './Components/Admin/UpdateType';
+import AppRequest from './Components/Admin/Request';
+import AppRespond from './Components/Admin/Respond';
+import AppUpdateRequest from './Components/Admin/UpdateRequest';
+import AppUser from './Components/Admin/User';
+import AppAdminSubject from './Components/Admin/AdminSubject';
+import AppAdminSubjectNo from './Components/Admin/AdminSubjectNo';
+import AppAdminUpdateExam from './Components/Admin/AdminUpdateExam';
+import AppCreateUser from './Components/Admin/CreateUser';
+import AppAdminQuestionnaire from './Components/Admin/AdminQuestionnaire';
+import AppAdminUpdateQuestionnaire from './Components/Admin/AdminUpdateQuestionnaire';
+import AppUpdateUser from './Components/Admin/UpdateUser';
+import AppShowScores from './Components/ShowScores';
+import AppScores from './Components/Scores';
 
 
 function App() {
@@ -96,14 +112,32 @@ function App() {
         <Route path='/Questionnaire/QuestionnaireNo/UploadQuestionnaire/:id' element={<AppUploadQuestionnaire />}></Route>
         <Route path='/Questionnaire/QuestionnaireNo/ShowQuestionnaire/UpdateQuestionnaire/:id' element={<AppUpdateQuetionaire />}></Route>
         <Route path='/Questionnaire/QuestionnaireNo/CheckQuestionaire/:id' element={<AppCheckQuestionaire />}></Route>
+        <Route path='/Questionnaire/QuestionnaireNo/AnalyzeResultsQue/:id' element={<AppAnalyzeResultsQue />}></Route>
 
         
         <Route path='/Profile' element={<AppProfile />}></Route>
         <Route path='/Contact' element={<AppContact />}></Route>
+        <Route path='/Scores' element={<AppScores />}></Route>
+        <Route path='/Scores/ShowScores/:id' element={<AppShowScores />}></Route>
+        
 
-        <Route path='/Admin/Type/create' element={<AppCreateType />}></Route>
+        <Route path='/Admin/AdminSubject' element={<AppAdminSubject />}></Route>
+        <Route path='/Admin/AdminSubject/SubjectExam/:id' element={<AppAdminSubjectNo />}></Route>
+        <Route path='/Admin/AdminSubject/SubjectExam/AppAdminUpdateExam/:id' element={<AppAdminUpdateExam />}></Route>
+        <Route path='/Admin/AdminQuestionnaire' element={<AppAdminQuestionnaire />}></Route>
+        <Route path='/Admin/AdminQuestionnaire/AdminUpdateQuestionnaire/:id' element={<AppAdminUpdateQuestionnaire />}></Route>
+
+       
+        <Route path='/Admin/User' element={<AppUser />}></Route>
+        <Route path='/Admin/User/CreateUser/' element={<AppCreateUser />}></Route>
+        <Route path='/Admin/User/UpdateUser/:id' element={<AppUpdateUser />}></Route>
         
-        
+        <Route path='/Admin/Type' element={<AppType />}></Route>
+        <Route path='/Admin/Type/CreateType' element={<AppCreateType />}></Route>
+        <Route path='/Admin/Type/UpdateType/:id' element={<AppUpdateType />}></Route>
+        <Route path='/Admin/Request' element={<AppRequest />}></Route>
+        <Route path='/Admin/Request/Respond/:id' element={<AppRespond />}></Route>
+        <Route path='/Admin/Request/UpdateRequest/:id' element={<AppUpdateRequest />}></Route>
 
         
       </Routes>

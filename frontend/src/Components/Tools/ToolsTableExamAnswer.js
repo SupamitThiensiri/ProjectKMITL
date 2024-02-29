@@ -181,17 +181,28 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
     }
     
 
-    const showcountOccurrences= (data) => {
+    const showcountOccurrences= (data,data1) => {
+        const isMobile = window.innerWidth < 780;
 
         Swal.fire({
             title: 'ข้อมูลเฉลยคำตอบ',
             html: `
-              <div>
-                <div > คะแนนรวม <span style='color:red'>${sumAns(data)}</span> คะแนน</div><br>
-                ${countOccurrences(data)}
-              </div>
+            <div class='test' style="display: ${isMobile ? 'grid' : 'flex'}; ${isMobile ? 'grid-template-columns: 1fr;' : 'justify-content: center;'} width: 100%;">
+                <div style="flex: 1; text-align: center;">
+                    <div>
+                        <p><b>คะแนนเต็ม</b></p>
+                        คะแนนรวม <span style=''>${sumAns(data)}</span> คะแนน<br>
+                        ${countOccurrences(data)}
+                    </div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div>
+                        <p><b>จำนวนช้อย</b></p>
+                        ${choiceanswerslength(data1)}
+                    </div>
+                </div>
+            </div>
             `,
-        
             showCancelButton: false,
             confirmButtonColor: "#341699",
             confirmButtonText: 'ตกลง',
@@ -203,19 +214,38 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
             }
         })
     }
+    const choiceanswerslength = (inputString) => {
+        const groups = inputString.split(',');
+        const array = [0,0,0,0,0,0,0,0,0]
+        groups.forEach((group, index) => {
+            const answers = group.split(':');
+            const answerCount = answers.length;
+            array[answerCount] +=1
+        });
+        console.log(array)
+        let result = '';
+        array.forEach((count, index) => {
+            console.log("count",count)
+            if(count === 0){
+
+            }else{
+                const Counts = parseInt(count, 10);
+                result += `คำตอบ ${index} ช้อย = ${Counts} ข้อ<br>`;
+            }
+           
+        });
+        return result;
+    };
+
     const sumAns = (inputString) => {
         // [1,2,3,4,5,6,7,1,1,2,2,3,4,5]
         const resultArray = inputString.split(",");
-        console.log("resultArray :",resultArray)
         let sum = 0;
         for (let i = 0; i < resultArray.length; i++) {
             const resultArrayRemove =  resultArray[i].split(":");
-            console.log("thirdCharacter :",resultArrayRemove)
             const thirdCharacter = parseInt(resultArrayRemove[2]); // Parse the third character as an integer
-            console.log("thirdCharacter :",thirdCharacter)
             sum += thirdCharacter; // Add the parsed value to the sum
         }
-        console.log("sum :",sum)
         return sum;
     };
     function countOccurrences(array) {
@@ -291,7 +321,7 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                                     <tr {...row.getRowProps()} key={row.id} className='LCshow'>
                                         <td className='center'><Link to={""}>{Number(row.id) + 1}</Link></td>
                                         <td><Link to={""}>{row.values.examnoanswers}</Link></td>
-                                        <td onClick={() =>showcountOccurrences(row.values.scoringcriteria)}><Link to={""} ><p>{sumAns(row.values.scoringcriteria) } คะแนน</p></Link></td>
+                                        <td onClick={() =>showcountOccurrences(row.values.scoringcriteria,row.values.choiceanswers)}><Link to={""} ><p>{sumAns(row.values.scoringcriteria) } คะแนน</p></Link></td>
                                         <td className='statustable'><Link to={""}><p className='succeed'><FontAwesomeIcon icon={faCircleCheck} />{"สร้างเฉลยเสร็จสิ้น"}</p></Link></td>
                                         <td className='center mw80px '>
                                             <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/UpdateExamAnswer/" + row.values.examanswersid +"/"+ id +"/"+ row.values.examnoanswers} className='' style={{ display: 'contents' }}>
@@ -337,8 +367,8 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                 {<FontAwesomeIcon icon={faAnglesRight} />}
                 </button>{' '}
                 <span>
-                    Page{' '}
-                    {pageIndex + 1} of {pageOptions.length}
+                    หน้า {' '}
+                    {pageIndex + 1} ของ {pageOptions.length}
                 </span>
             </div>
         </div>

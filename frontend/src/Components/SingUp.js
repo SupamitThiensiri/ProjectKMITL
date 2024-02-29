@@ -229,7 +229,7 @@ function AppSingUp(){
                     fullname: FullName,
                     password: password,
                     googleid: GoogleID,
-                    job: selectedRole+otherRole,
+                    job: selectedRole === "other" ? otherRole : selectedRole,
                     department: Department,
                     faculty: Faculty,
                     workplace: Workplace,
@@ -277,8 +277,8 @@ function AppSingUp(){
         return emailRegex.test(email);
     };
 
-    const clientId ="608918814563-geifv2f4mg3c1rqivvnok1lhcphdfnlf.apps.googleusercontent.com" // pst121243@gmail.com
-    // const clientId ="289302695651-pngfh1sob9anv945q7fl3d6krvp0aqom.apps.googleusercontent.com"
+    // const clientId ="608918814563-geifv2f4mg3c1rqivvnok1lhcphdfnlf.apps.googleusercontent.com" // pst121243@gmail.com
+    const clientId ="289302695651-pngfh1sob9anv945q7fl3d6krvp0aqom.apps.googleusercontent.com"
  
     useEffect(() => {
         const initClient = () => {
@@ -295,7 +295,7 @@ function AppSingUp(){
         setEmail(res.profileObj.email)
         setGoogleID(res.profileObj.googleId)
         try{
-            fetch(variables.API_URL+"user/duplicate/googleid/"+res.profileObj.googleId+"/", {
+            fetch(variables.API_URL+"user/duplicate/email/"+res.profileObj.email+"/", {
                 method: "GET",
                 headers: {
                     'Accept': 'application/json, text/plain',
@@ -355,11 +355,6 @@ function AppSingUp(){
 
     const handleFileInputChange = (e) => {
         const file = e;
-        // const reader = new FileReader();
-        // reader.readAsDataURL(file);
-        // reader.onloadend = () => {
-        //     setFile(reader.result);
-        // }
         setFile(file)
         setStatusItem(true);
         setNameFileUpload(file.path);

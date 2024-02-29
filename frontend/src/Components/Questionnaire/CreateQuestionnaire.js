@@ -573,7 +573,7 @@ function AppCreateQuestionnaire(){
                                         <p>ส่วนที่ 1 : ข้อมูลทั่วไปของผู้ตอบแบบสอบถาม </p>
                                         <p className="danger-font fs12">*หากพิมพ์ตัวเลือกเป็น "อื่นๆ" เพื่อต้องการให้มีการระบุได้ ไม่ต้องพิมพ์ ... หรือ ___ ตามหลัง</p>
                                         <div className="tableQue ">
-                                        <table className="">
+                                            <table className="">
                                                 <thead>
                                                     <tr>
                                                         <th className="grey">หัวข้อ</th>

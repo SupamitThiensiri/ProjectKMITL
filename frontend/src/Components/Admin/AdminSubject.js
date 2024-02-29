@@ -4,9 +4,9 @@ import {
 import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
-import TableSubject from "../Tools/ToolsTableSubject";
+import TableAdminSubject from "../Tools/ToolsAdminSubject";
 
-function AppSubject(){
+function AppAdminSubject(){
 
     const [StartError, setStartError] = useState(0);
     useEffect(() => {
@@ -19,6 +19,8 @@ function AppSubject(){
     const columns = useMemo(
         () => [
             {Header: 'subid',accessor: 'subid',},
+            {Header: 'ผู้ใช้',accessor: 'userid',},
+            {Header: 'ผู้ใช้',accessor: 'useridUpdate',},
             {Header: 'รหัสวิชา',accessor: 'subjectid', },
             {Header: 'ชื่อวิชา',accessor: 'subjectname', },
             {Header: 'ปีการศึกษา',accessor: 'year', },
@@ -26,7 +28,6 @@ function AppSubject(){
             {Header: 'statussubject',accessor: 'statussubject',},
             {Header: 'deletetimesubject',accessor: 'deletetimesubject', },
             {Header: 'createtimesubject',accessor: 'createtimesubject', },
-            {Header: 'userid',accessor: 'userid',},
         ],
         []
     );
@@ -61,18 +62,18 @@ function AppSubject(){
                 }
                 <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                     <div className='bx-topic light'>
-                        <p><Link to="/Subject">จัดการรายวิชา</Link> / รายวิชาทั้งหมด</p>
-                        <div className='bx-grid2-topic'>
+                        <p><Link to="/Admin/AdminSubject">จัดการรายวิชา</Link> / รายวิชาทั้งหมด</p>
+                        <div className='bx-grid-topic'>
                             <h2>รายวิชาทั้งหมด</h2>
-                            <div className='flex-end'>
+                            {/* <div className='flex-end'>
                                 <Link to="/CreateSubject">
                                     <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างรายวิชา</p>
                                 </Link>
-                            </div>
+                            </div> */}
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                        <TableSubject columns={columns}/>
+                        <TableAdminSubject columns={columns}/>
                     </div>
                 </div>
             </div>
@@ -83,4 +84,4 @@ function AppSubject(){
 
 }
 
-export default AppSubject;
+export default AppAdminSubject;

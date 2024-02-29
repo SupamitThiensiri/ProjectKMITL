@@ -4,9 +4,9 @@ import {
 import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
-import TableSubject from "../Tools/ToolsTableSubject";
+import TableAdminQuestionnaire from "../Tools/ToolsTableAdminQuestionnaire";
 
-function AppSubject(){
+function AppAdminQuestionnaire(){
 
     const [StartError, setStartError] = useState(0);
     useEffect(() => {
@@ -18,17 +18,14 @@ function AppSubject(){
 
     const columns = useMemo(
         () => [
-            {Header: 'subid',accessor: 'subid',},
-            {Header: 'รหัสวิชา',accessor: 'subjectid', },
-            {Header: 'ชื่อวิชา',accessor: 'subjectname', },
-            {Header: 'ปีการศึกษา',accessor: 'year', },
-            {Header: 'เทอม',accessor: 'semester',},
-            {Header: 'statussubject',accessor: 'statussubject',},
-            {Header: 'deletetimesubject',accessor: 'deletetimesubject', },
-            {Header: 'createtimesubject',accessor: 'createtimesubject', },
-            {Header: 'userid',accessor: 'userid',},
-        ],
-        []
+            {Header: 'ID แบบสอบถาม',accessor: 'quesheetid',},
+            {Header: 'ผู้ใช้',accessor: 'userid', },
+            {Header: 'ผู้ใช้',accessor: 'useridUpdate', },
+            {Header: 'ชื่อแบบสอบถาม',accessor: 'quesheetname', },
+            {Header: 'ชื่อหัวข้อแบบสอบถาม',accessor: 'quesheettopicname', },
+            {Header: 'ลำดับการทำงาน',accessor: 'sequencesteps',},
+            {Header: 'deletetimequesheet',accessor: 'deletetimequesheet', },
+        ],[]
     );
 
 
@@ -61,18 +58,13 @@ function AppSubject(){
                 }
                 <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                     <div className='bx-topic light'>
-                        <p><Link to="/Subject">จัดการรายวิชา</Link> / รายวิชาทั้งหมด</p>
-                        <div className='bx-grid2-topic'>
-                            <h2>รายวิชาทั้งหมด</h2>
-                            <div className='flex-end'>
-                                <Link to="/CreateSubject">
-                                    <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างรายวิชา</p>
-                                </Link>
-                            </div>
+                        <p><Link to="/Admin/AdminSubject">จัดการแบบสอบถาม</Link> / แบบสอบถามทั้งหมด</p>
+                        <div className='bx-grid-topic'>
+                            <h2>แบบสอบถามทั้งหมด</h2>
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                        <TableSubject columns={columns}/>
+                        <TableAdminQuestionnaire columns={columns}/>
                     </div>
                 </div>
             </div>
@@ -83,4 +75,4 @@ function AppSubject(){
 
 }
 
-export default AppSubject;
+export default AppAdminQuestionnaire;

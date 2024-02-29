@@ -381,6 +381,16 @@ input[type=radio]{
         grid-template-columns:auto ;
     }
 }
+.bx-grid2-topicAdmin{
+    display: grid;
+    grid-template-columns:auto 180px ;
+    grid-gap: 10px;
+    padding: 5px 0;
+
+    @media (max-width: 450px){
+        grid-template-columns:auto ;
+    }
+}
 .bx-grid2-detail-topic{
     display: grid;
     grid-template-columns:auto 150px ;
@@ -651,6 +661,62 @@ input[type=radio]{
         justify-content: center;
     }
 }
+.bx-scores-content{
+
+    & .wait{
+        /* border-radius: 10px; */
+        background-color: #dddddd; /* Set the background color to gray */
+        color: gray; /* Set the text color to gray */
+        opacity: 0.7; /* Optionally, reduce opacity to visually indicate it's disabled */
+        pointer-events: none; /* Disable pointer events to make it non-interactive */
+    }
+ 
+    & .bx-show{
+        width: fit-content;
+        margin: 10px;
+        color: var(--dark);
+        display:inline-grid;
+
+        & .box{
+            position: relative;
+            border: 1px solid var(--light-grey);
+            border-radius: 10px;
+            /* background:var(--light); */
+            padding: 10px;
+            width: 250px;
+            height: 160px;
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            & .box-img{
+                text-align: center;
+                & img{
+                    /* width: 50px; */
+                    height: 50px;
+                }
+            }
+            & h1{
+                color: var(--dark);
+                text-align: center;
+            }
+            & p{
+                color: var(--dark);
+                text-align: center;
+                font-size: 14px;
+            }
+            
+        }
+        & :hover{
+            background:var(--light-blue);
+            border-radius: 10px;
+        }
+    }
+
+    @media (max-width: 800px){
+        display: grid;
+        justify-content: center;
+    }
+}
 /* END BOX SHOW */
 
 
@@ -702,7 +768,132 @@ input[type=radio]{
         background: var(--light-blue);
     }
 }
+.tableAll{
+    overflow : auto;
+    margin: 10px 0px;
+  
+    & input[type=text]{
+        width:200px;
+        height: 30px;
+    }
+    & table {
+        border: 1px solid var(--light-grey);
+        border-radius: 13px; 
+        border-spacing: 0;
+        border-radius: 5px; /* Apply border-radius to the entire table */
+        overflow: hidden; /* Clip the table contents to the rounded shape */
+        min-width: 900px;
+
+        
+        & tr:last-child > td {
+            border-bottom: none;
+        }
+    }
+      
     
+    & th, td {
+        border-bottom: 1px solid var(--light-grey);
+        border-right: 1px solid var(--light-grey);
+        padding: 5px; 
+    }
+      
+    & tr th {
+        padding: 5px;
+
+        & span{
+            padding: 0px 5px;
+        }
+    }
+    & tr td {
+        & a{
+            color: var(--dark);
+            
+        }
+        & span{
+            padding: 5px 9px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+    }
+    
+    & td a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        /* color: inherit; */
+    }
+    & td {
+        /* max-width: 200px;  */
+        overflow: auto; 
+        white-space: nowrap; 
+    }
+   
+}
+.tableUser{
+    overflow : auto;
+    margin: 10px 0px;
+  
+    & input[type=text]{
+        width:200px;
+        height: 30px;
+    }
+    & table {
+        border: 1px solid var(--light-grey);
+        border-radius: 13px; 
+        border-spacing: 0;
+        border-radius: 5px; /* Apply border-radius to the entire table */
+        overflow: hidden; /* Clip the table contents to the rounded shape */
+        min-width: 1600px;
+
+        
+        & tr:last-child > td {
+            border-bottom: none;
+        }
+    }
+      
+    
+    & th, td {
+        border-bottom: 1px solid var(--light-grey);
+        border-right: 1px solid var(--light-grey);
+        padding: 5px; 
+    }
+      
+    & tr th {
+        padding: 5px;
+
+        & span{
+            padding: 0px 5px;
+        }
+    }
+    & tr td {
+        & a{
+            color: var(--dark);
+            
+        }
+        & span{
+            padding: 5px 9px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+    }
+    
+    & td a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        /* color: inherit; */
+    }
+    & td {
+        /* max-width: 200px;  */
+        overflow: auto; 
+        white-space: nowrap; 
+    }
+   
+}   
 .tableSub{
     overflow : auto;
     margin: 10px 0px;
@@ -766,7 +957,69 @@ input[type=radio]{
     }
    
 }
+.tableAnalyze{
+    overflow : auto;
+    margin: 10px 0px;
+  
+    & input[type=text]{
+        width:200px;
+        height: 30px;
+    }
+    & table {
+        border: 1px solid var(--light-grey);
+        border-radius: 13px; 
+        border-spacing: 0;
+        border-radius: 5px; /* Apply border-radius to the entire table */
+        overflow: hidden; /* Clip the table contents to the rounded shape */
+        min-width: 770px;
 
+        
+        & tr:last-child > td {
+            border-bottom: none;
+        }
+    }
+      
+    
+    & th, td {
+        border-bottom: 1px solid var(--light-grey);
+        border-right: 1px solid var(--light-grey);
+        padding: 5px; 
+    }
+      
+    & tr th {
+        padding: 5px;
+
+        & span{
+            padding: 0px 5px;
+        }
+    }
+    & tr td {
+        & a{
+            color: var(--dark);
+            
+        }
+        & span{
+            padding: 5px 9px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+    }
+    
+    & td a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        /* color: inherit; */
+    }
+    & td {
+        /* max-width: 200px;  */
+        overflow: auto; 
+        white-space: nowrap; 
+    }
+   
+}
 .tableQue{
     overflow : auto;
     margin: 10px 0px;
@@ -1179,7 +1432,7 @@ input[type=radio]{
 display: block;
 }
 
-/*  */
+/* AnalyzeResults */
 .AnalyzeResultsCSV2g{
     display: grid;
     grid-template-columns:30px auto ;
@@ -1194,4 +1447,27 @@ display: block;
         transform: rotate(180deg);
         text-align: center;
     }
+}
+
+/* QuePart1 */
+/* .QuePart1{
+    display: flex;
+
+    & .QuePart1col{
+        flex: 1; 
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+} */
+
+.QuePart1 {
+    /* display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;  */
+}
+
+.QuePart1col {
+display: inline-grid;
+width: 280px;
 }

@@ -2,10 +2,9 @@
 import {
     Link
 } from "react-router-dom";
-import React, { useState,useCallback,useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, { useState,useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faCloudArrowUp,faTrashCan,faCheck,faCircleXmark,faCircleCheck,faTriangleExclamation,faPen} from "@fortawesome/free-solid-svg-icons";
+import {faTrashCan,faCheck,faCircleXmark,faCircleCheck,faTriangleExclamation,faPen} from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 // import { SRLWrapper } from 'simple-react-lightbox';
 import {variables} from "../../Variables";
@@ -15,29 +14,11 @@ import { useParams } from 'react-router-dom';
 function AppCheckQuestionaire(){
     const { id } = useParams();
 
-    const [File, setFile] = useState([]); // สำหรับเก็บไฟล์
-    const [ShowFile, setShowFile] = useState([]);
-    const [statusitem, setStatusItem] = useState(false); // สำหรับเปิด box แสดงชื่อไฟล์และลบลบไฟล์ box item
-    const [namefileupload, setNameFileUpload] = useState(''); // สำหรับชื่อไฟล์อัปโหลด
-
     const [sequencesteps, setsequencesteps] = useState('');
     const [QueSheetName, setQueSheetName] = useState('');
-    const [QueSheetTopicName, setQueSheetTopicName] = useState('');
-    const [DetailsLineOne, setDetailsLineOne] = useState('');
-    const [DetailsLinetwo, setDetailsLinetwo] = useState('');
-
-    const [quehead1, setquehead1] = useState('');
-    const [quehead2, setquehead2] = useState('');
-    const [quehead3, setquehead3] = useState('');
-    const [quehead4, setquehead4] = useState('');
-    const [quehead5, setquehead5] = useState('');
-
-    const [quetopicdetails, setquetopicdetails] = useState('');
-    const [quetopicformat, setquetopicformat] = useState('');
 
     const [quesheetinfo, setquesheetinfo] = useState('');
     
-
     const [Start, setStart] = useState(0);
     const [StartError, setStartError] = useState(0);
     
@@ -58,9 +39,7 @@ function AppCheckQuestionaire(){
                     console.log("quesheet :",result)
                     setQueSheetName(result.quesheetname)
                     setsequencesteps(result.sequencesteps)
-                    setQueSheetTopicName(result.quesheettopicname)
-                    setDetailsLineOne(result.detailslineone)
-                    setDetailsLinetwo(result.detailslinetwo)
+
                 }
             )
             fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
@@ -75,12 +54,6 @@ function AppCheckQuestionaire(){
                     if(result.err !== undefined){
                         setStartError(1);
                     }else{
-                        console.log(result)
-                        setquehead1(result.quehead1)
-                        setquehead2(result.quehead2)
-                        setquehead3(result.quehead3)
-                        setquehead4(result.quehead4)
-                        setquehead5(result.quehead5)
                     }
                     
 
@@ -97,10 +70,7 @@ function AppCheckQuestionaire(){
                 .then(result => {
                     if(result.err !== undefined){
                         setStartError(1);
-                    }else{
-                        console.log(result)
-                        setquetopicdetails(result.quetopicdetails)
-                        setquetopicformat(result.quetopicformat)
+                    }else{              
                     }
                    
                 }
@@ -327,7 +297,6 @@ function AppCheckQuestionaire(){
         try {
             const check = await AnalyzeresultsQue()
             if(check === undefined){
-                fetchDataquesheet();
                 let timerInterval;
                 Swal.fire({
                 title: "กำลังส่งผลแบบสอบถามเพื่อวิเคราะห์ผลลัพธ์",
@@ -392,8 +361,24 @@ function AppCheckQuestionaire(){
                     quesheetid : id
                 }),
             }).then(response => {
-                console.log("1")
-                return true; // รีเทิร์นค่า true เพื่อสื่อว่าการส่งข้อมูลเสร็จสิ้น
+                console.log(response)
+                if(response.status === 500){
+                    fetch(variables.API_URL + "quesheet/update/"+id+"/", {
+                        method: "PUT",
+                        headers: {
+                            'Accept': 'application/json, text/plain',
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        },
+                        body: JSON.stringify({
+                            sequencesteps : 3,
+                            userid : Cookies.get('userid')
+                        }),
+                    });
+                    return "status 500"
+                }else{
+                    return true;
+                }
+                 // รีเทิร์นค่า true เพื่อสื่อว่าการส่งข้อมูลเสร็จสิ้น
                 
             }).catch(error => {
                 fetch(variables.API_URL + "quesheet/update/"+id+"/", {
@@ -480,8 +465,8 @@ function AppCheckQuestionaire(){
                                         <div className="space5"></div>
                                     </div>
                                 ) : (
-                                    sequencesteps === 5 ?
-                                        <Link to={""+id} className="light-font"> <div className="success-text light-font"><FontAwesomeIcon icon={faCheck} />คลิกดูผลการวิเคราะห์</div></Link>
+                                    sequencesteps === 5 || sequencesteps === "5" ?
+                                        <Link to={"/Questionnaire/QuestionnaireNo/AnalyzeResultsQue/"+id} className="light-font"> <div className="success-text light-font"><FontAwesomeIcon icon={faCheck} />คลิกดูผลการวิเคราะห์</div></Link>
                                     :
                                     null
                                 )}

@@ -12,7 +12,7 @@ function AppContact(){
                             <p>ติดต่อเรา/</p>
                             <h2>ติดต่อเรา</h2>  
                         </div>
-                        <div className='bx-details primary-blue'>
+                        <div className='bx-details light'>
                             details
                         </div>
                     </div>

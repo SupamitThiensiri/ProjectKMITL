@@ -19,7 +19,9 @@ function AppSingIn(){
   const handleInputEmail = (e) => { SetEmail(e.target.value); };
   const handleInputpassword = (e) => { Setpassword(e.target.value);};
 
-  const clientId ="608918814563-geifv2f4mg3c1rqivvnok1lhcphdfnlf.apps.googleusercontent.com"
+  // const clientId ="608918814563-geifv2f4mg3c1rqivvnok1lhcphdfnlf.apps.googleusercontent.com"//pst121243@gmail.com
+  const clientId ="289302695651-pngfh1sob9anv945q7fl3d6krvp0aqom.apps.googleusercontent.com" //mcaqs
+
 
   // const [count, setCount] = useState(null)
   // useEffect(() => {

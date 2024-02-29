@@ -7,6 +7,7 @@ import {
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useCallback } from "react";
+// import { GoogleLogin } from 'react-google-login'
 
 import Cookies from "js-cookie";
 import { variables } from "../Variables";
@@ -30,6 +31,8 @@ function AppProfile() {
   const [checkbox2, setCheckbox2] = useState(false);
 
   const [errortext, seterrortext] = useState("");
+
+  // const clientId ="608918814563-geifv2f4mg3c1rqivvnok1lhcphdfnlf.apps.googleusercontent.com" // pst121243@gmail.com
 
   const handleInputemail = (e) => {
     setemail(e.target.value);
@@ -297,11 +300,6 @@ function AppProfile() {
 
   const handleFileInputChange = (e) => {
     const file = e;
-    // const reader = new FileReader();
-    // reader.readAsDataURL(file);
-    // reader.onloadend = () => {
-    //     setFile(reader.result);
-    // }
     setFile(file);
     setStatusItem(true);
     setNameFileUpload(file.path);
@@ -415,6 +413,7 @@ function AppProfile() {
       },
     });
   }
+
   return (
     <div className="content">
       <main>
@@ -445,6 +444,15 @@ function AppProfile() {
             <div className="bx-details light">
               <form>
                 <div className="form-set">
+                  {console.log("googleid",Cookies.get('googleid'))}
+
+                  {
+                    Cookies.get('googleid') === ''?
+                    // <div>เชื่อมต่อ google id</div>
+                    null
+                    :
+                    null
+                  }
                   <h3>ข้อมูลผู้ใช้</h3>
                   <div className="bx-input inline-grid">
                     <label htmlFor="email">อีเมล์</label>
