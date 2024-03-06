@@ -10,7 +10,7 @@ const QuePart2 = ({ url , showChart}) => {
     const handleChange = (event) => {
         setSelectedValue(event.target.value);
         setvalues(csvData[event.target.value])
-        console.log(values)
+        // console.log(values)
     };
 
     useEffect(() => {
@@ -28,7 +28,7 @@ const QuePart2 = ({ url , showChart}) => {
                     },
                 });
             } catch (error) {
-                console.error('Error fetching or parsing CSV:', error);
+                // console.error('Error fetching or parsing CSV:', error);
             }
         };
 
@@ -88,6 +88,11 @@ const QuePart2 = ({ url , showChart}) => {
                                 <th>น้อย</th>
                                 <th>น้อยที่สุด</th>
                                 <th>ไม่ประเมิน</th>
+                                <th>จำนวนผู้ประเมิน</th>
+                                <th>ค่าเฉลี่ย</th>
+                                <th>ค่าเฉลี่ย(%)</th>
+                                <th>ส่วนเบี่ยงเบนมาตรฐาน</th>
+                                <th>ระดับความพึงพอใจ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -95,7 +100,7 @@ const QuePart2 = ({ url , showChart}) => {
                                 rowIndex === 0 ?null :(
                                     value.length === 1 ? 
                                         <tr key={rowIndex}>
-                                            <td align="" colSpan={7}><b>{value[0]}</b></td>
+                                            <td align="" colSpan={12}><b>{value[0]}</b></td>
                                         </tr>
                                     : 
                                     (
@@ -111,6 +116,11 @@ const QuePart2 = ({ url , showChart}) => {
                                             <td align="center">{value[4]}</td>
                                             <td align="center">{value[5]}</td>
                                             <td align="center">{value[6]}</td>
+                                            <td align="center">{value[7]}</td>
+                                            <td align="center">{value[8]}</td>
+                                            <td align="center">{value[9]}</td>
+                                            <td align="center">{value[10]}</td>
+                                            <td align="center">{value[11]}</td>
                                         </tr>
                                     )
                                 )

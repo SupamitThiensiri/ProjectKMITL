@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCloudArrowUp,faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 import Cookies from 'js-cookie';
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppCreateExamAnswer(){
 
@@ -500,7 +501,7 @@ function AppCreateExamAnswer(){
         setCheckboxValues5(E);
         setCheckboxValues6(F);
         setCheckboxValues7(G);
-        setCheckboxValues7(H);
+        setCheckboxValues8(H);
 
     }
 
@@ -534,7 +535,7 @@ function AppCreateExamAnswer(){
                         <div className='bx-topic light'>
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/"+ExamNoShow}> เฉลยคำตอบ </Link> / สร้างเฉลย</p>
                             <div className='bx-grid2-topic'>
-                                <h2>{idstatus === "1" ?"สร้างเฉลยด้วยตนเอง":"สร้างเฉลยด้วยการสแกนไฟล์"}</h2>                           
+                                <h2>{idstatus === "1" ?"สร้างเฉลยด้วยตนเอง":"สร้างเฉลยด้วยการสแกนไฟล์"} <Alertmanual name={"createexamanswer"} status={"1"}/></h2>                           
                             </div> 
                         </div>
                         <div className='bx-details light'>

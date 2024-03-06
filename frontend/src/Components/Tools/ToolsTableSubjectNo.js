@@ -175,9 +175,10 @@ const TableSubjectNo = ({ columns }) => {
          });
      };
 
-     function removeTZ(dateTimeString) {
+    function removeTZ(dateTimeString) {
         return dateTimeString.replace("T", " ").replace("Z", "").replace("+07:00", "");
     }
+   
      return (
          <div>
              <div className='InputSize space-between'>

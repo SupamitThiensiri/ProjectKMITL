@@ -5,6 +5,7 @@ import { useState , useEffect } from 'react';
 import {variables} from "../../Variables";
 import Swal from 'sweetalert2'
 import Cookies from 'js-cookie';
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppCreateSubject(){
 
     const [SubjectID, setSubjectID] = useState('');
@@ -98,7 +99,7 @@ function AppCreateSubject(){
                     <div className='box-content-view'>
                         <div className='bx-topic light'>
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / สร้างรายวิชา</p>
-                            <h2>สร้างรายวิชา</h2>  
+                            <h2>สร้างรายวิชา <Alertmanual name={"createsubject"} status={"1"}/></h2>  
                         </div>
                         <div className='bx-details light'>
                             <form onSubmit={handleSubmit}>

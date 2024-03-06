@@ -4,8 +4,14 @@ import {
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+
 import QuePart1 from "../Tools/QuePart1";
 import QuePart2 from "../Tools/QuePart2";
+import Alertmanual from "../Tools/ToolAlertmanual";
+
+import { SRLWrapper } from 'simple-react-lightbox';
+
 function AppAnalyzeResultsQue(){
     const { id } = useParams();
 
@@ -18,12 +24,16 @@ function AppAnalyzeResultsQue(){
 
     const [part1select, setpart1select] = useState('');
     const [part2select, setpart2select] = useState(0);
+    const [part3select, setpart3select] = useState(0);
 
     const handlepart1select = (event) => {
         setpart1select(event.target.value);
     };
     const handlepart2select = (event) => {
         setpart2select(event.target.value);
+    };
+    const handlepart3select = (event) => {
+        setpart3select(event.target.value);
     };
 
     const [showChart, setshowChart] = useState(false);
@@ -111,7 +121,7 @@ function AppAnalyzeResultsQue(){
                     if(result.err !== undefined){
                         setStartError(1);
                     }else{
-                        console.log(result)
+                        console.log("queinformation ",result)
                         setquesheetinfo(result)
                     }
                     
@@ -140,12 +150,9 @@ function AppAnalyzeResultsQue(){
         }
         if(resultpart2_csv_path.length >= 1){
             setpart2select(resultpart2_csv_path[0])
+            setpart3select(FromURL(resultpart2_csv_path[0]))
             setSteppart2(1)
-            
         }
-        // if(quesheetinfo.length === 0){
-        //     fetchDataquesheetinfo();
-        // }
     }, [resultpart1_csv_path,resultpart2_csv_path]);
 
     function FromURL(url) {
@@ -194,9 +201,13 @@ function AppAnalyzeResultsQue(){
                 }
                 <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                     <div className='bx-topic light'>
-                    <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / <Link to={"/Questionnaire/"}>แบบสอบถามทั้งหมด</Link> / <Link to={"/Questionnaire/QuestionnaireNo/"+id}>{QueSheetName}</Link> / สรุปผลแบบสอบถาม</p>
-                        <div className='bx-grid-topic'>
-                            <h2>สรุปผลแบบสอบถาม</h2>  
+                    {Cookies.get('typesid') === 1 || Cookies.get('typesid') === '1'?
+                            <p><Link to="/Admin/AdminQuestionnaire">จัดการแบบสอบถาม</Link> / <Link to={"/Admin/AdminQuestionnaire"}>แบบสอบถามทั้งหมด</Link> / <Link to={"/Admin/AdminQuestionnaire/QuestionnaireNo/"+id}>{QueSheetName}</Link> / สรุปผลแบบสอบถาม</p>
+                        :
+                            <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / <Link to={"/Questionnaire/"}>แบบสอบถามทั้งหมด</Link> / <Link to={"/Questionnaire/QuestionnaireNo/"+id}>{QueSheetName}</Link> / สรุปผลแบบสอบถาม</p>
+                    }
+                    <div className='bx-grid-topic'>
+                            <h2>สรุปผลแบบสอบถาม <Alertmanual name={"analyzeresultsque"} status={"1"}/></h2>  
                         </div> 
                     </div>
                     
@@ -207,35 +218,89 @@ function AppAnalyzeResultsQue(){
                         </span>
                     </div>
 
-                        <div>ส่วนที่ 1 ข้อมูลทั่วไป</div>
-                            {Steppart1 === 1 &&
-                                <div className="bx-input-fix">
-                                    <select id="mySelect" value={part1select} onChange={handlepart1select} style={{ width: '150px' }}>
-                                    {
-                                        resultpart1_csv_path.map((path, index) => (
-                                            <option key={index} value={path}>{FromURL(path)}</option>
-                                        ))
-                                    }
-                                    </select>
-                                    <div ><QuePart1 url={part1select} showChart={showChart}/></div>
-                                </div>
+                    <div>ส่วนที่ 1 ข้อมูลทั่วไป</div>
+                    {Steppart1 === 1 &&
+                        <div className="bx-input-fix">
+                            <select id="mySelect" value={part1select} onChange={handlepart1select} style={{ width: '150px' }}>
+                            {
+                                resultpart1_csv_path.map((path, index) => (
+                                    <option key={index} value={path}>{FromURL(path)}</option>
+                                ))
                             }
-                        <div>ส่วนที่ 2 ระดับความคิดเห็นของแบบสอบถาม</div>
-                            {Steppart2 === 1 &&
-                                <div className="bx-input-fix">
-                                    <select id="mySelect" value={part2select} onChange={handlepart2select} style={{ width: '150px' }}>
-                                    {
-                                        resultpart2_csv_path.map((path, index) => (
-                                            <option key={index} value={path}>{FromURL(path)}</option>
-                                        ))
-                                    }
-                                    </select>
-                                    <div ><QuePart2 url={part2select} showChart={showChart}/></div>
+                            </select>
+                            <div ><QuePart1 url={part1select} showChart={showChart}/></div>
+                        </div>
+                    }
+                    {/* {Steppart1 === 1 && (
+                        quesheetinfo.length !== 0 ? (
+                            <>
+                                <div className="tableAnalyze">  
+                                    <table className="">
+                                        <thead>
+                                            <tr>
+                                                <th className="">ข้อเสนอแนะเพิ่มเติม</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {quesheetinfo.map((value, index) => {
+                                                if ((FromURL(part1select) === 'รูปแบบออฟไลน์' || FromURL(part1select) === 'สรุปผลรวม') && value.status_queinfo === "Offline" && value.additionalsuggestions) {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td><img src={value.additionalsuggestions} alt="Description of the image" /></td>
+                                                        </tr>
+                                                    );
+                                                } else if ((FromURL(part1select) === 'รูปแบบออนไลน์' || FromURL(part1select) === 'สรุปผลรวม') && value.status_queinfo === "Online" && value.additionalsuggestions) {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td>{value.additionalsuggestions}</td>
+                                                        </tr>
+                                                    );
+                                                } else {
+                                                    return null;
+                                                }
+                                            })}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            }
-                        <div>ส่วนที่ 3 ข้อเสนอแนะเพิ่มเติม</div>
-                        {quesheetinfo.length !== 0 ? (
-                            <div className="tableAnalyze">
+                            </>
+                        ) : null
+                    )}
+                    <SRLWrapper>
+                        <div>
+                            <img src="image1.jpg" alt="Image 1" />
+                            <img src="image2.jpg" alt="Image 2" />
+                            <img src="image3.jpg" alt="Image 3" />
+                        </div>
+                    </SRLWrapper> */}
+                    <div>ส่วนที่ 2 ระดับความคิดเห็นของแบบสอบถาม</div>
+                        {Steppart2 === 1 &&
+                            <div className="bx-input-fix">
+                                <select id="mySelect" value={part2select} onChange={handlepart2select} style={{ width: '150px' }}>
+                                {
+                                    resultpart2_csv_path.map((path, index) => (
+                                        <option key={index} value={path}>{FromURL(path)}</option>
+                                    ))
+                                }
+                                </select>
+                                <div ><QuePart2 url={part2select} showChart={showChart}/></div>
+                            </div>
+                        }
+                    <div>ส่วนที่ 3 ข้อเสนอแนะเพิ่มเติม</div>
+                    
+                    {quesheetinfo.length !== 0 ? (
+                        <>
+                        {Steppart2 === 1 &&
+                            <div className="bx-input-fix">
+                                <select id="mySelect" value={part3select} onChange={handlepart3select} style={{ width: '150px' }}>
+                                {
+                                    resultpart2_csv_path.map((path, index) => (
+                                        <option key={index} value={FromURL(path)}>{FromURL(path)}</option>
+                                    ))
+                                }
+                                </select>
+                            </div>
+                        }
+                            <div className="tableAnalyze">  
                                 <table className="">
                                     <thead>
                                         <tr>
@@ -243,29 +308,28 @@ function AppAnalyzeResultsQue(){
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
-                                    {quesheetinfo.map((value, index) => (
-                                        value.status_queinfo === "Offline" ?
-                                            value.additionalsuggestions === null || value.additionalsuggestions === "" ?
-                                            null:
-                                            <tr key={index}>
-                                                <td>{value.status_queinfo}</td>
-                                            </tr>
-                                        :
-                                        value.status_queinfo === "Online" ?
-                                            value.additionalsuggestions === null || value.additionalsuggestions === "" ?
-                                                null:
-                                                <tr key={index}>
-                                                    <td>{value.additionalsuggestions}</td>
-                                                </tr>
-                                        :null
-                                    ))}
-                                    
+                                        {quesheetinfo.map((value, index) => {
+                                            if ((part3select === 'รูปแบบออฟไลน์' || part3select === 'สรุปผลรวม') && value.status_queinfo === "Offline" && value.additionalsuggestions) {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td><img src={value.additionalsuggestions} alt="Description of the image" /></td>
+                                                    </tr>
+                                                );
+                                            } else if ((part3select === 'รูปแบบออนไลน์' || part3select === 'สรุปผลรวม') && value.status_queinfo === "Online" && value.additionalsuggestions) {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td>{value.additionalsuggestions}</td>
+                                                    </tr>
+                                                );
+                                            } else {
+                                                return null;
+                                            }
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
-                        ) : null}
-
+                        </>
+                    ) : null}
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import React, { useState, useMemo } from 'react';
 import TableExamAnswer from "../Tools/ToolsTableExamAnswer";
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
+import Alertmanual from "../Tools/ToolAlertmanual";
 // import Swal from 'sweetalert2'
 function AppExamAnswer(){
     const { id } = useParams();
@@ -114,7 +115,7 @@ function AppExamAnswer(){
                     <div className='bx-topic light'>
                         <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / เฉลยคำตอบ</p>
                         <div className='bx-grid2-topic'>
-                            <h2>เฉลยคำตอบ</h2>                           
+                            <h2>เฉลยคำตอบ<Alertmanual name={"examanswers"} status={"1"}/></h2>                           
                         </div> 
                     </div>
                     <div className='bx-details light'>

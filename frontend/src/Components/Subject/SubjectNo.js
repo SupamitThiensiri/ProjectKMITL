@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import TableSubjectNo from "../Tools/ToolsTableSubjectNo";
 import {variables} from "../../Variables";
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppSubjectNo(){
     const { id } = useParams(); 
     const [SubjectID, setSubjectID] = useState('');
@@ -108,7 +109,7 @@ function AppSubjectNo(){
                     <div className='bx-topic light'>
                         <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / {SubjectName}</p>
                         <div className='bx-grid2-topic'>
-                            <h2>{SubjectName}</h2>
+                            <h2>{SubjectName}<Alertmanual name={"subjectno"} status={"1"}/></h2>
                         </div> 
                     </div>
                     <div className='bx-details light'>

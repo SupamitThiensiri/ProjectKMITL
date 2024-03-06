@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
 import Papa from "papaparse";
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppUploadStudent(){
     // examid
@@ -262,7 +263,7 @@ function AppUploadStudent(){
                         <div className='bx-topic light'>
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link>/ อัปโหลดรายชื่อนักศึกษา</p>
                             <div className='bx-grid-topic'> 
-                                <h2>อัปโหลดรายชื่อนักศึกษา</h2>
+                                <h2>อัปโหลดรายชื่อนักศึกษา<Alertmanual name={"uploadstudent"} status={"1"}/></h2>
                                 
                             </div> 
                         </div>

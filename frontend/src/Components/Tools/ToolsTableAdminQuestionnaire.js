@@ -267,6 +267,15 @@ const TableAdminQuestionnaire = ({ columns }) => {
             return "-"
         }
     };
+    async function showalert(text) {
+        Swal.fire({
+            text: text,
+            showCancelButton: false,
+            confirmButtonColor: "#7066e0",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "ตกลง"
+        });
+    }
     return (
         <div>
             <div className='InputSize space-between'>
@@ -320,14 +329,11 @@ const TableAdminQuestionnaire = ({ columns }) => {
                             prepareRow(row);
                                 return (
                                     <tr {...row.getRowProps()} key={row.id}>
-                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"center":"center wait"}><Link to={""}>{row.values.quesheetid}</Link></td>
-                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={""}>{(row.values.useridUpdate)}</Link></td>
-                                        {/* <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={""}>{findUseremailById(row.values.userid)}</Link></td> */}
-
-                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={""}>{row.values.quesheetname}</Link></td>
-                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={""}>{row.values.quesheettopicname}</Link></td>
-                                        <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={""}>{(row.values.sequencesteps)}</Link></td>             
-                                        {/* <td className={row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?"":"wait"}><Link to={""}>{findSeq(row.values.sequencesteps)}</Link></td>                                        */}
+                                        <td className={"center"}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปแบบสอบถามได้ เนื่องจากยังไม่มีการสรุปผลแบบสอบถาม")} >{row.values.quesheetid}</Link>:<Link to={'/Admin/AdminQuestionnaire/QuestionnaireNo/'+row.values.quesheetid} >{row.values.quesheetid}</Link>}</td>
+                                        <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปแบบสอบถามได้ เนื่องจากยังไม่มีการสรุปผลแบบสอบถาม")} >{row.values.useridUpdate}</Link>:<Link to={'/Admin/AdminQuestionnaire/QuestionnaireNo/'+row.values.quesheetid} >{row.values.useridUpdate}</Link>}</td>
+                                        <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปแบบสอบถามได้ เนื่องจากยังไม่มีการสรุปผลแบบสอบถาม")} >{row.values.quesheetname}</Link>:<Link to={'/Admin/AdminQuestionnaire/QuestionnaireNo/'+row.values.quesheetid} >{row.values.quesheetname}</Link>}</td>
+                                        <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปแบบสอบถามได้ เนื่องจากยังไม่มีการสรุปผลแบบสอบถาม")} >{row.values.quesheettopicname}</Link>:<Link to={'/Admin/AdminQuestionnaire/QuestionnaireNo/'+row.values.quesheetid} >{row.values.quesheettopicname}</Link>}</td>
+                                        <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปแบบสอบถามได้ เนื่องจากยังไม่มีการสรุปผลแบบสอบถาม")} >{row.values.sequencesteps}</Link>:<Link to={'/Admin/AdminQuestionnaire/QuestionnaireNo/'+row.values.quesheetid} >{row.values.sequencesteps}</Link>}</td>
                           
                                         {row.values.deletetimequesheet === null || row.values.deletetimequesheet === '' || row.values.deletetimequesheet === "null"?
                                             <td className='center mw80px' ><Link to={'/Admin/AdminQuestionnaire/AdminUpdateQuestionnaire/'+row.values.quesheetid} className='' style={{ display: 'contents' }}><span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.values.quesheetid,row.values.quesheetname)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>

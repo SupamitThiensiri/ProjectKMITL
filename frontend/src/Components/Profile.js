@@ -7,7 +7,8 @@ import {
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect, useCallback } from "react";
-// import { GoogleLogin } from 'react-google-login'
+import { GoogleLogin} from 'react-google-login'
+import { gapi } from 'gapi-script'
 
 import Cookies from "js-cookie";
 import { variables } from "../Variables";
@@ -33,6 +34,9 @@ function AppProfile() {
   const [errortext, seterrortext] = useState("");
 
   // const clientId ="608918814563-geifv2f4mg3c1rqivvnok1lhcphdfnlf.apps.googleusercontent.com" // pst121243@gmail.com
+  const [emailsingin, setemailsingin] = useState('');
+  const [googleIDsingin, setgoogleIDsingin] = useState('');
+  const clientId ="289302695651-pngfh1sob9anv945q7fl3d6krvp0aqom.apps.googleusercontent.com" //mcaqs
 
   const handleInputemail = (e) => {
     setemail(e.target.value);
@@ -135,6 +139,98 @@ function AppProfile() {
     fetchDataRequest();
     setStart(1);
   }
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client.init({
+        clientId: clientId,
+        scope: ''
+      }).then(() => {
+        console.log('Google API client initialized successfully');
+      }).catch((error) => {
+        console.error('Error initializing Google API client', error);
+      });
+    };
+
+    gapi.load("client:auth2", initClient);
+    
+  }, [clientId]);
+
+  const onSuccess = (res) => {
+    console.log('success', res)
+    if(res.profileObj.email === Cookies.get('email')){
+      SingInGoogleID(res.profileObj.googleId)
+    }else{
+      Swal.fire({
+        title: "อีเมลที่ใช้สมัครกับอีเมลที่จะทำการเชื่อมต่อไม่ตรงกัน",
+        icon: "error", //error,question,warning,success
+        confirmButtonColor: "#341699",
+      });
+    }
+  }
+
+  const onFailure = (res) => {
+    console.log('failed', res)
+  }
+
+  async function SingInGoogleID(googleId){
+    console.log("googleId",googleId)
+    try {
+      const response = await fetch(
+        variables.API_URL + "user/update/" + Cookies.get("userid") + "/",
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/json, text/plain",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+          body: JSON.stringify({
+            googleid: googleId,
+          }),
+        }
+      );
+      
+      const result = await response.json();
+      console.log("result",result)
+
+      if (result.err === undefined) {
+        Swal.fire({
+          title: "ทำการเชื่อมต่อเสร็จสิ้น โปรดเข้าสู่ระบบใหม่อีกครั้ง",
+          icon: "success", //error,question,warning,success
+          confirmButtonColor: "#341699",
+        }).then( (result) => {
+          handleGoogleLogout()
+        })
+      } else {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด" + result.err,
+          icon: "error", //error,question,warning,success
+          confirmButtonColor: "#341699",
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด" + err,
+        icon: "error", //error,question,warning,success
+        confirmButtonColor: "#341699",
+      });
+    }
+  }
+
+  const handleGoogleLogout = () => {
+    Cookies.remove('userid');
+    Cookies.remove('email');
+    Cookies.remove('fullname');
+    Cookies.remove('googleid');
+    Cookies.remove('usageformat1');
+    Cookies.remove('usageformat2');
+    Cookies.remove('e_kyc');
+    Cookies.remove('typesid');
+    Cookies.remove('clientId');
+    Cookies.remove('userToken');
+    console.log(Cookies.get())
+    window.location.href = '/SingIn';
+  }
+
 
   useEffect(() => {
     let errorMessage = "กรุณากรอก";
@@ -448,8 +544,17 @@ function AppProfile() {
 
                   {
                     Cookies.get('googleid') === ''?
-                    // <div>เชื่อมต่อ google id</div>
-                    null
+                    <div>
+                      <GoogleLogin 
+                        clientId={clientId}
+                        buttonText="Sing in with Google"
+                        onSuccess={onSuccess}
+                        onFailure={onFailure}
+                        cookiePolicy={"single_host_origin"}
+                        isSignedIn={false}
+                      />
+                    </div>
+                    // null
                     :
                     null
                   }

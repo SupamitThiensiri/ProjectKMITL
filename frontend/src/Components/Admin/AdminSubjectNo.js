@@ -59,7 +59,7 @@ function AppAdminSubjectNo(){
 
     const columns = useMemo(
         () => [
-        {Header: 'examid',accessor: 'examid',},
+        {Header: 'ID การสอบ',accessor: 'examid',},
         {Header: 'ชื่อการสอบ', accessor: 'examname', },
         {Header: 'การสอบครั้งที่',accessor: 'examno', },
         {Header: 'จำนวนข้อสอบ',accessor: 'numberofexams', },

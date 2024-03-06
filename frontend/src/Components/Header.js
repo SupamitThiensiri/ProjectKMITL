@@ -57,7 +57,7 @@ function AppHeader(){
                     <li className={location.pathname.includes("/Admin/User") ? "active" : ""} ><Link to="/Admin/User"><div className='iconmenu'><FontAwesomeIcon icon={faIdCardClip} /></div>ผู้ใช้ทั้งหมด</Link></li>
                     <li className={location.pathname.includes("/Admin/Type") ? "active" : ""} ><Link to="/Admin/Type"><div className='iconmenu'> <FontAwesomeIcon icon={faWrench} /></div>ประเภทผู้ใช้</Link></li>
                     <li className={location.pathname.includes("/Admin/Request") ? "active" : ""} ><Link to="/Admin/Request"><div className='iconmenu'> <FontAwesomeIcon icon={faBell} /></div>การร้องขอ</Link></li>
-                    <li><Link to="#"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
+                    <li className={location.pathname.includes("/Usermanual") ?"active":""}><Link to="/Usermanual"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
 
                 </ul>
             :
@@ -73,8 +73,11 @@ function AppHeader(){
                     }
                     <li className={location.pathname.includes("/Questionnaire") ?"active":""}><Link to="Questionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faClipboardList} /></div>แบบสอบถามทั้งหมด</Link></li>
                     <li className={location.pathname.includes("/CreateQuestionnaire") ?"active":""}><Link to="CreateQuestionnaire"><div className='iconmenu'><FontAwesomeIcon icon={faFileCirclePlus} /></div>สร้างแบบสอบถาม</Link></li>
-                    <li className={location.pathname.includes("/Scores") ?"active":""}><Link to="Scores"><div className='iconmenu'><FontAwesomeIcon icon={faUserGraduate} /></div>ดูคะแนนสอบ</Link></li>
-                    <li><Link to="#"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
+                    {Cookies.get('usageformat1') === 0 || Cookies.get('usageformat1') === '0'?
+                        <li className={location.pathname.includes("/Scores") ?"active":""}><Link to="/Scores"><div className='iconmenu'><FontAwesomeIcon icon={faUserGraduate} /></div>ดูคะแนนสอบ</Link></li>
+                        :null
+                    }
+                    <li className={location.pathname.includes("/Usermanual") ?"active":""}><Link to="/Usermanual"><div className='iconmenu'><FontAwesomeIcon icon={faBookOpenReader} /> </div>คู่มือการใช้งาน</Link></li>
                     <li className={location.pathname.includes("/Contact") ?"active":""}><Link to="/Contact"><div className='iconmenu'><FontAwesomeIcon icon={faUserShield} /></div>ติดต่อ Admin</Link></li>
                 </ul>
             }

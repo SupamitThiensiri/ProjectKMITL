@@ -5,6 +5,7 @@ import { variables } from "../Variables";
 import {
     Link
 } from "react-router-dom";
+import Alertmanual from './Tools/ToolAlertmanual';
 function AppScores(){
     
     const [data, setdata] = useState([]);
@@ -152,8 +153,8 @@ function AppScores(){
                     }
                     <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                         <div className='bx-topic light'>
-                            <p>ดูคะแนนสอบ </p>
-                            <h2>ดูคะแนนสอบ</h2>  
+                            <p>ดูคะแนนสอบ /</p>
+                            <h2>ดูคะแนนสอบ <Alertmanual name={"scores"} status={"1"}/></h2>  
                         </div>
                         <div className='bx-details light'>
                             {/* style inline */}

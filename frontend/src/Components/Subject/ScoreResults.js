@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import Swal from 'sweetalert2'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppScoreResults() {
     const { id } = useParams();
 
@@ -119,6 +120,32 @@ function AppScoreResults() {
                         }),
                     });
                     fetchDataExaminfo()
+                    fetch(variables.API_URL+"exam/sendmail/"+id+"/", {
+                        method: "GET",
+                        headers: {
+                            'Accept': 'application/json, text/plain',
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        },
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if(result.ok){
+                                console.log("sendmail ",result)
+                            }else{
+                                fetch(variables.API_URL + "exam/update/"+id+"/", {
+                                    method: "PUT",
+                                    headers: {
+                                        'Accept': 'application/json, text/plain',
+                                        'Content-Type': 'application/json;charset=UTF-8'
+                                    },
+                                    body: JSON.stringify({
+                                        sendemail:null,
+                                        userid : Cookies.get('userid')
+                                    }),
+                                });
+                            }  
+                        }
+                    )
                 }
             })
         }else{
@@ -143,6 +170,34 @@ function AppScoreResults() {
                             userid : Cookies.get('userid')
                         }),
                     });
+                    fetchDataExaminfo()
+                    fetch(variables.API_URL+"exam/sendmail/"+id+"/", {
+                        method: "GET",
+                        headers: {
+                            'Accept': 'application/json, text/plain',
+                            'Content-Type': 'application/json;charset=UTF-8'
+                        },
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if(result.ok){
+                                console.log("sendmail ",result)
+                            }else{
+                                console.log("not ok ",result)
+                                fetch(variables.API_URL + "exam/update/"+id+"/", {
+                                    method: "PUT",
+                                    headers: {
+                                        'Accept': 'application/json, text/plain',
+                                        'Content-Type': 'application/json;charset=UTF-8'
+                                    },
+                                    body: JSON.stringify({
+                                        sendemail:null,
+                                        userid : Cookies.get('userid')
+                                    }),
+                                });
+                            }  
+                        }
+                    )
                 }
             })
         }
@@ -178,10 +233,10 @@ function AppScoreResults() {
                     setshowscores(true)
                 }
                 const statu_sendemail = result.sendemail
-                if(statu_sendemail === null){
+                if(statu_sendemail === null || statu_sendemail === ''){
                     setsendemail(null)
                 }else{
-                    setsendemail(true)
+                    setsendemail(result.sendemail)
                 }
                 
             }
@@ -202,16 +257,13 @@ function AppScoreResults() {
             setStartError(1);
         }
     };
-
-    useEffect(() => {
-        if (Start === 0) {
-            fetchDataExaminfo();
-            setStart(1);
-            setTimeout(function() {
-                setStartError(2)
-            }, 800);
-        }
-    }, [Start]); 
+    if (Start === 0) {
+        fetchDataExaminfo();
+        setStart(1);
+        setTimeout(function() {
+            setStartError(2)
+        }, 800);
+    }
 
     const parseCSVData = (text) => {
         Papa.parse(text, {
@@ -226,12 +278,29 @@ function AppScoreResults() {
     };
 
     const handleDownload = () => {
+        console.log(link_result);
         const filePath = link_result;
         const link = document.createElement('a');
         link.href = process.env.PUBLIC_URL + filePath;
         link.download = 'result_student_list.csv';
         link.click();
     };
+    // const handleDownload = (link_result) => {
+    //     // link_result = link
+
+    //     const blob = new Blob([link_result], { type: 'text/csv; charset=utf-8' });
+    //     const url = URL.createObjectURL(blob);
+    //     const link = document.createElement('a');
+    //     link.href = url;
+    //     link.download = 'result_student_list.csv';
+    //     link.click();
+    // };
+    
+
+    useEffect(() => {
+        const intervalId = setInterval(() => fetchDataExaminfo(), 30000);
+        return () => clearInterval(intervalId);
+    }, [fetchDataExaminfo]);
     return (
         <div className='content'>
             <main>
@@ -260,10 +329,14 @@ function AppScoreResults() {
                     }
                     <div className={StartError === 2 ?'box-content-view':'box-content-view none'}>
                         <div className='bx-topic light'>
+                        {Cookies.get('typesid') === 1 || Cookies.get('typesid') === '1'?
+                            <p><Link to="/Admin/AdminSubject">จัดการรายวิชา</Link> / <Link to="/Admin/AdminSubject">รายวิชาทั้งหมด</Link> / <Link to={"/Admin/AdminSubject/SubjectExam/"+subid}>{subjectname}</Link> / <Link to={"/Admin/AdminSubject/SubjectExam/Exam/"+ExamNoShow}>การสอบครั้งที่ {ExamNo} </Link> / ผลลัพธ์คะแนน</p>
+
+                            :
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link>/ ผลลัพธ์คะแนน</p>
+                        }
                             <div className='bx-grid2-topic'>
-                                <h2>แสดงผลลัพธ์คะแนน</h2>
-                                
+                                <h2>แสดงผลลัพธ์คะแนน<Alertmanual name={"scoreresults"} status={"1"}/></h2>    
                             </div>
                         </div>
                         <div className='bx-details light'>
@@ -273,17 +346,33 @@ function AppScoreResults() {
                                     <div className="button-download center" onClick={handleDownload}>
                                         ดาวน์โหลดข้อมูลการสอบ
                                     </div>
-                                    <div className="button-download center" onClick={handlesendemail}>
-                                        <FontAwesomeIcon icon={faCircleCheck} className={sendemail !== null ? "green-font":""} /> ส่งข้อมูลการสอบไปยังอีเมลของนักศึกษา
-                                    </div>
+                                    {Cookies.get('typesid') === 1 || Cookies.get('typesid') === '1'?null:
+                                        <div className="button-download center" onClick={handlesendemail}>
+                                            {sendemail === null || sendemail === "" ? "" : 
+                                            sendemail === "1" || sendemail === 1 ?
+                                            " "
+                                            :<FontAwesomeIcon icon={faCircleCheck} />} ส่งข้อมูลการสอบไปยังอีเมลของนักศึกษา
+                                        </div>
+                                    }
                                 </div>
-                                <div>
-                                    <div className="bx-input-fix">
-                                        <span className="flex">
-                                            <input className="mgR10" style={{minWidth:25}} value="" type="checkbox" checked={showscores} onChange = {handleshowscores} />แสดงข้อมูลการสอบ
-                                        </span>
+                                { sendemail === "1" || sendemail === 1 ?
+                                        <div className="sendemail">
+                                        <img src="/img/loading.webp" alt="Your GIF" style={{ height: '25px' }}/>
+                                        กำลังส่งข้อมูลการสอบไปยังอีเมลของนักศึกษา
+                                        </div>
+                                    :
+                                        null
+                                }
+                              
+                                {Cookies.get('typesid')  === 1 || Cookies.get('typesid') === '1'?null:
+                                    <div>
+                                        <div className="bx-input-fix">
+                                            <span className="flex">
+                                                <input className="mgR10" style={{minWidth:25}} value="" type="checkbox" checked={showscores} onChange = {handleshowscores} />แสดงข้อมูลการสอบ
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             </div>
                             <div>{TextError === ''? '':TextError}</div>
                             <div className="tableSub">

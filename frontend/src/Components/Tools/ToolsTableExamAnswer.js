@@ -218,25 +218,66 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
         const groups = inputString.split(',');
         const array = [0,0,0,0,0,0,0,0,0]
         groups.forEach((group, index) => {
-            const answers = group.split(':');
-            const answerCount = answers.length;
-            array[answerCount] +=1
+            if(group === ''){
+                array[0] +=1
+            }else{
+                const answers = group.split(':');
+                const answerCount = answers.length;
+                array[answerCount] +=1
+            }
+            
         });
         console.log(array)
         let result = '';
         array.forEach((count, index) => {
             console.log("count",count)
             if(count === 0){
-
+                // result += `คำตอบ ${index} ช้อย = ${count} ข้อ<br>`;
             }else{
-                const Counts = parseInt(count, 10);
-                result += `คำตอบ ${index} ช้อย = ${Counts} ข้อ<br>`;
+                if(index === 0){
+                    const Counts = parseInt(count, 10);
+                    result += `ไม่มีคำตอบ = ${Counts} ข้อ<br>`;
+                }else{
+                    const Counts = parseInt(count, 10);
+                    result += `คำตอบ ${index} ช้อย = ${Counts} ข้อ<br>`;
+                }
             }
            
         });
         return result;
     };
-
+    const choiceanswerslengthtable = (inputString) => {
+        const groups = inputString.split(',');
+        const array = [0,0,0,0,0,0,0,0,0]
+        groups.forEach((group, index) => {
+            if(group === ''){
+                array[0] +=1
+            }else{
+                const answers = group.split(':');
+                const answerCount = answers.length;
+                array[answerCount] +=1
+            }
+            
+        });
+        console.log(array)
+        let result = '';
+        array.forEach((count, index) => {
+            console.log("count",count)
+            if(count === 0){
+                // result += `คำตอบ ${index} ช้อย = ${count} ข้อ<br>`;
+            }else{
+                if(index === 0){
+                    const Counts = parseInt(count, 10);
+                    result += `ไม่มีคำตอบ = ${Counts} ข้อ `;
+                }else{
+                    const Counts = parseInt(count, 10);
+                    result += `คำตอบ ${index} ช้อย = ${Counts} ข้อ`;
+                }
+            }
+           
+        });
+        return result;
+    };
     const sumAns = (inputString) => {
         // [1,2,3,4,5,6,7,1,1,2,2,3,4,5]
         const resultArray = inputString.split(",");
@@ -302,6 +343,7 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                                 ) : null
                             ))}
                             <th>จำนวนคะแนนเต็ม</th>
+                            <th>จำนวนช้อย</th>
                             <th>สถานะ</th>
                             <th>การจัดการ</th>
                         </tr>
@@ -319,10 +361,13 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                             return (
                                 row.values.examanswersid !== null ?
                                     <tr {...row.getRowProps()} key={row.id} className='LCshow'>
-                                        <td className='center'><Link to={""}>{Number(row.id) + 1}</Link></td>
-                                        <td><Link to={""}>{row.values.examnoanswers}</Link></td>
+                                        <td className='center' onClick={() =>showcountOccurrences(row.values.scoringcriteria,row.values.choiceanswers)}><Link to={""}>{Number(row.id) + 1}</Link></td>
+                                        <td onClick={() =>showcountOccurrences(row.values.scoringcriteria,row.values.choiceanswers)}><Link to={""}>{row.values.examnoanswers}</Link></td>
                                         <td onClick={() =>showcountOccurrences(row.values.scoringcriteria,row.values.choiceanswers)}><Link to={""} ><p>{sumAns(row.values.scoringcriteria) } คะแนน</p></Link></td>
-                                        <td className='statustable'><Link to={""}><p className='succeed'><FontAwesomeIcon icon={faCircleCheck} />{"สร้างเฉลยเสร็จสิ้น"}</p></Link></td>
+                                        <td onClick={() =>showcountOccurrences(row.values.scoringcriteria,row.values.choiceanswers)}><Link to={""} ><p>{choiceanswerslengthtable(row.values.choiceanswers)}</p></Link></td>
+
+                                        
+                                        <td className='statustable' onClick={() =>showcountOccurrences(row.values.scoringcriteria,row.values.choiceanswers)}><Link to={""}><p className='succeed'><FontAwesomeIcon icon={faCircleCheck} />{"สร้างเฉลยเสร็จสิ้น"}</p></Link></td>
                                         <td className='center mw80px '>
                                             <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/UpdateExamAnswer/" + row.values.examanswersid +"/"+ id +"/"+ row.values.examnoanswers} className='' style={{ display: 'contents' }}>
                                                 <span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span>
@@ -336,6 +381,7 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                                     <tr {...row.getRowProps()} key={row.id} className='LCnotshow' onClick={() => showAlertCreate(id,Number(row.id) + 1)}>
                                         <td className='center'><Link to={""}>{Number(row.id) + 1}</Link></td>
                                         <td><Link to={""}>{row.values.examnoanswers}</Link></td>
+                                        <td><Link to={""}>-</Link></td>
                                         <td><Link to={""}>-</Link></td>
                                         <td className='statustable'><Link to={""}><p className='warning'><FontAwesomeIcon icon={faTriangleExclamation} />{"รอดำเนินการสร้าง"}</p></Link></td>
                                         <td className='center mw80px'>

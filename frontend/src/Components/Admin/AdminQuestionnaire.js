@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import TableAdminQuestionnaire from "../Tools/ToolsTableAdminQuestionnaire";
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppAdminQuestionnaire(){
 
@@ -60,7 +61,7 @@ function AppAdminQuestionnaire(){
                     <div className='bx-topic light'>
                         <p><Link to="/Admin/AdminSubject">จัดการแบบสอบถาม</Link> / แบบสอบถามทั้งหมด</p>
                         <div className='bx-grid-topic'>
-                            <h2>แบบสอบถามทั้งหมด</h2>
+                            <h2>แบบสอบถามทั้งหมด<Alertmanual name={"adminquestionnaire"} status={"1"}/></h2>
                         </div> 
                     </div>
                     <div className='bx-details light'>

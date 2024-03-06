@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import TableAdminSubject from "../Tools/ToolsAdminSubject";
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppAdminSubject(){
 
@@ -18,7 +19,7 @@ function AppAdminSubject(){
 
     const columns = useMemo(
         () => [
-            {Header: 'subid',accessor: 'subid',},
+            {Header: 'ID รายวิชา',accessor: 'subid',},
             {Header: 'ผู้ใช้',accessor: 'userid',},
             {Header: 'ผู้ใช้',accessor: 'useridUpdate',},
             {Header: 'รหัสวิชา',accessor: 'subjectid', },
@@ -64,7 +65,7 @@ function AppAdminSubject(){
                     <div className='bx-topic light'>
                         <p><Link to="/Admin/AdminSubject">จัดการรายวิชา</Link> / รายวิชาทั้งหมด</p>
                         <div className='bx-grid-topic'>
-                            <h2>รายวิชาทั้งหมด</h2>
+                            <h2>รายวิชาทั้งหมด<Alertmanual name={"adminsubject"} status={"1"}/></h2>
                             {/* <div className='flex-end'>
                                 <Link to="/CreateSubject">
                                     <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างรายวิชา</p>

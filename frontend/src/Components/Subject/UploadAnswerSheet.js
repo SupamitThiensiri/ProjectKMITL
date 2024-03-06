@@ -10,6 +10,7 @@ import Swal from 'sweetalert2'
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router-dom';
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppUploadAnswerSheet(){
     const { id } = useParams();
 
@@ -232,7 +233,7 @@ function AppUploadAnswerSheet(){
         try {
             const check = await saveUpload()
             if(check === undefined){
-                fetchDataStartExam();
+                setsequencesteps(3)
                 let timerInterval;
                 Swal.fire({
                 title: "กำลังอัปโหลดกระดาษคำตอบ",
@@ -258,7 +259,7 @@ function AppUploadAnswerSheet(){
                         confirmButtonColor: "#341699",
                         confirmButtonText: "ยืนยัน",  
                     }).then((result) => {
-                        
+                        fetchDataStartExam();
                     });
                 }
                 });
@@ -309,12 +310,12 @@ function AppUploadAnswerSheet(){
                     <div className='bx-topic light'>
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / อัปโหลดกระดาษคำตอบ</p>
                         <div className='bx-grid2-topic'>
-                            <h2>อัปโหลดกระดาษคำตอบ</h2>
+                            <h2>อัปโหลดกระดาษคำตอบ<Alertmanual name={"uploadanswersheet"} status={"1"}/></h2>
                         
                         </div> 
                     </div>
                     <div className='bx-details light'>
-                        <div>รูปแบบฟอร์มกระดาษคำตอบ</div>
+                        <div></div>
                         <div className="gtc2-CAS">
                             <div className="jc-center">
                                 <div className="mw300px fit-content">

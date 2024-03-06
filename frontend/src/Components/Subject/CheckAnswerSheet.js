@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
 import Papa from "papaparse";
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppCheckAnswerSheet(){
     const { id } = useParams();
     const [data, setdata] = useState([]);
@@ -113,7 +114,8 @@ function AppCheckAnswerSheet(){
     };
     function checknomistake(data) {
         for (let i = 0; i < data.length; i++) {
-            if(data[i].errorstype !== ''){
+            console.log("data.length : ",data[i].errorstype)
+            if(data[i].errorstype !== '' && data[i].errorstype !== null){
                 return false;
             } 
         }
@@ -301,6 +303,9 @@ function AppCheckAnswerSheet(){
         });
     };
     function nameRepeat(dataarray) {
+        if(dataarray === null){
+            return ""
+        }
         const Repeat = dataarray.split(",")
         for (let i = 0; i < Repeat.length; i++) {
             if(Repeat[i] === "ไม่พบรหัสนักศึกษาในรายชื่อ"){
@@ -653,7 +658,7 @@ function AppCheckAnswerSheet(){
                     <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / ตรวจความถูกต้องกระดาษคำตอบ</p>
                         <div className='bx-grid-topic'>
                             <div className="flex">
-                                <h2>ตรวจความถูกต้องกระดาษคำตอบ</h2>
+                                <h2>ตรวจความถูกต้องกระดาษคำตอบ<Alertmanual name={"checkanswersheet"} status={"1"}/></h2>
                                 <div className="pdl10px" onClick={handleSubmitAnalyzeresults}>
                                     <Link to="#">
                                         <p className={sequencesteps >= 5 ?"button-process wait":"button-process"}><span className="fb">วิเคราะห์ผล</span></p>
@@ -712,14 +717,14 @@ function AppCheckAnswerSheet(){
                                             (item.subjectidstd !== '' && item.subjectidstd !== null && item.subjectidstd !== "0" && item.setexaminfo !== 0 ) && 
                                             (item.setexaminfo !== '' && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0) && 
                                             (item.anschoicestd !== '' && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0) &&
-                                            (item.errorstype === '')
+                                            (item.errorstype === '' || item.errorstype === null)
                                             ? (
                                             <tr key={index}>
                                                 <td className="center">{item.stdid} </td>
                                                 <td className="center" >{item.stdid !== "" && item.stdid !== null && item.subjectidstd !== "0" && item.stdid !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                 <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null && item.subjectidstd !== "0" && item.subjectidstd !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                 <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null && item.setexaminfo !== "0" && item.setexaminfo !== 0 ? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="cursor-p green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                 <td className="hover-trigger center green-font"><p className="hover-content">รายละเอียดถูกต้อง{item.errorstype}</p><FontAwesomeIcon icon={faCircleCheck} /></td>
                                                 <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
                                                 <td className="center mw80px"> 
@@ -755,7 +760,7 @@ function AppCheckAnswerSheet(){
                                                     (item.subjectidstd === '' || item.subjectidstd === null || item.subjectidstd === "0" || item.subjectidstd === 0) ||
                                                     (item.setexaminfo === '' || item.setexaminfo === null || item.setexaminfo === "0" || item.setexaminfo === 0) ||
                                                     (item.anschoicestd === '' || item.anschoicestd === null || item.anschoicestd === "0" || item.anschoicestd === 0)||
-                                                    (item.errorstype !== '' )
+                                                    (item.errorstype !== '' && item.errorstype !== null )
                                                 ) {
                                                     return (
                                                         <tr key={index}>
@@ -784,7 +789,7 @@ function AppCheckAnswerSheet(){
                                                             </td>
                                                             <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                             <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                            <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                            <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="cursor-p green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                             {/* <td className="center"><div className="floating-box">สาเหตุ</div></td> */}
                                                             <td className="hover-trigger center warning-font"><FontAwesomeIcon icon={faTriangleExclamation} /><p className="hover-content">{item.errorstype}</p></td>
 
@@ -803,7 +808,7 @@ function AppCheckAnswerSheet(){
                                                         <td className="center">{item.stdid !== "" && item.stdid !== null  && item.stdid !== "0" && item.stdid !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p> :<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                         <td className="center">{item.subjectidstd !== "" && item.subjectidstd !== null  && item.subjectidstd !== "0" && item.subjectidstd !== 0? <p><FontAwesomeIcon  className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                         <td className="center">{item.setexaminfo !== ""  && item.setexaminfo !== null  && item.setexaminfo !== "0" && item.setexaminfo !== 0? <p><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
-                                                        <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
+                                                        <td className="center">{item.anschoicestd !== ""  && item.anschoicestd !== null && item.anschoicestd !== "0" && item.anschoicestd !== 0 ?<p  onClick={() =>submitprocessimg(item.examinfoid,item.imgansstd_path,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon className="cursor-p green-font" icon={faCircleCheck} /></p>:<FontAwesomeIcon  className="danger-font" icon={faCircleXmark} />}</td>
                                                         <td className="hover-trigger center warning-font"><p className="hover-content">รหัสนักศึกษาซ้ำกัน{item.errorstype}</p><FontAwesomeIcon icon={faTriangleExclamation} /></td>
                                                         <td className="w150px" style={{ overflowX: 'auto', whiteSpace: 'nowrap'}}>{extractFilenameFromURL(item.imgansstd_path)}</td>
                                                         <td className="center mw80px"> <Link to="#" onClick={() =>showCustomAlert(item.examinfoid,item.stdid,item.subjectidstd,item.setexaminfo,item.imgansstd_path, "3")} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link><span className='danger light-font' onClick={() => handleDelCours(item.examinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span></td>

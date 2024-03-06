@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import TableUser from '../Tools/ToolTableUser';
+import Alertmanual from '../Tools/ToolAlertmanual';
 
 function AppUser() {
 
@@ -64,7 +65,7 @@ function AppUser() {
             <div className="bx-topic light">
               <p><Link to="">ผู้ใช้ทั้งหมด</Link> / </p>
                     <div className='bx-grid2-topicAdmin'>
-                    <h2>ผู้ใช้ทั้งหมด</h2>
+                    <h2>ผู้ใช้ทั้งหมด <Alertmanual name={"adminuser"} status={"1"}/></h2>
                     <div className='flex-end'>
                         <Link to="/Admin/User/CreateUser/">
                             <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างผู้ใช้งาน</p>

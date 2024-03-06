@@ -21,7 +21,7 @@ const QuePart1 = ({ url,showChart }) => {
         ['', '', '', '']
       ]
     );
-    console.log(datashowtable.length)
+    // console.log(datashowtable.length)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -33,7 +33,7 @@ const QuePart1 = ({ url,showChart }) => {
                     skipEmptyLines: true,
                     complete: function (result) {
                         let dataDetail= result.data
-                        console.log("result",result.data)
+                        // console.log("result",result.data)
                         let section = [] // หัวข้อเรื่อง
                         let originalArray = []
                         let topicAndValue = []
@@ -83,7 +83,7 @@ const QuePart1 = ({ url,showChart }) => {
                                 topic.push(dataDetail[i][0])
                                 value.push(dataDetail[i][1])
                                 topicAndValue.push(dataDetail[i][0] + " (" + dataDetail[i][1]+" คน)")
-                                console.log(dataDetail[i])
+                                // console.log(dataDetail[i])
                             }
                         }
                         settopicAll(section)
@@ -255,6 +255,7 @@ const QuePart1 = ({ url,showChart }) => {
                             <tbody>
                                 {topicAll.map((value, rowIndex) => (
                                     <tr  key={rowIndex}>
+                                        {console.log(datashowtable[0])}
                                         <td>{topicAll[rowIndex]}</td>
                                         <td>{datashowtable[0][rowIndex]}</td>
                                         <td>{datashowtable[1][rowIndex]}</td>

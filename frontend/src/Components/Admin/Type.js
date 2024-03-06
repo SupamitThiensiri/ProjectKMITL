@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import TableType from "../Tools/ToolTableType";
+import Alertmanual from '../Tools/ToolAlertmanual';
 
 function AppType() {
 
@@ -62,7 +63,7 @@ function AppType() {
             <div className="bx-topic light">
               <p><Link to="">ประเภทการใช้งาน</Link> / </p>
                     <div className='bx-grid2-topicAdmin'>
-                    <h2>ประเภทการใช้งาน</h2>
+                    <h2>ประเภทการใช้งาน <Alertmanual name={"admintype"} status={"1"}/></h2>
                     <div className='flex-end'>
                         <Link to="/Admin/Type/CreateType/">
                             <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างประเภทการใช้งาน</p>

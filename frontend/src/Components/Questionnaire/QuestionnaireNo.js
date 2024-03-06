@@ -7,6 +7,7 @@ import {variables} from "../../Variables";
 import Swal from 'sweetalert2'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCircleCheck} from "@fortawesome/free-solid-svg-icons";
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppQuestionnaireNo(){
     const { id } = useParams();
@@ -187,7 +188,7 @@ function AppQuestionnaireNo(){
                     <div className='bx-topic light'>
                         <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / <Link to={"/Questionnaire/"}>แบบสอบถามทั้งหมด</Link> / {QueSheetName}</p>
                         <div className='bx-grid-topic'>
-                            <h2>แบบสอบถาม</h2>  
+                            <h2>แบบสอบถาม <Alertmanual name={"questionnaireno"} status={"1"}/></h2>  
                         </div> 
                     </div>
                     <div className='bx-details light'>
@@ -250,7 +251,7 @@ function AppQuestionnaireNo(){
                         </div>
                         <div className="fb">ขั้นตอนการประมวลผล</div>
                         <div className="bx-step-content">
-                            <div className={sequencesteps >= 3 && sequencesteps <=4 ? "bx-show":"bx-show wait" }>
+                            <div className={(sequencesteps >= 3 && sequencesteps <=4) || (quesheetinfo.length >= 1 && sequencesteps <=4) ? "bx-show":"bx-show wait" }>
                                 <Link to={"/Questionnaire/QuestionnaireNo/CheckQuestionaire/"+id}>
                                     <div className="box">
                                         <div className="box-img">

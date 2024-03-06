@@ -278,9 +278,9 @@ const TableAdminSubject = ({ columns }) => {
                     <thead>
                     {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
-                            <th>ลำดับ</th>
+                            {/* <th>ลำดับ</th> */}
                             {headerGroup.headers.map((column) => (
-                                (column.id !== 'subid' && column.id !== 'statussubject' && column.id !== 'createtimesubject' && column.id !== 'deletetimesubject'  && column.id !== 'userid') ? (
+                                (column.id !== 'null' && column.id !== 'statussubject' && column.id !== 'createtimesubject' && column.id !== 'deletetimesubject'  && column.id !== 'userid') ? (
                                     <th {...column.getHeaderProps()}>
                                     {/* <th {...column.getHeaderProps(column.getSortByToggleProps())}> */}
                                         {column.render('Header')}
@@ -314,14 +314,14 @@ const TableAdminSubject = ({ columns }) => {
                             prepareRow(row);
                                 return (
                                     <tr {...row.getRowProps()} key={row.id}>
-                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"center":"center wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{Number(row.id)+1}</Link></td>
+                                        <td className={"center"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.subid}</Link></td>
                                         {/* <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{findUseremailById(row.values.userid)}</Link></td> */}
-                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{(row.values.useridUpdate)}</Link></td>
+                                        <td className={""}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{(row.values.useridUpdate)}</Link></td>
 
-                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.subjectid}</Link></td>
-                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.subjectname}</Link></td>
-                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.year}</Link></td>
-                                        <td className={row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?"":"wait"}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.semester}</Link></td>
+                                        <td className={""}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.subjectid}</Link></td>
+                                        <td className={""}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.subjectname}</Link></td>
+                                        <td className={""}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.year}</Link></td>
+                                        <td className={""}><Link to={"/Admin/AdminSubject/SubjectExam/"+row.values.subid}>{row.values.semester}</Link></td>
                                        
                                         {row.values.deletetimesubject === null || row.values.deletetimesubject === '' || row.values.deletetimesubject === "null"?
                                             <td className='center mw80px' ><span className='danger light-font' onClick={() => handleDelCours(row.values.subid,row.cells[1].value)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>

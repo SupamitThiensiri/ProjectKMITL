@@ -60,8 +60,43 @@ const AnalyzeResultsCSV = ({ url }) => {
                             {
                                 label: "ค่าอำนาจจำแนก,ค่าความยาก",
                                 data: csvData.map(item => ({ x: item['ค่าอำนาจจำแนก'],y: item['ค่าความยาก']})),
-                                backgroundColor: 'rgba(255, 99, 132, 0.6)', // Color of the dots
-                                borderColor: 'rgba(255, 99, 132, 1)', // Border color of the dots
+                                backgroundColor: function(context) {
+                                    var value = context.dataset.data[context.dataIndex];
+                                    if (value && value.x >= 0.2 && value.x <= 1 && value.y >= 0.2 && value.y <= 0.8) {
+                                        return 'rgba(255, 205, 86, 1)';
+                                    }
+                                    else if(value && value.x >= 0.2 && value.x <= 1 && value.y >= 0 && value.y <= 0.2) {
+                                        return 'rgba(0, 164, 228, 1)';
+                                    }
+                                    else if(value && value.x >= 0.2 && value.x <= 1 && value.y >= 0.8 && value.y <= 1) {
+                                        return 'rgba(0, 164, 228, 1)';
+                                    }
+                                    else if(value && value.x >= 0 && value.x <= 0.2 && value.y >= 0.2 && value.y <= 0.8) {
+                                        return 'rgba(0, 255, 0, 1)';
+                                    }
+                                    else {
+                                        return 'rgba(255, 0, 0, 1)';
+                                    }
+                                },
+                                borderColor: function(context) {
+                                    var value = context.dataset.data[context.dataIndex];
+                                    if (value && value.x >= 0.2 && value.x <= 1 && value.y >= 0.2 && value.y <= 0.8) {
+                                        return 'rgba(255, 205, 86, 1)';
+                                    }
+                                    else if(value && value.x >= 0.2 && value.x <= 1 && value.y >= 0 && value.y <= 0.2) {
+                                        return 'rgba(0, 164, 228, 1)';
+                                    }
+                                    else if(value && value.x >= 0.2 && value.x <= 1 && value.y >= 0.8 && value.y <= 1) {
+                                        return 'rgba(0, 164, 228, 1)';
+                                    }
+                                    else if(value && value.x >= 0 && value.x <= 0.2 && value.y >= 0.2 && value.y <= 0.8) {
+                                        return 'rgba(0, 255, 0, 1)';
+                                    }
+                                    else {
+                                        return 'rgba(255, 0, 0, 1)';
+                                    }
+                                },
+                               
                                 borderWidth: 1, // Border width of the dots
                                 pointRadius: 5, // Size of the dots
                                 pointHoverRadius: 8 // Size of the dots on hover
@@ -78,9 +113,18 @@ const AnalyzeResultsCSV = ({ url }) => {
                                 type: 'linear', // Y-axis type
                                 position: 'left' // Y-axis position
                             }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            var label = `${context.label+' '+context.dataset.label || ''+context.dataset.label}: (${context.parsed.x}, ${context.parsed.y})`;
+                                            return label;
+                                        }
+                                    }
+                                }
                             }
                         }}
-                            
                     />
                     <div className='center'>ค่าอำนาจจำแนก</div>
                 </div>

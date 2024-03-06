@@ -116,11 +116,10 @@ function AppSingIn(){
           confirmButtonColor:"#341699",
         }); 
       }
-     
-
     }catch(error){}
   }
 
+  
   async function handleSubmit(e) {
     e.preventDefault();
     console.log('Email:', Email);

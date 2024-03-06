@@ -467,7 +467,7 @@ function AppSingUp(){
                                         />
                                     </div>
                                     <div className="bx-input-fix">
-                                        <label htmlFor="Email">อีเมล์ <span className="danger-font">* </span></label>
+                                        <label htmlFor="Email">อีเมล <span className="danger-font">* </span></label>
                                         <input
                                             type="email"
                                             id="Email"

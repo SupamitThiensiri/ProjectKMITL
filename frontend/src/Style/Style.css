@@ -81,6 +81,12 @@ body{
 .grey-font{
     color: var(--grey);
 }
+.dark{
+    background: var(--dark);
+}
+.dark-font{
+    color: var(--dark);
+}
 .primary{
     background: var(--primary);
 }
@@ -1424,14 +1430,28 @@ input[type=radio]{
     border: 1px solid var(--light-grey);
     padding: 20px;
     z-index: 1;
+    max-width: 280px;
+    white-space: pre-line;
     border-radius: 10px;
-    left: auto;
+    left: 55%;
 }
   
 .hover-trigger:hover .hover-content {
 display: block;
 }
+.sendemail{
+    display: flex;
+    background: var(--blue);
+    color: var(--light);
+    width: fit-content;
+    padding: 10px;
+    border-radius: 10px;
 
+    & img{
+        padding-right: 10px;
+    }
+}
+  
 /* AnalyzeResults */
 .AnalyzeResultsCSV2g{
     display: grid;

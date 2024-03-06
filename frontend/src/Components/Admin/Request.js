@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import TableRequest from '../Tools/ToolTableRequest';
+import Alertmanual from '../Tools/ToolAlertmanual';
 
 
 function AppRequest() {
@@ -62,7 +63,7 @@ function AppRequest() {
             <div className="bx-topic light">
               <p><Link to="">การร้องขอ</Link> / </p>
                     <div className='bx-grid-topicAdmin'>
-                    <h2>การร้องขอ</h2>
+                    <h2>การร้องขอ <Alertmanual name={"adminrequest"} status={"1"}/></h2>
                 </div> 
             </div>
             <div className="bx-details light">

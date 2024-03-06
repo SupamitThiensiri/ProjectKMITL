@@ -145,7 +145,7 @@ function AppShowQuestionaire(){
                                 <div className="TB">
                                     <div className="TB-box">
                                         <h3 className="center">แสดงตัวอย่างกระดาษแบบสอบถาม</h3>
-                                        <SRLWrapper options={options}>
+                                        {/* <SRLWrapper options={options}>
                                             <div className="container">
                                                 <div key={imgquesheet_path} className="image-card">
                                                     <a href={`${imgquesheet_path}`}>
@@ -153,7 +153,15 @@ function AppShowQuestionaire(){
                                                     </a>
                                                 </div>
                                             </div>
-                                        </SRLWrapper>     
+                                        </SRLWrapper>   */}
+                                       <div className="container">
+                                            <div key={imgquesheet_path} className="image-card">
+                                                <a href={`${imgquesheet_path}`} target="_blank">
+                                                    <img className="image" src={`${imgquesheet_path}`} alt={`${imgquesheet_path.substring(imgquesheet_path.lastIndexOf('/') + 1)}`} />
+                                                </a>
+                                            </div>
+                                        </div>
+  
                                     </div>
                                 </div>    
                             </div>

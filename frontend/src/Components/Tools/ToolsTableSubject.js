@@ -33,6 +33,7 @@ const TableSubject = ({ columns }) => {
                 .then(result => {
                     // console.log(result)
                     setdata(result)
+                    // setdata([])
                 }
             )
         }catch (err) {

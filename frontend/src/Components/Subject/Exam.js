@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCircleCheck} from "@fortawesome/free-solid-svg-icons";
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppExam(){
     const { id } = useParams();
@@ -139,7 +140,7 @@ function AppExam(){
                     <div className='bx-topic light'>
                         <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link></p>
                         <div className='bx-grid2-topic'>
-                            <h2>การสอบครั้งที่ {ExamNo}</h2>                           
+                            <h2>การสอบครั้งที่ {ExamNo}<Alertmanual name={"exam"} status={"1"}/></h2>                           
                         </div> 
                     </div>
                     <div className='bx-details light'>

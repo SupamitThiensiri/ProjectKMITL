@@ -194,6 +194,15 @@ const TableAdminSubjectNo = ({ columns }) => {
             return "-"
         }
     };
+    async function showalert(text) {
+        Swal.fire({
+            text: text,
+            showCancelButton: false,
+            confirmButtonColor: "#7066e0",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "ตกลง"
+        });
+    }
      return (
          <div>
              <div className='InputSize space-between'>
@@ -222,9 +231,9 @@ const TableAdminSubjectNo = ({ columns }) => {
                      <thead>
                      {headerGroups.map((headerGroup) => (
                          <tr {...headerGroup.getHeaderGroupProps()}>
-                             <th>ลำดับ</th>
+                             {/* <th>ลำดับ</th> */}
                              {headerGroup.headers.map((column) => (
-                                 (column.id !== 'examid' && column.id !== 'answersheetformat' && column.id !== 'imganswersheetformat_path' && column.id !== 'std_csv_path' && column.id !== 'showscores' && column.id !== 'sendemail' && column.id !== 'statusexam' && column.id !== 'deletetimeexam' && column.id !== 'createtimeexam' && column.id !== 'subid') ? (
+                                 (column.id !== 'null' && column.id !== 'answersheetformat' && column.id !== 'imganswersheetformat_path' && column.id !== 'std_csv_path' && column.id !== 'showscores' && column.id !== 'sendemail' && column.id !== 'statusexam' && column.id !== 'deletetimeexam' && column.id !== 'createtimeexam' && column.id !== 'subid') ? (
                                      <th {...column.getHeaderProps()}>
                                          {column.render('Header')}
                                          <span className='' {...column.getSortByToggleProps()}>
@@ -244,13 +253,13 @@ const TableAdminSubjectNo = ({ columns }) => {
                              prepareRow(row);
                                  return (
                                      <tr {...row.getRowProps()} key={row.id}>
-                                         <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"center":"center wait"}><Link to={''}>{Number(row.id)+1}</Link></td>
-                                         <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"":"wait"}><Link to={''}>{row.values.examname}</Link></td>
-                                         <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"":"wait"}><Link to={''}>{row.values.examno}</Link></td>
-                                         <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"":"wait"}><Link to={''}>{row.values.numberofexams}</Link></td>
-                                         <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"":"wait"}><Link to={''}>{row.values.numberofexamsets}</Link></td>
-                                         {/* <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"":"wait"}><Link to={''}>{findSeq(row.values.sequencesteps)}</Link></td> */}
-                                         <td className={row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?"":"wait"}><Link to={''}>{(row.values.sequencesteps)}</Link></td>
+                                         <td className={"center"}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปผลการสอบได้ เนื่องจากยังไม่มีการสรุปผลการสอบ")} >{row.values.examid}</Link>:<Link to={'/Admin/AdminSubject/SubjectExam/Exam/'+row.values.examid} >{row.values.examid}</Link>}</td>
+                                         <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปผลการสอบได้ เนื่องจากยังไม่มีการสรุปผลการสอบ")} >{row.values.examname}</Link>:<Link to={'/Admin/AdminSubject/SubjectExam/Exam/'+row.values.examid} >{row.values.examname}</Link>}</td>
+                                         <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปผลการสอบได้ เนื่องจากยังไม่มีการสรุปผลการสอบ")} >{row.values.examno}</Link>:<Link to={'/Admin/AdminSubject/SubjectExam/Exam/'+row.values.examid} >{row.values.examno}</Link>}</td>
+                                         <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปผลการสอบได้ เนื่องจากยังไม่มีการสรุปผลการสอบ")} >{row.values.numberofexams}</Link>:<Link to={'/Admin/AdminSubject/SubjectExam/Exam/'+row.values.examid} >{row.values.numberofexams}</Link>}</td>
+                                         <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปผลการสอบได้ เนื่องจากยังไม่มีการสรุปผลการสอบ")} >{row.values.numberofexamsets}</Link>:<Link to={'/Admin/AdminSubject/SubjectExam/Exam/'+row.values.examid} >{row.values.numberofexamsets}</Link>}</td>
+                                         <td className={""}>{parseInt(row.values.sequencesteps,10) < 5 ? <Link to={''} onClick={() =>showalert("ไม่สามารถดูข้อมูลสรุปผลการสอบได้ เนื่องจากยังไม่มีการสรุปผลการสอบ")} >{row.values.sequencesteps}</Link>:<Link to={'/Admin/AdminSubject/SubjectExam/Exam/'+row.values.examid} >{row.values.sequencesteps}</Link>}</td>
+
                                          {row.values.deletetimeexam === null || row.values.deletetimeexam === '' || row.values.deletetimeexam === "null"?
                                              <td className='center mw80px' ><Link to={'/Admin/AdminSubject/SubjectExam/AppAdminUpdateExam/'+row.values.examid} className='' style={{ display: 'contents' }}><span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span></Link><span className='danger light-font' onClick={() => handleDelCours(row.values.examid,row.values.examname)}><FontAwesomeIcon icon={faTrashCan} /></span> </td>
                                          :

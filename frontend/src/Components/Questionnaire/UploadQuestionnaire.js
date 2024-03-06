@@ -10,6 +10,7 @@ import Swal from 'sweetalert2'
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router-dom';
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppUploadAnswerSheet(){
     const { id } = useParams();
 
@@ -390,7 +391,7 @@ function AppUploadAnswerSheet(){
                     <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / <Link to={"/Questionnaire/"}>แบบสอบถามทั้งหมด</Link> / <Link to={"/Questionnaire/QuestionnaireNo/"+id}>{QueSheetName}</Link> / อัปโหลดแบบสอบถาม</p>
 
                         <div className='bx-grid2-topic'>
-                            <h2>อัปโหลดแบบสอบถาม</h2>
+                            <h2>อัปโหลดแบบสอบถาม<Alertmanual name={"uploadquestionnaire"} status={"1"}/></h2>
                         </div> 
                     </div>
                     <div className='bx-details light'>

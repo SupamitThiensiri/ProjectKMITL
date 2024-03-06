@@ -4,9 +4,12 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { variables } from "../../Variables";
+import Cookies from "js-cookie";
+
 import Chart from 'chart.js/auto';
 import {Bar} from "react-chartjs-2";
 import AnalyzeResultsCSV from "../Tools/AnalyzeResultsCSV";
+import Alertmanual from "../Tools/ToolAlertmanual";
 function AppAnalyzeResults() {
     const { id } = useParams();
     const [ExamNo, setExamNo] = useState('');
@@ -210,9 +213,13 @@ function AppAnalyzeResults() {
                     {/* Render Chart based on selected option */}
                     <div className={StartError === 2 ? 'box-content-view' : 'box-content-view none'}>
                         <div className='bx-topic light'>
+                        {Cookies.get('typesid') === 1 || Cookies.get('typesid') === '1'?
+                            <p><Link to="/Admin/AdminSubject">จัดการรายวิชา</Link> / <Link to="/Admin/AdminSubject">รายวิชาทั้งหมด</Link> / <Link to={"/Admin/AdminSubject/SubjectExam/"+subid}>{subjectname}</Link> / <Link to={"/Admin/AdminSubject/SubjectExam/Exam/"+ExamNoShow}>การสอบครั้งที่ {ExamNo} </Link> /  วิเคราะห์ผล</p>
+                            :
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link>/ วิเคราะห์ผล</p>
+                        }
                             <div className='bx-grid2-topic'>
-                                <h2>แสดงผลลัพธ์คะแนน</h2>
+                                <h2>แสดงผลการวิเคราะห์<Alertmanual name={"analyzeresults"} status={"1"}/></h2>
                             </div>
                         </div>
                         <div className='bx-details light'>
@@ -244,6 +251,37 @@ function AppAnalyzeResults() {
                                                     },
                                                 ],  
                                             }}
+                                            options={{
+                                                plugins: {
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            labels:function(context) {
+                                                                return + context.labels.y +' คะแนน';
+                                                            },
+                                                            label: function(context) {
+                                                                return 'จำนวน ' + context.parsed.y +' คน';
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }}
+                                            // options={{
+                                            //     scales: {
+                                            //         x: {
+                                            //             title: {
+                                            //                 display: true,
+                                                            
+                                            //                 text: 'ข้อ'
+                                            //             }
+                                            //         },
+                                            //         y: {
+                                            //             title: {
+                                            //                 display: true,
+                                            //                 text: 'จำนวนนักเรียนที่ตอบถูก'
+                                            //             }
+                                            //         }
+                                            //     }
+                                            // }}
                                         />
                                         <p className="center">คะแนน </p>
                                     </div>
@@ -304,7 +342,10 @@ function AppAnalyzeResults() {
                             {selectedValue === '4' &&
                                 (Step === 1 &&
                                     csvPathsArray.map((path, index) => (
-                                        <div key={index}><AnalyzeResultsCSV url={path}/></div>
+                                        <div key={index}>
+                                            <h3>ชุดข้อสอบที่ {index+1}</h3>
+                                            <div key={index}><AnalyzeResultsCSV url={path}/></div>
+                                        </div>
                                     ))
                                 )
                             }

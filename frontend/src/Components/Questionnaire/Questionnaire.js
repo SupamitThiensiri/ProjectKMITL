@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useMemo, useEffect } from 'react';
 import ToolTableQuestionaire from "../Tools/ToolTableQuestionaire";
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppQuestionnaire(){
     const [StartError, setStartError] = useState(0);
@@ -69,7 +70,7 @@ function AppQuestionnaire(){
                     <div className='bx-topic light'>
                         <p><Link to="/Questionnaire">จัดการแบบสอบถาม</Link> / แบบสอบถามทั้งหมด</p>
                         <div className='bx-grid2-topic'>
-                            <h2>แบบสอบถาม</h2>
+                            <h2>แบบสอบถาม <Alertmanual name={"questionnaire"} status={"1"}/></h2>
                             <div className='flex-end'>
                                 <Link to="/CreateQuestionnaire">
                                     <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างแบบสอบถาม</p>

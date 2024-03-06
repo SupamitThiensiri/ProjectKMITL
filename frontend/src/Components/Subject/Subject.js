@@ -5,6 +5,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faSquarePlus} from "@fortawesome/free-solid-svg-icons";
 import TableSubject from "../Tools/ToolsTableSubject";
+import Alertmanual from "../Tools/ToolAlertmanual";
+import Cookies from 'js-cookie';
 
 function AppSubject(){
 
@@ -12,7 +14,11 @@ function AppSubject(){
     useEffect(() => {
       
         setTimeout(() => {
-          setStartError(2);
+            if(Cookies.get('usageformat1') === 1 || Cookies.get('usageformat1') === "1"){
+                setStartError(2);
+            }else{
+                setStartError(1);
+            }
         }, 500); 
     }, []);
 
@@ -63,7 +69,7 @@ function AppSubject(){
                     <div className='bx-topic light'>
                         <p><Link to="/Subject">จัดการรายวิชา</Link> / รายวิชาทั้งหมด</p>
                         <div className='bx-grid2-topic'>
-                            <h2>รายวิชาทั้งหมด</h2>
+                            <h2>รายวิชาทั้งหมด<Alertmanual name={"subject"} status={"1"}/></h2>
                             <div className='flex-end'>
                                 <Link to="/CreateSubject">
                                     <p className='button-create'><FontAwesomeIcon icon={faSquarePlus} />สร้างรายวิชา</p>

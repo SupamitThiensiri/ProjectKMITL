@@ -444,7 +444,7 @@ function AppUpdateQuetionaire(){
         formData.append("quesheet", JSON.stringify(quesheet_data))
         formData.append("queheaddetails", JSON.stringify(queheaddetails_data))
         formData.append("quetopicdetails", JSON.stringify(quetopicdetails_data))
-        formData.append("nonelogo",(checknonelogo === false ? false : true))
+        formData.append("nonelogo",checknonelogo === false ? false : true)
         console.log(formData)
 
         try{

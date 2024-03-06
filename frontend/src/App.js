@@ -64,6 +64,9 @@ import AppAdminUpdateQuestionnaire from './Components/Admin/AdminUpdateQuestionn
 import AppUpdateUser from './Components/Admin/UpdateUser';
 import AppShowScores from './Components/ShowScores';
 import AppScores from './Components/Scores';
+import AppAdminExam from './Components/Admin/AdminExam';
+import AppAdminQuestionnaireNo from './Components/Admin/AdminQuestionnaireno';
+import AppUsermanual from './Components/Usermanual';
 
 
 function App() {
@@ -117,6 +120,7 @@ function App() {
         
         <Route path='/Profile' element={<AppProfile />}></Route>
         <Route path='/Contact' element={<AppContact />}></Route>
+        <Route path='/Usermanual' element={<AppUsermanual />}></Route>
         <Route path='/Scores' element={<AppScores />}></Route>
         <Route path='/Scores/ShowScores/:id' element={<AppShowScores />}></Route>
         
@@ -124,10 +128,15 @@ function App() {
         <Route path='/Admin/AdminSubject' element={<AppAdminSubject />}></Route>
         <Route path='/Admin/AdminSubject/SubjectExam/:id' element={<AppAdminSubjectNo />}></Route>
         <Route path='/Admin/AdminSubject/SubjectExam/AppAdminUpdateExam/:id' element={<AppAdminUpdateExam />}></Route>
+        <Route path='/Admin/AdminSubject/SubjectExam/Exam/:id' element={<AppAdminExam />}></Route>
+        <Route path='/Admin/AdminSubject/SubjectExam/Exam/ScoreResults/:id' element={<AppScoreResults />}></Route>
+        <Route path='/Admin/AdminSubject/SubjectExam/Exam/AnalyzeResults/:id' element={<AppAnalyzeResults />}></Route>
         <Route path='/Admin/AdminQuestionnaire' element={<AppAdminQuestionnaire />}></Route>
         <Route path='/Admin/AdminQuestionnaire/AdminUpdateQuestionnaire/:id' element={<AppAdminUpdateQuestionnaire />}></Route>
+        <Route path='/Admin/AdminQuestionnaire/QuestionnaireNo/:id' element={<AppAdminQuestionnaireNo />}></Route>
+        <Route path='/Admin/AdminQuestionnaire/QuestionnaireNo/AnalyzeResultsQue/:id' element={<AppAnalyzeResultsQue />}></Route>
 
-       
+        /Admin/AdminQuestionnaire/AnalyzeResultsQue/
         <Route path='/Admin/User' element={<AppUser />}></Route>
         <Route path='/Admin/User/CreateUser/' element={<AppCreateUser />}></Route>
         <Route path='/Admin/User/UpdateUser/:id' element={<AppUpdateUser />}></Route>

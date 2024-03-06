@@ -13,7 +13,7 @@ function AppContact(){
                             <h2>ติดต่อเรา</h2>  
                         </div>
                         <div className='bx-details light'>
-                            details
+                            อีเมล : mcqa.system@gmail.com
                         </div>
                     </div>
                 </div>

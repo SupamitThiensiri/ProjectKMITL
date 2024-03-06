@@ -266,9 +266,9 @@ function AppAdminUpdateExam(){
                                     <div htmlFor="sequencesteps">เลือกลำดับการทำงาน</div>
                                     <select id="sequencesteps" value={sequencesteps} onChange={handlesequencesteps} style={{width:250}}>
                                         <option value="">กรุณาเลือก</option>
-                                        <option value="1">ค่าเริ่มต้น</option>
-                                        <option value="4">ก่อนวิเคราะห์ผล</option>
-                                        <option value="6">สรุปผล</option>
+                                        <option value="1">ขั้นตอนเตรียมการก่อนการประมวลผล</option>
+                                        <option value="4">ขั้นตอนการประมวลผล</option>
+                                        <option value="6" disabled='true'>สรุปผล</option>
                                     </select>
                                 </div>
                               

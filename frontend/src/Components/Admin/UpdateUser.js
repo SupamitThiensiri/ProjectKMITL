@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 function AppUpdateUser() {
     const { id } = useParams();
 
+    const [emailshow, setemailshow] = useState("");
     const [email, setemail] = useState("");
     const [tel, settel] = useState("");
     const [fullname, setfullname] = useState("");
@@ -90,6 +91,7 @@ function AppUpdateUser() {
               } else {
                 console.log("result :", result);
                 setemail(result.email);
+                setemailshow(result.email);
                 settel(result.tel);
                 setfullname(result.fullname);
                 setDepartment(result.department);
@@ -212,6 +214,8 @@ function AppUpdateUser() {
         console.log("Workplace:", Workplace);
         console.log("tel:", tel);
         console.log("errortext:", errortext);
+        console.log("checkbox1:", checkbox1);
+
         if (errortext === "กรุณากรอก") {
           try {
             const response = await fetch(
@@ -230,7 +234,7 @@ function AppUpdateUser() {
                     department: Department,
                     faculty: Faculty,
                     workplace: Workplace,
-                    usageformat : checkbox1 === true ? "[1,1]":"[0,1]",
+                    usageformat : checkbox1 === true || checkbox1 === 1 ? "[1,1]":"[0,1]",
                     e_kyc : e_kyc,
                     typesid:type
                 }),
@@ -299,7 +303,7 @@ function AppUpdateUser() {
             ) : null}
             <div className={StartError === 2 ? "box-content-view" : "box-content-view none"}>
                 <div className="bx-topic light">
-                <p><Link to="/Admin/User">ผู้ใช้ทั้งหมด</Link> / {email} /แก้ไขผู้ใช้งาน</p>
+                <p><Link to="/Admin/User">ผู้ใช้ทั้งหมด</Link> / {emailshow} /แก้ไขผู้ใช้งาน</p>
                         <div className='bx-grid-topicAdmin'>
                         <h2>แก้ไขผู้ใช้งาน</h2>
                     </div> 
@@ -308,7 +312,7 @@ function AppUpdateUser() {
                     <div style={{maxWidth:340,minWidth:200}}>
                         <div> ID ผู้ใช้งาน : {id}</div>
                         <div className="bx-input-fix">
-                            <label htmlFor="Email">อีเมล์ <span className="danger-font">* </span></label>
+                            <label htmlFor="Email">อีเมล <span className="danger-font">* </span></label>
                             <input
                                 type="email"
                                 id="Email"

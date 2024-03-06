@@ -267,7 +267,7 @@ function AppUpdateExamAnswer(){
         setCheckboxValues5(E);
         setCheckboxValues6(F);
         setCheckboxValues7(G);
-        setCheckboxValues7(H);
+        setCheckboxValues8(H);
 
     }
     function transformScoringCriteria(input) {

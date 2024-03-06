@@ -11,6 +11,7 @@ import { SRLWrapper } from 'simple-react-lightbox';
 import { useParams } from 'react-router-dom';
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 
 function AppCreateAnswerSheet(){
@@ -364,7 +365,7 @@ function AppCreateAnswerSheet(){
                         <div className='bx-topic light'>
                             <p><Link to="/Subject">จัดการรายวิชา</Link> / <Link to="/Subject">รายวิชาทั้งหมด</Link> / <Link to={"/Subject/SubjectNo/"+subid}> {subjectname} </Link> / <Link to={"/Subject/SubjectNo/Exam/"+ExamNoShow}> การสอบครั้งที่ {ExamNo} </Link> / สร้างกระดาษคำตอบ</p>
                             <div className='bx-grid2-topic'>
-                                <h2>สร้างกระดาษคำตอบ</h2>
+                                <h2>สร้างกระดาษคำตอบ<Alertmanual name={"createanswersheet"} status={"1"}/></h2>
                             </div> 
                         </div>
                         <div className='bx-details light'>

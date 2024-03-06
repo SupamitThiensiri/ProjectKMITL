@@ -10,12 +10,14 @@ import Swal from 'sweetalert2'
 import {variables} from "../../Variables";
 import Cookies from 'js-cookie';
 import { useParams } from 'react-router-dom';
+import Alertmanual from "../Tools/ToolAlertmanual";
 
 function AppCheckQuestionaire(){
     const { id } = useParams();
 
     const [sequencesteps, setsequencesteps] = useState('');
     const [QueSheetName, setQueSheetName] = useState('');
+    const [quesheetid, setquesheetid] = useState('');
 
     const [quesheetinfo, setquesheetinfo] = useState('');
     
@@ -37,9 +39,9 @@ function AppCheckQuestionaire(){
                         setStartError(1);
                     }
                     console.log("quesheet :",result)
+                    setquesheetid(result.quesheetid)
                     setQueSheetName(result.quesheetname)
-                    setsequencesteps(result.sequencesteps)
-
+                    setsequencesteps(parseInt(result.sequencesteps, 10))
                 }
             )
             fetch(variables.API_URL+"queheaddetails/detail/"+id+"/", {
@@ -109,7 +111,6 @@ function AppCheckQuestionaire(){
            
         }
     };
-    
     const setStartError2 = (e) => {
         setStartError(2);
     }
@@ -134,7 +135,8 @@ function AppCheckQuestionaire(){
         const intervalId = setInterval(fetchDataquesheet, 30000);
         return () => clearInterval(intervalId);
     }, []);
-    const showCustomAlert = (dataid,type,dataimg) => {
+    const showCustomAlert = (dataid,type,dataimg,dataerror) => {
+        console.log("quesheetid",quesheetid)
         console.log(dataid)
         console.log(type)
         console.log(dataimg)
@@ -142,11 +144,18 @@ function AppCheckQuestionaire(){
         Swal.fire({
             title: 'แก้ไขข้อผิดพลาด  ',
             html: `
-                <div class='test' style="display: ${isMobile ? 'grid' : 'flex'}; ${isMobile ? 'grid-template-columns: 1fr;' : 'justify-content: center; align-items: center;'} width: 100%;">
+                <div class='test' style="display: ${isMobile ? 'grid' : 'flex'}; ${isMobile ? 'grid-template-columns: 1fr;' : 'justify-content: center; align-items: center;'} width: 100%;min-width: fit-content;">
                     <div style="flex: 1; text-align: center;">
-                        <img src="${dataimg}" alt="Image" style="width: 584px; height: 750px;">
+                        <img src="${dataimg}" alt="Image" style="width: 496px; height: 701px;">
                     </div>
                     <div style="flex: 1; margin-left: 20px; text-align: left;"> 
+                        <div style="${dataerror === 'ไม่พบข้อมูล QR Code ในแบบสอบถาม'? 'pading:10px' : 'display:none'}">
+                            <label for="input2">ยืนยัน QR Code แบบสอบถาม</label>
+                        </div>
+                        <div style="position: relative; ${dataerror === 'ไม่พบข้อมูล QR Code ในแบบสอบถาม'? '' : 'display:none'}">
+                            <input type="text" id="input2" value="${""}" class="swal2-input" style="width: 250px;margin:0px;padding-right: 40px; display:none" disabled="true">
+                            <img src="/img/check.png" alt="Image" id="passTextquzid" style="width: 30px; height: 30px; right: 10px;left: 0;">
+                        </div>
                         <div style=" ${type === '2' || type === '3'? '' : 'display:none'}">
                             <div>
                                 <label for="fileInput">อัปโหลดไฟล์:</label> 
@@ -158,7 +167,6 @@ function AppCheckQuestionaire(){
                     </div>
                 </div>
             `,
-        
             showCancelButton: true,
             confirmButtonColor: "#341699",
             confirmButtonText: 'แก้ไข',
@@ -166,11 +174,47 @@ function AppCheckQuestionaire(){
             customClass: {
                 popup: 'custom-alert-popup',
             },
+            preConfirm: () => {
+                const input2Value = document.getElementById('input2').value;
+                if(dataerror === 'ไม่พบข้อมูล QR Code ในแบบสอบถาม'){
+                    if (input2Value === '') {
+                        Swal.showValidationMessage('กรุณายืนยันแบบสอบถาม');
+                        return false;
+                    }
+                }
+            }
         }).then((result) => {
-        
+            if (result.isConfirmed) {
+                if(dataerror === 'ไม่พบข้อมูล QR Code ในแบบสอบถาม'){
+                    if(UpdateQueInfo(dataid)){
+                        // fetchDataExamInfo();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'แก้ไขข้อมูลเสร็จสิ้น',
+                            text: '',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: '',
+                        });
+                    }
+                }
+            }
+            
+        });
+        // <img src="/img/check.png" alt="Image" id="passTextquzid" style="width: 30px; height: 30px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);left: 0;">
+
+        document.getElementById('passTextquzid').addEventListener('click', function() {
+            document.getElementById('input2').value = quesheetid;
+            document.getElementById('input2').disabled = true;
+            document.getElementById('input2').style.backgroundColor = '#DDDDDD';
+            document.getElementById('passTextquzid').src = "/img/checkgreen.png";
         });
 
-      
         document.getElementById('fileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if(UpdateuploadFile(file,dataid)) {
@@ -192,6 +236,30 @@ function AppCheckQuestionaire(){
             }
         });
     };
+    async function UpdateQueInfo(dataid) {
+        try{
+            const response = await fetch(variables.API_URL + "queinformation/update/"+dataid+"/", {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    errorstype: null
+                }),
+            });
+
+            const result = await response.json();
+            if(result.ok){
+                return true;
+            }
+
+        }catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
     async function UpdateuploadFile(fileUpload,dataid) {
         try{
             const formData = new FormData();
@@ -269,6 +337,9 @@ function AppCheckQuestionaire(){
                 return false;
             } 
         }
+        if(quesheetinfo.length === 0){
+            return "error";
+        }
         return true;
     }
     async function handleSubmitAnalyzeresultsQue(e) {
@@ -288,6 +359,8 @@ function AppCheckQuestionaire(){
                     loading();
                 }
             });
+        }else if(checknomistake(quesheetinfo) === "error"){
+            Swal.fire('มีข้อมูลไม่มากพอในการประมวลผล');
         }else{
             Swal.fire('ยังมีข้อมูลที่ยังรอการแก้ไขไม่สามารถวิเคราะห์ผลได้');
         }
@@ -345,11 +418,11 @@ function AppCheckQuestionaire(){
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
                 body: JSON.stringify({
-                    sequencesteps : 4,
+                    sequencesteps : "4",
                     userid : Cookies.get('userid')
                 }),
             });
-            fetchDataquesheet();
+            setsequencesteps("4");
             fetch(variables.API_URL + "queinformation/result/"+id+"/", {
                 method: "POST",
                 headers: {
@@ -370,12 +443,27 @@ function AppCheckQuestionaire(){
                             'Content-Type': 'application/json;charset=UTF-8'
                         },
                         body: JSON.stringify({
-                            sequencesteps : 3,
+                            sequencesteps : "3",
                             userid : Cookies.get('userid')
                         }),
                     });
                     return "status 500"
                 }else{
+                    fetch(
+                    variables.API_URL + "quesheet/update/" + id + "/",
+                    {
+                        method: "PUT",
+                        headers: {
+                        Accept: "application/json, text/plain",
+                        "Content-Type": "application/json;charset=UTF-8",
+                        },
+                            body: JSON.stringify({
+                            datetimestart: null,
+                            datetimeend: null,
+                            userid: Cookies.get("userid"),
+                        }),
+                    }
+                    );
                     return true;
                 }
                  // รีเทิร์นค่า true เพื่อสื่อว่าการส่งข้อมูลเสร็จสิ้น
@@ -388,7 +476,7 @@ function AppCheckQuestionaire(){
                         'Content-Type': 'application/json;charset=UTF-8'
                     },
                     body: JSON.stringify({
-                        sequencesteps : 3,
+                        sequencesteps : "3",
                         userid : Cookies.get('userid')
                     }),
                 });
@@ -403,7 +491,7 @@ function AppCheckQuestionaire(){
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
                 body: JSON.stringify({
-                    sequencesteps : 3,
+                    sequencesteps : "3",
                     userid : Cookies.get('userid')
                 }),
             });
@@ -442,8 +530,7 @@ function AppCheckQuestionaire(){
 
                             <div className='bx-grid-topic'>
                                 <div className="flex">
-
-                                    <h2>ตรวจสอบความถูกต้องของแบบสอบถาม</h2>
+                                    <h2>ตรวจสอบความถูกต้องของแบบสอบถาม <Alertmanual name={"checkquestionaire"} status={"1"}/></h2>
                                     <div className="pdl10px" onClick={handleSubmitAnalyzeresultsQue}>
                                         <Link to="#">
                                             <p className={sequencesteps >= 5 ?"button-process wait":"button-process"}><span className="fb">วิเคราะห์ผล</span></p>
@@ -472,7 +559,7 @@ function AppCheckQuestionaire(){
                                 )}
                             <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษแบบสอบถาม ที่ถูกต้อง</div>
                             <div className="tableSub">
-                                <table className={sequencesteps >= 5 ? "wait" : ""}>
+                                <table className={sequencesteps >= 4 ? "wait" : ""}>
                                     <thead>
                                         <tr>
                                             <th style={{ minWidth: '200px',maxWidth: '200px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>แหล่งที่มาของแบบสอบถาม</th>
@@ -501,7 +588,7 @@ function AppCheckQuestionaire(){
                                                     </td>
                                                 :
                                                     <td className="center mw80px"> 
-                                                        <Link to="#" onClick={() =>showCustomAlert(item.queinfoid,'3',item.imgansstd_path)} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
+                                                        <Link to="#" onClick={() =>showCustomAlert(item.queinfoid,'3',item.imgansstd_path,item.errorstype)} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
                                                         <span className='danger light-font' onClick={() => handleDelCours(item.queinfoid,item.status_queinfo === "Online" ? "Online" :extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span>
                                                     </td>
                                                 }
@@ -514,7 +601,7 @@ function AppCheckQuestionaire(){
                             </div>
                             <div className="fb">ตารางแสดงความถูกต้องของไฟล์กระดาษแบบสอบถาม ที่ผิดพลาด</div>
                             <div className="tableSub">
-                                <table className={sequencesteps >= 5 ? "wait" : ""}>
+                                <table className={sequencesteps >= 4 ? "wait" : ""}>
                                     <thead>
                                         <tr>
                                             <th style={{ minWidth: '200px',maxWidth: '200px' ,overflowX: 'auto', whiteSpace: 'nowrap'}}>แหล่งที่มาของแบบสอบถาม</th>
@@ -542,7 +629,7 @@ function AppCheckQuestionaire(){
                                                     </td>
                                                 :
                                                     <td className="center mw80px"> 
-                                                        <Link to="#" onClick={() =>showCustomAlert(item.queinfoid,'3',item.imgansstd_path)} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
+                                                        <Link to="#" onClick={() =>showCustomAlert(item.queinfoid,'3',item.imgansstd_path,item.errorstype)} className='' style={{ display: 'contents' }}><span className='border-icon-dark'>{<FontAwesomeIcon icon={faPen} />}</span></Link>
                                                         <span className='danger light-font' onClick={() => handleDelCours(item.queinfoid,extractFilenameFromURL(item.imgansstd_path))}><FontAwesomeIcon icon={faTrashCan} /></span>
                                                     </td>
                                                 }
