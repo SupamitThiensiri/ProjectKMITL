@@ -54,7 +54,7 @@ function AppScoreResults() {
                     });
                     Swal.fire({
                         title: ``,
-                        text: `ผู้ใช้งานที่มีอีเมล USER ตรงกับอีเมลที่มีในการสอบจะสามารถมองเห็นข้อมูลการสอบชองตนเองได้`,
+                        text: `ผู้ใช้งานที่มีอีเมล USER ตรงกับอีเมลที่มีในการสอบจะสามารถมองเห็นข้อมูลการสอบของตนเองได้`,
                         icon: "success",
                         showCancelButton: false,
                         confirmButtonColor:"#341699",
@@ -95,6 +95,7 @@ function AppScoreResults() {
             })
         }
     };
+
     async function handlesendemail(e) {
         if(sendemail === null){
             Swal.fire({
@@ -252,6 +253,7 @@ function AppScoreResults() {
             setStartError(1);
         }
     };
+
     if (Start === 0) {
         fetchDataExaminfo();
         setStart(1);
