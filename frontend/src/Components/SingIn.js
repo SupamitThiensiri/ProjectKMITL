@@ -83,6 +83,11 @@ function AppSingIn(){
         }); 
       }
     }catch(err){
+      Swal.fire({
+        title: err,
+        icon: "error",//error,question,warning,success
+        confirmButtonColor:"#341699",
+      });
     }
   }
 
