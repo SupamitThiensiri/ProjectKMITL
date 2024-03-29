@@ -412,6 +412,7 @@ function AppUpdateUser() {
                                 </div>
                             )}
                         </div>
+                        <div> สิทธิ์การใช้งานในระบบ</div>
                         <div className="bx-input-fix">
                             <span className="flex"><input className="mgR10 wait" value = "1" type = "checkbox" checked={checkbox2} onChange={handleCheckbox2} />จัดการแบบสอบถาม </span>
                         </div>
