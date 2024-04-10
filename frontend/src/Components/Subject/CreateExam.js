@@ -24,7 +24,7 @@ function AppCreateExam(){
         for (let i = 1; i <= num; i++) {
           output += `${i}:1:1:0,`;
         }
-        return output.slice(0, -1); // Removing the last comma
+        return output.slice(0, -1); 
     }
 
     async function handleSubmit(e) {
@@ -50,7 +50,6 @@ function AppCreateExam(){
                 });
 
                 const result = await response.json();
-                // console.log("exam/create/"+result.examid,"NumExam:",NumExam)
 
                 if (response.ok) {
                     for (let i = 1; i <= SetExam; i++) {
@@ -97,14 +96,14 @@ function AppCreateExam(){
             });
         }
     }
-
+    
     const handleReset = (e) => {
         setNameExam('');
         setExamNo(1);
         setNumExam(40)
         setSetExam(1);
     }
-    
+
     return(
         <div className='content'>
             <main>

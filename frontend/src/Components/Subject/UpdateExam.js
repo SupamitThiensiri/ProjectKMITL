@@ -188,42 +188,8 @@ function AppUpdateExam(){
                                     });
                                     let resultd = await resultdelete.json()
                                 }
-                                fetch(variables.API_URL+"examanswers/detail/"+id+"/", {
-                                    method: "GET",
-                                    headers: {
-                                        'Accept': 'application/json, text/plain',
-                                        'Content-Type': 'application/json;charset=UTF-8'
-                                    },
-                                    })
-                                    .then(response => response.json())
-                                    .then(result => {
-                                        console.log("จำนวนข้อสอบ :",result)
-                                    }
-                                )
                                 for (let i = 1; i <= SetExam; i++) {
-                                    // try{
-                                    //     let resulcreate = await fetch(variables.API_URL + "examanswers/create/", {
-                                    //         method: "POST",
-                                    //         headers: {
-                                    //             'Accept': 'application/json, text/plain',
-                                    //             'Content-Type': 'application/json;charset=UTF-8'
-                                    //         },
-                                    //         body: JSON.stringify({
-                                    //             scoringcriteria : generateOutputexamanswers(NumExam),
-                                    //             examnoanswers : i,
-                                    //             examid : id
-                                    //         }),
-                                    //     });
-                                    //     if (resulcreate.ok) {
-                                    //         let resultc = await resulcreate.json();
-                                    //     } else {
-                                    //         checkcreateanswers = false
-                                    //     }
-                                    // }catch(err){
-                                    //     checkcreateanswers = false
-                                    // }
                                     try {
-                                        console.log("id :",id)
                                         for (let i = 1; i <= SetExam; i++) {
                                             fetch(variables.API_URL + "examanswers/create/", {
                                                 method: "POST",
