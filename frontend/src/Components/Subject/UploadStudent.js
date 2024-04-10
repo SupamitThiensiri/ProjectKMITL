@@ -133,13 +133,13 @@ function AppUploadStudent(){
             dynamicTyping: true,
             skipEmptyLines: true,
             complete: function (result) {
-                console.log(result.data[0].length)
                 if(result.data[0].length === 4){
                     console.log(result.data[0][0])
                     console.log(result.data[0][1])
                     console.log(result.data[0][2])
                     console.log(result.data[0][3])
-                    if(result.data[0][0] === "รหัสนักศึกษา" && result.data[0][1] === "ชื่อ-นามสกุล" && result.data[0][2] === "กลุ่มเรียน" && result.data[0][3] === "อีเมล"){
+                    if(result.data[0][0] === "รหัสนักศึกษา" && result.data[0][1] === "ชื่อ-นามสกุล" 
+                        && result.data[0][2] === "กลุ่มเรียน" && result.data[0][3] === "อีเมล"){
                         setcsvData(result.data);
                     }else{
                         Swal.fire({
