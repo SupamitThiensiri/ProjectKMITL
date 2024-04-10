@@ -176,44 +176,74 @@ function AppUpdateExam(){
                             let checkcreateanswers = true
                             //Fetch API เพื่อทำการดึกข้อมูล exam/update แก้ไข
                             if(NumExam !== checkNumExam || SetExam !== checkSetExam){
+                                console.log("dataanswer.length = ",dataanswer.length)
                                 for (let i = 0; i < dataanswer.length; i++) {
-                                    const resultdelete = await fetch(variables.API_URL+"examanswers/delete/"+dataanswer[i].examanswersid+"/", {
+                                    console.log()
+                                    let resultdelete = await fetch(variables.API_URL+"examanswers/delete/"+dataanswer[i].examanswersid+"/", {
                                         method: "DELETE",
                                         headers: {
                                             'Accept': 'application/json, text/plain',
                                             'Content-Type': 'application/json;charset=UTF-8'
                                         },
                                     });
-
-                                    const result = await resultdelete.json()
-                                        
+                                    let resultd = await resultdelete.json()
                                 }
-                                
+                                fetch(variables.API_URL+"examanswers/detail/"+id+"/", {
+                                    method: "GET",
+                                    headers: {
+                                        'Accept': 'application/json, text/plain',
+                                        'Content-Type': 'application/json;charset=UTF-8'
+                                    },
+                                    })
+                                    .then(response => response.json())
+                                    .then(result => {
+                                        console.log("จำนวนข้อสอบ :",result)
+                                    }
+                                )
                                 for (let i = 1; i <= SetExam; i++) {
-                                    try{
-                                        const resulcreate = await fetch(variables.API_URL + "examanswers/create/", {
-                                            method: "POST",
-                                            headers: {
-                                                'Accept': 'application/json, text/plain',
-                                                'Content-Type': 'application/json;charset=UTF-8'
-                                            },
-                                            body: JSON.stringify({
-                                                scoringcriteria : generateOutputexamanswers(NumExam),
-                                                examnoanswers : i,
-                                                examid : id
-                                            }),
-                                        });
-                                        if (resulcreate.ok) {
-                                            const result = await resulcreate.json();
-                                        } else {
-                                            checkcreateanswers = false
+                                    // try{
+                                    //     let resulcreate = await fetch(variables.API_URL + "examanswers/create/", {
+                                    //         method: "POST",
+                                    //         headers: {
+                                    //             'Accept': 'application/json, text/plain',
+                                    //             'Content-Type': 'application/json;charset=UTF-8'
+                                    //         },
+                                    //         body: JSON.stringify({
+                                    //             scoringcriteria : generateOutputexamanswers(NumExam),
+                                    //             examnoanswers : i,
+                                    //             examid : id
+                                    //         }),
+                                    //     });
+                                    //     if (resulcreate.ok) {
+                                    //         let resultc = await resulcreate.json();
+                                    //     } else {
+                                    //         checkcreateanswers = false
+                                    //     }
+                                    // }catch(err){
+                                    //     checkcreateanswers = false
+                                    // }
+                                    try {
+                                        console.log("id :",id)
+                                        for (let i = 1; i <= SetExam; i++) {
+                                            fetch(variables.API_URL + "examanswers/create/", {
+                                                method: "POST",
+                                                headers: {
+                                                    'Accept': 'application/json, text/plain',
+                                                    'Content-Type': 'application/json;charset=UTF-8'
+                                                },
+                                                body: JSON.stringify({
+                                                    scoringcriteria : generateOutputexamanswers(NumExam),
+                                                    examnoanswers : i,
+                                                    examid :id
+                                                }),
+                                            });
                                         }
-                                    }catch(err){
+                                    } catch (error) {
                                         checkcreateanswers = false
                                     }
-                                    
                                 }
                             }
+
                             if(checkcreateanswers === false){
                                 Swal.fire({
                                     title: "เกิดข้อผิดพลาดในการแก้ไขจำนวนชุดข้อสอบกรุณาตรวจสอบใหม่อีกครั้ง",

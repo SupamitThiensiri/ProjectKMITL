@@ -434,7 +434,7 @@ const TableExamAnswer = ({ columns, examnoanswers }) => {
                                             <Link to={"/Subject/SubjectNo/Exam/ExamAnswer/UpdateExamAnswer/" + row.values.examanswersid +"/"+ id +"/"+ row.values.examnoanswers} className='' style={{ display: 'contents' }}>
                                                 <span className='border-icon-dark'><FontAwesomeIcon icon={faPen} /></span>
                                             </Link>
-                                            <span className={dataduplicate.length === 0 && datanon.length === 0 ? 'danger light-font wait':'danger light-font'} onClick={() => handleDelCours(row.values.examanswersid, row.values.examnoanswers)}>
+                                            <span className={dataduplicate.length === 0 && datanon.length === 0 ? 'danger light-font ':'danger light-font wait'} onClick={() => handleDelCours(row.values.examanswersid, row.values.examnoanswers)}>
                                                 <FontAwesomeIcon icon={faTrashCan} />
                                             </span>
                                         </td>
